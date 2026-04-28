@@ -1,0 +1,66 @@
+:root {
+    --cc-cream: #f3e3cb;
+    --cc-pink: #ff9b9e;
+    --cc-red: #dd0d22;
+    --cc-orange: #ff4a00;
+    --cc-white: #ffffff;
+}
+
+body {
+    background-color: var(--cc-cream);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.cc-card {
+    background: var(--cc-white);
+    padding: 30px;
+    border-radius: 12px;
+    width: 400px;
+    border-top: 6px solid var(--cc-red);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.cc-title {
+    color: var(--cc-red);
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-group { margin-bottom: 15px; }
+
+.form-group label {
+    display: block;
+    color: var(--cc-orange);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.cc-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--cc-pink);
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.btn-cc {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--cc-red);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-cc:hover { background-color: var(--cc-orange); }
