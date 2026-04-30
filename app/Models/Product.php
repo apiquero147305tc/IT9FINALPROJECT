@@ -9,24 +9,17 @@ class Product extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'user_id',
+        'user_id', // The Seller's ID
         'name',
         'description',
         'price',
-        'stock',
         'category',
         'image',
-        'status',
     ];
 
     /**
-     * Get the seller that owns the product.
+     * Relationship: A product belongs to a Seller (User).
      */
     public function seller()
     {
@@ -34,10 +27,10 @@ class Product extends Model
     }
 
     /**
-     * Scope a query to only include available products.
+     * Relationship: A product can be in many orders.
      */
-    public function scopeInStock($query)
+    public function orders()
     {
-        return $query->where('stock', '>', 0)->where('status', 'active');
+        return $this->hasMany(Order::class);
     }
 }

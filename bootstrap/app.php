@@ -11,10 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // REGISTER YOUR MIDDLEWARE ALIAS HERE
+        // This connects the name 'role' or 'checkRole' used in your routes 
+        // to the actual RoleMiddleware file.
         $middleware->alias([
-            // ADD \CheckRole AT THE END
-'checkRole' => \App\Http\Middleware\CheckRole::class,        ]);
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

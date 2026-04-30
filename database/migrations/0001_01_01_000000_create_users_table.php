@@ -18,13 +18,19 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             
-            // The 'role' column determines if a user sees the Seller Studio or Buyer Marketplace
-            $table->string('role')->default('buyer'); 
+            // User Role
+            $table->enum('role', ['admin', 'seller', 'buyer'])->default('buyer'); 
+
+            // Student-specific data (Buyer only)
+            // We use nullable() so Admins/Sellers aren't forced to have these values
+            $table->string('grade_level')->nullable(); 
+            $table->string('monthly_budget')->nullable(); 
 
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // Standard Laravel Security Tables
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

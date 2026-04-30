@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Models\Product; 
-use Illuminate\Support\Facades\Auth;
 
 class BuyerController extends Controller
 {
-    /**
-     * Show the Buyer Dashboard / Marketplace
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // Fetch all products to display on the marketplace
-        $products = Product::all();
+        $query = Product::query();
 
-        // This expects: resources/views/buyer_dashboard.blade.php
-        return view('buyer_dashboard', compact('products'));
-    }
+        // 1. Handle the Category Filter (from your Gift/Food icons)
+        if ($request->has('category') && $request->category !== 'All') {
+            $query->where('category', $request->category);
+        }
 
-    /**
-     * Show the Shopping Cart
-     */
-    public function viewCart()
-    {
-        // This expects: resources/views/cart.blade.php
-        return view('cart'); 
+        // 2. Handle Search bar queries
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // 3. Fetch products and pass to the variable $products
+        $products = $query->latest()->get();
+
+        // 4. Send $products to buyer/home.blade.php
+        return view('buyer.home', compact('products'));
     }
 }

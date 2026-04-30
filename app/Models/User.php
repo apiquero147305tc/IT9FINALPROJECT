@@ -20,6 +20,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role', 
+        'grade_level',
+        'monthly_budget',
     ];
 
     /**
@@ -43,29 +45,44 @@ class User extends Authenticatable
 
     // --- HELPER METHODS ---
 
-    /**
-     * Check if the user is a seller.
-     */
+    public function isAdmin(): bool
+    {
+        return strtolower($this->role) === 'admin';
+    }
+
     public function isSeller(): bool
     {
         return strtolower($this->role) === 'seller';
     }
 
-    /**
-     * Check if the user is a buyer.
-     */
     public function isBuyer(): bool
     {
         return strtolower($this->role) === 'buyer';
     }
 
+    /**
+     * Custom helper for University of Mindanao student logic
+     */
+    public function isStudent(): bool
+    {
+        return in_array($this->grade_level, ['High School', 'SHS', 'College']);
+    }
+
     // --- RELATIONSHIPS ---
 
     /**
-     * Relationship: A user (seller) can have many products.
+     * Seller Side: A seller has many products.
      */
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    /**
+     * Buyer Side: A buyer has many orders.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }
