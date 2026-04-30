@@ -15,19 +15,24 @@ return new class extends Migration
             $table->id();
             
             // 1. Link to the Seller (The user who posted it)
+            // This ensures only the seller who owns the product can edit it.
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             
             // 2. Basic Item Details
             $table->string('name');
-            $table->text('description')->nullable(); // Good for more details
-            $table->decimal('price', 10, 2); // Increased to 10 for larger prices
-            $table->integer('stock')->default(0); // Tracking inventory
+            $table->text('description')->nullable(); 
+            $table->decimal('price', 10, 2); 
+            $table->integer('stock')->default(0); 
             
             // 3. Organization & Visuals
-            $table->string('category')->default('General');
-            $table->string('image')->nullable();
+            // Change category to string so sellers can type their own or pick from a list
+            $table->string('category')->default('General'); 
             
-            // 4. Status (Optional: helpful for 'Lending' vs 'Selling')
+            // This stores the path to the item picture in the 'storage' folder
+            $table->string('image')->nullable(); 
+            
+            // 4. Status 
+            // Useful for showing "Sold Out" or "Hidden"
             $table->string('status')->default('available'); 
 
             $table->timestamps();

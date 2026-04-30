@@ -1,22 +1,117 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraveCart | Login</title>
+    <style>
+        :root {
+            --bg-cream: #f3e3cb;
+            --cc-red: #dd0d22;
+            --cc-orange: #ff4a00;
+            --cc-pink: #ff9b9e;
+        }
 
-@section('content')
-<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 15px; border-bottom: 5px solid var(--crave-red); box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-    <h2 style="color: var(--crave-red); text-align: center;">CraveCart Login</h2>
-    <form action="{{ route('login') }}" method="POST">
-        @csrf
-        <div style="margin-bottom: 15px;">
-            <label>Email Address</label>
-            <input type="email" name="email" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;" required>
+        body {
+            background-color: var(--bg-cream);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 350px;
+            border-bottom: 5px solid var(--cc-orange);
+        }
+
+        h2 { 
+            color: var(--cc-red); 
+            text-align: center; 
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label { font-size: 0.9rem; color: #555; display: block; margin-bottom: 5px; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--cc-pink);
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--cc-red); }
+
+        button {
+            width: 100%;
+            background-color: var(--cc-red);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover { background-color: var(--cc-orange); }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a { color: var(--cc-orange); text-decoration: none; font-weight: bold; }
+        
+        .error-list { color: var(--cc-red); font-size: 0.8rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>CraveCart</h2>
+
+        @if ($errors->any())
+            <div class="error-list">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </div>
+        @endif
+
+        <form action="{{ route('login.post') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" value="{{ old('email') }}" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <button type="submit">LOGIN</button>
+        </form>
+
+        <div class="footer-links">
+            <p>New to CraveCart? <a href="{{ route('register') }}">Create Account</a></p>
         </div>
-        <div style="margin-bottom: 20px;">
-            <label>Password</label>
-            <input type="password" name="password" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;" required>
-        </div>
-        <button type="submit" class="btn-action">Login to Dashboard</button>
-    </form>
-    <p style="text-align: center; font-size: 0.9rem; margin-top: 15px;">
-        New here? <a href="{{ url('/choose-role') }}" style="color: var(--crave-orange);">Create an account</a>
-    </p>
-</div>
-@endsectionss
+    </div>
+
+</body>
+</html>

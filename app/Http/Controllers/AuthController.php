@@ -3,27 +3,51 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class AuthController extends Controller
 {
-    // 1. Show the Login Form
-    public function showLogin()
-    {
-        return view('auth.login');
+    public function loginPage() { return view('auth.login'); }
+    public function registerPage() { return view('auth.register'); }
+
+    public function register(Request $request) {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|in:buyer,seller',
+            // Added validation for the dropdowns
+            'grade_level' => 'required_if:role,buyer', 
+            'monthly_budget' => 'required_if:role,buyer',
+            'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
+        ]);
+
+        // Clean up the budget string for the database
+        $finalBudget = $request->monthly_budget;
+        if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
+            $finalBudget = "₱" . $request->custom_budget; // Standardizing the format
+        }
+
+        // Creating the User
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password), // Securely hashing
+            'role' => $request->role,
+            'grade_level' => $request->role === 'buyer' ? $request->grade_level : null,
+            'monthly_budget' => $request->role === 'buyer' ? $finalBudget : null,
+        ]);
+
+        // Auto-login the user after registration so they don't have to log in again
+        Auth::login($user);
+
+        // Use the same redirect logic as login
+        return $this->redirectUserBasedOnRole($user);
     }
 
-    // 2. Show the Registration Form
-    public function showRegister()
-    {
-        return view('auth.register');
-    }
-
-    // 3. Handle Login Logic
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -31,59 +55,33 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            $user = Auth::user();
-
-            // Use the named routes from your web.php
-            if ($user->role === 'seller') {
-                return redirect()->route('seller.dashboard');
-            }
-            
-            if ($user->role === 'buyer') {
-                return redirect()->route('buyer.dashboard');
-            }
-
-            return redirect()->intended('/');
+            return $this->redirectUserBasedOnRole(Auth::user());
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
     }
 
-    // 4. Handle Registration Logic
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', 'string', 'in:buyer,seller'], 
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
-
-        Auth::login($user);
-
-        // Redirect based on the newly created role
-        if ($user->role === 'seller') {
-            return redirect()->route('seller.dashboard');
+    /**
+     * Helper to keep redirect logic in one place
+     */
+    private function redirectUserBasedOnRole($user) {
+        // Using your isSeller() and isBuyer() helpers from the User Model
+        if ($user->isAdmin()) {
+            return redirect()->intended('/admin/dashboard');
         }
-
-        return redirect()->route('buyer.dashboard');
+        
+        if ($user->isSeller()) {
+            return redirect()->intended('/seller/dashboard');
+        }
+        
+        // Buyers go to the shop home
+        return redirect()->intended('/home');
     }
 
-    // 5. Handle Logout
-    public function logout(Request $request)
-    {
+    public function logout(Request $request) {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/login');
     }
 }

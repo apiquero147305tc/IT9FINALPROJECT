@@ -2,52 +2,95 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Order; 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class SellerController extends Controller
 {
     /**
-     * Show the Seller Dashboard
+     * Seller Dashboard Overview
      */
-    public function index()
+    public function dashboard()
     {
-        // The 'auth' and 'checkRole' middleware in web.php already handle the check.
-        // We just need to fetch the data.
-        $myProducts = Product::where('user_id', Auth::id())->latest()->get();
+        $seller = Auth::user();
 
-        // Ensure the file is resources/views/seller_dashboard.blade.php
-        return view('seller_dashboard', compact('myProducts'));
+        // 1. Fetch only this seller's products
+        $products = Product::where('user_id', $seller->id)->latest()->get();
+        
+        $orders = collect();
+        $totalEarnings = 0;
+
+        // Check if both the Model and Table exist before querying
+        if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
+            try {
+                // Fetch recent 5 orders for products owned by this seller
+                $orders = Order::whereHas('product', function($query) use ($seller) {
+                    $query->where('user_id', $seller->id);
+                })
+                ->with(['user', 'product'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+                // Calculate earnings only from 'completed' status orders
+                $totalEarnings = Order::whereHas('product', function($query) use ($seller) {
+                    $query->where('user_id', $seller->id);
+                })
+                ->where('status', 'completed')
+                ->sum('total_price');
+                
+            } catch (\Exception $e) {
+                $orders = collect();
+            }
+        }
+
+        return view('seller.dashboard', compact('products', 'orders', 'totalEarnings'));
     }
 
     /**
-     * Save product to database
+     * Full Orders Management List
      */
-    public function store(Request $request)
+    public function orders()
     {
-        // 1. Validate
+        $seller = Auth::user();
+        
+        if (!Schema::hasTable('orders')) {
+            return view('seller.orders', ['orders' => collect()]);
+        }
+
+        $orders = Order::whereHas('product', function($query) use ($seller) {
+            $query->where('user_id', $seller->id);
+        })
+        ->with(['user', 'product'])
+        ->latest()
+        ->paginate(15);
+
+        return view('seller.orders', compact('orders'));
+    }
+
+    /**
+     * Update Order Status (New Method)
+     * This allows sellers to mark items as 'Completed' or 'Cancelled'
+     */
+    public function updateOrderStatus(Request $request, $id)
+    {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'category' => ['required', 'string'],
-            'image' => ['nullable', 'url'],
-            'description' => ['nullable', 'string'], // Added to validation
+            'status' => 'required|in:pending,completed,cancelled'
         ]);
 
-        // 2. Create
-        // Ensure 'user_id', 'description', 'stock', and 'status' are in Product.php $fillable array
-        Product::create([
-            'user_id'     => Auth::id(),
-            'name'        => $request->name,
-            'description' => $request->description ?? 'No description provided.',
-            'price'       => $request->price,
-            'category'    => $request->category,
-            'image'       => $request->image,
-            'stock'       => 10,
-            'status'      => 'active',
-        ]);
+        $seller = Auth::user();
 
-        return redirect()->route('seller.dashboard')->with('success', 'Item listed!');
+        // Find the order and verify the seller actually owns the product being sold
+        $order = Order::whereHas('product', function($query) use ($seller) {
+            $query->where('user_id', $seller->id);
+        })->findOrFail($id);
+
+        $order->status = $request->status;
+        $order->save();
+
+        return back()->with('success', 'Order status updated to ' . $request->status);
     }
 }

@@ -1,0 +1,50 @@
+:root {
+    --bg-cream: #f3e3cb;
+    --cc-red: #dd0d22;
+    --cc-orange: #ff4a00;
+    --cc-pink: #ff9b9e;
+    --cc-gold: #feb207;
+}
+
+body {
+    background-color: var(--bg-cream);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.auth-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 350px;
+}
+
+h2 { color: var(--cc-red); text-align: center; margin-bottom: 1.5rem; }
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--cc-pink);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    background-color: var(--cc-orange);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+button:hover { background-color: var(--cc-red); }
