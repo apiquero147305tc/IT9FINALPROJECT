@@ -3,27 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-<<<<<<< HEAD
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-=======
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-
-class DatabaseSeeder extends Seeder
-{
-    use WithoutModelEvents;
-
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-<<<<<<< HEAD
         // 1. Create the PRE-SET ADMIN
         User::create([
             'name' => 'CraveCart Admin',
@@ -49,13 +38,3 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
-=======
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-    }
-}
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
