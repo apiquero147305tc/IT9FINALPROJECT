@@ -18,33 +18,29 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:buyer,seller',
-            // Added validation for the dropdowns
             'grade_level' => 'required_if:role,buyer', 
             'monthly_budget' => 'required_if:role,buyer',
             'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
         ]);
 
-        // Clean up the budget string for the database
         $finalBudget = $request->monthly_budget;
         if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
-            $finalBudget = "₱" . $request->custom_budget; // Standardizing the format
+            $finalBudget = "₱" . $request->custom_budget;
         }
 
-        // Creating the User
+        // Creating the User with 'pending' status by default
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // Securely hashing
+            'password' => Hash::make($request->password),
             'role' => $request->role,
+            'status' => 'pending', // New users start as pending
             'grade_level' => $request->role === 'buyer' ? $request->grade_level : null,
             'monthly_budget' => $request->role === 'buyer' ? $finalBudget : null,
         ]);
 
-        // Auto-login the user after registration so they don't have to log in again
-        Auth::login($user);
-
-        // Use the same redirect logic as login
-        return $this->redirectUserBasedOnRole($user);
+        // IMPORTANT: We do NOT auto-login here anymore because they need approval
+        return redirect()->route('login')->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
     }
 
     public function login(Request $request) {
@@ -54,8 +50,16 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Check if the user is approved or is an admin
+            if ($user->status !== 'approved' && !$user->isAdmin()) {
+                Auth::logout(); // Log them out immediately
+                return back()->withErrors(['email' => 'Your account is pending admin approval. Please try again later.']);
+            }
+
             $request->session()->regenerate();
-            return $this->redirectUserBasedOnRole(Auth::user());
+            return $this->redirectUserBasedOnRole($user);
         }
 
         return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
@@ -65,7 +69,6 @@ class AuthController extends Controller
      * Helper to keep redirect logic in one place
      */
     private function redirectUserBasedOnRole($user) {
-        // Using your isSeller() and isBuyer() helpers from the User Model
         if ($user->isAdmin()) {
             return redirect()->intended('/admin/dashboard');
         }
@@ -74,7 +77,6 @@ class AuthController extends Controller
             return redirect()->intended('/seller/dashboard');
         }
         
-        // Buyers go to the shop home
         return redirect()->intended('/home');
     }
 
