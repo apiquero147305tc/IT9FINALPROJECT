@@ -10,7 +10,6 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-<<<<<<< HEAD
     ->withMiddleware(function (Middleware $middleware) {
         // This connects the name 'role' or 'checkRole' used in your routes 
         // to the actual RoleMiddleware file.
@@ -21,11 +20,3 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
-=======
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0

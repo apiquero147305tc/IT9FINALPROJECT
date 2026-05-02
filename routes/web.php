@@ -4,7 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Auth;
 // Guest Routes
 Route::get('/', function () {
     return redirect()->route('login');
@@ -38,8 +38,6 @@ Route::middleware(['role:buyer'])->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
