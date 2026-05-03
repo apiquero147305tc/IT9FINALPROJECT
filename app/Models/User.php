@@ -2,10 +2,6 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
-=======
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,31 +14,22 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
-<<<<<<< HEAD
-=======
      *
      * @var list<string>
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-<<<<<<< HEAD
         'role', 
         'grade_level',
         'monthly_budget',
-=======
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
     ];
 
     /**
      * The attributes that should be hidden for serialization.
-<<<<<<< HEAD
-=======
      *
      * @var list<string>
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
      */
     protected $hidden = [
         'password',
@@ -51,11 +38,8 @@ class User extends Authenticatable
 
     /**
      * Get the attributes that should be cast.
-<<<<<<< HEAD
-=======
      *
      * @return array<string, string>
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
      */
     protected function casts(): array
     {
@@ -64,7 +48,6 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-<<<<<<< HEAD
 
     // --- HELPER METHODS ---
 
@@ -109,6 +92,4 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 }
-=======
-}
->>>>>>> 4de1883d5dbe8b6824d22131dd8b470cc5952cf0
+
