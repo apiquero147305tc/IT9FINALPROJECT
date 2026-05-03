@@ -10,7 +10,7 @@
 <body>
 <nav class="navbar">
     <div class="logo"><a href="{{ route('home') }}" class="cravecartlogo">
-    <h2>🛒 CraveCart</h2>
+    <h2 class="h22">🛒 CraveCart</h2>
 </a></div>
 
 <ul>

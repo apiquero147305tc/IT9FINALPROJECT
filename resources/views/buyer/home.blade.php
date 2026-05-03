@@ -121,15 +121,35 @@
         </div>
     </div>
 
-    <!-- Category Menu logic using query strings -->
-    <div id="category-menu" style="{{ request('category') ? 'display:block;' : '' }}">
-        <p style="margin-top:0; font-weight:bold; color:#555;">Filter by Category</p>
-        <a href="{{ route('buyer.home') }}" class="cat-chip {{ !request('category') || request('category') == 'All' ? 'active' : '' }}">All</a>
-        <a href="?category=Flowers" class="cat-chip {{ request('category') == 'School Supplies' ? 'active' : '' }}">School Supples</a>
-        <a href="?category=Plants" class="cat-chip {{ request('category') == 'Cooking' ? 'active' : '' }}">Cooking</a>
-        <a href="?category=Gifts" class="cat-chip {{ request('category') == 'Accesories' ? 'active' : '' }}">Accesories</a>
-        <a href="?category=Food" class="cat-chip {{ request('category') == 'Food' ? 'active' : '' }}">Food</a>
-    </div>
+   <!-- Category Menu -->
+    <div id="category-menu" class="{{ ($showMenu ?? false) ? 'show' : 'hide' }}">
+    <p style="margin-top:0; font-weight:bold; color:#555;">Filter by Category</p>
+
+    <a href="{{ route('buyer.home') }}" 
+       class="cat-chip {{ !request('category') || request('category') == 'All' ? 'active' : '' }}">
+        All
+    </a>
+
+    <a href="?category=School Supplies" 
+       class="cat-chip {{ request('category') == 'School Supplies' ? 'active' : '' }}">
+        School Supplies
+    </a>
+
+    <a href="?category=Cooking" 
+       class="cat-chip {{ request('category') == 'Cooking' ? 'active' : '' }}">
+        Cooking
+    </a>
+
+    <a href="?category=Accessories" 
+       class="cat-chip {{ request('category') == 'Accessories' ? 'active' : '' }}">
+        Accessories
+    </a>
+
+    <a href="?category=Food" 
+       class="cat-chip {{ request('category') == 'Food' ? 'active' : '' }}">
+        Food
+    </a>
+</div>
 
     <div class="product-grid">
         @forelse($products as $product)
