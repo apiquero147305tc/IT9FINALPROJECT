@@ -41,7 +41,7 @@ class ProductController extends Controller
             'stock' => $request->stock,
             'category' => $request->category,
             'image' => $imagePath,
-            'status' => 'available',
+            'status' => 'pending',
         ]);
 
         return redirect()->route('seller.dash')->with('success', 'Product added successfully!');

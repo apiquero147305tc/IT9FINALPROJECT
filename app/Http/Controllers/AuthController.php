@@ -53,7 +53,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             // Check if the user is approved or is an admin
-            if ($user->status !== 'approved' && !$user->isAdmin()) {
+            if ($user->status !== 'approved' && $user->role !== 'admin'){
                 Auth::logout(); // Log them out immediately
                 return back()->withErrors(['email' => 'Your account is pending admin approval. Please try again later.']);
             }
@@ -69,16 +69,16 @@ class AuthController extends Controller
      * Helper to keep redirect logic in one place
      */
     private function redirectUserBasedOnRole($user) {
-        if ($user->isAdmin()) {
-            return redirect()->intended('/admin/dashboard');
-        }
-        
-        if ($user->isSeller()) {
-            return redirect()->intended('/seller/dashboard');
-        }
-        
-        return redirect()->intended('/home');
+    if ($user->isAdmin()) {
+        return redirect()->intended('/admin/controlpanel');
     }
+    
+    if ($user->isSeller()) {
+        return redirect()->intended('/seller/dashboard');
+    }
+    
+    return redirect()->intended('/home');
+   }
 
     public function logout(Request $request) {
         Auth::logout();

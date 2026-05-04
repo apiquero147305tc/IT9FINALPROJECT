@@ -16,25 +16,24 @@ class RoleMiddleware
      * @param  \Closure  $next
      * @param  string  $role  <-- Added this parameter
      */
-    public function handle(Request $request, Closure $next, string $role): Response
-    {
-        // 1. Check if user is logged in
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        // 2. Check if the user's role matches the required role (e.g., 'seller')
-        // We use strtolower to prevent errors if the DB has 'Seller' vs 'seller'
-        if (strtolower(Auth::user()->role) !== strtolower($role)) {
-            
-            // Redirect based on what they actually are
-            if (Auth::user()->role === 'seller') {
-                return redirect()->route('seller.dash');
-            }
-            
-            return redirect('/home')->with('error', 'Unauthorized access.');
-        }
-
-        return $next($request);
+    
+     public function handle(Request $request, Closure $next, string $role): Response
+{
+    if (!Auth::check()) {
+        return redirect()->route('login');
     }
+
+    $user = Auth::user();
+
+    // normalize role
+    $userRole = strtolower($user->role);
+    $requiredRole = strtolower($role);
+
+    // STRICT ROLE CHECK ONLY
+    if ($userRole !== $requiredRole) {
+        return redirect('/home')->with('error', 'Unauthorized access.');
+    }
+
+    return $next($request);
+}
 }

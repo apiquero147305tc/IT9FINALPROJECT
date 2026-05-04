@@ -12,17 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-
-            // Add role only if it does not exist
-            if (!Schema::hasColumn('users', 'role')) {
-                $table->string('role')->default('buyer');
-            }
-
-            // Add spending_limit only if it does not exist
-            if (!Schema::hasColumn('users', 'spending_limit')) {
-                $table->decimal('spending_limit', 10, 2)->nullable();
-            }
-
+         $table->string('status')->default('pending');
         });
     }
 
@@ -32,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'spending_limit']);
+            $table->dropColumn('status');
         });
     }
 };
