@@ -28,6 +28,7 @@ body {
 }
 
 h2 { color: var(--cc-red); text-align: center; margin-bottom: 1.5rem; }
+
 .h22{
     color: var(--cc-white);
 }

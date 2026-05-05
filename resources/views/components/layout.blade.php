@@ -22,19 +22,18 @@
 
     <div class="nav-right">
         <input type="text" placeholder="Search for essentials...">
-         @if (!Request::is('buyer/*') && !Request::is('seller/*') && !Request::is('chooseRole'))
-        
-        <button class="login"><a href="{{ route('chooseRole') }}" class="login-btn authpart">
-            Login
-        </a></button>
+        @if (!Route::is('buyer.home') && !Route::is('seller.dashboard'))
+    
+     <button class="login"><a href="{{ route('login') }}" class="login-btn authpart">
+        Login
+     </a></button>
 
-        <button class="signup"><a href="{{ route('chooseRole') }}" class="signup-btn authpart">
+     <button class="signup"><a href="{{ route('chooseRole') }}" class="signup-btn authpart">
             Sign up
         </a></button>
 
-    @else
-
-        <button class="login"><span class="login login-btn disabled">
+@else
+     <button class="login"><span class="login login-btn disabled">
             Login
         </span></button>
 
@@ -42,7 +41,7 @@
             Sign up
         </span></button>
 
-    @endif
+@endif
     </div>
 </nav>
 

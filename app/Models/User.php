@@ -51,20 +51,20 @@ class User extends Authenticatable
 
     // --- HELPER METHODS ---
 
-    public function isAdmin(): bool
-    {
-        return strtolower($this->role) === 'admin';
-    }
+  public function isAdmin()
+{
+    return $this->role === 'admin';
+}
 
-    public function isSeller(): bool
-    {
-        return strtolower($this->role) === 'seller';
-    }
+public function isSeller()
+{
+    return $this->role === 'seller';
+}
 
-    public function isBuyer(): bool
-    {
-        return strtolower($this->role) === 'buyer';
-    }
+public function isBuyer()
+{
+    return $this->role === 'buyer';
+}
 
     /**
      * Custom helper for University of Mindanao student logic

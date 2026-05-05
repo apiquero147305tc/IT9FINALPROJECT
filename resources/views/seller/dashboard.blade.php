@@ -35,80 +35,109 @@
         </div>
     </div>
 
-    <div class="container">
-        <div class="main-content">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <small>Total Products</small>
-                    <h3>{{ count($products) }}</h3>
-                </div>
-                <div class="stat-card" style="background: #dd0d22;">
-                    <small>Total Earnings</small>
-                    <h3>₱{{ number_format($totalEarnings, 2) }}</h3>
-                </div>
+  <div class="container">
+    <div class="main-content">
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <small>Total Products</small>
+                <h3>{{ $products->count() }}</h3>
             </div>
 
-            <div class="card">
-                <h2>My Inventory</h2>
-                <a href="{{ route('products.create') }}" class="btn-add">+ Add New Product</a>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Item Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($products as $product)
+            <div class="stat-card" style="background: #dd0d22;">
+                <small>Total Earnings</small>
+                <h3>₱{{ number_format($totalEarnings, 2) }}</h3>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>My Inventory</h2>
+
+            <a href="{{ route('products.create') }}" class="btn-add">
+                + Add New Product
+            </a>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($products as $product)
                         <tr>
                             <td>
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" width="45" style="border-radius: 5px; object-fit: cover; height: 45px;">
+                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                         width="45"
+                                         height="45"
+                                         style="border-radius:5px; object-fit:cover;">
                                 @else
-                                    <div style="width:45px; height:45px; background:#eee; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#999;">No Img</div>
+                                    <div style="width:45px; height:45px; background:#eee; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#999;">
+                                        No Img
+                                    </div>
                                 @endif
                             </td>
+
                             <td><b>{{ $product->name }}</b></td>
                             <td><span class="badge">{{ $product->category }}</span></td>
                             <td>₱{{ number_format($product->price, 2) }}</td>
-                            <td>{{ $product->stock }} <small>pcs</small></td>
+                            <td>{{ $product->stock }} pcs</td>
+
                             <td>
-                                <a href="{{ route('products.edit', $product->id) }}" class="btn-edit">Edit</a>
+                                <a href="{{ route('products.edit', $product->id) }}"
+                                   class="btn-edit">
+                                    Edit
+                                </a>
                             </td>
                         </tr>
-                        @empty
-                        <tr><td colspan="6" style="text-align:center; padding: 30px; color: #999;">No products found. Start adding your items!</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="card">
-                <h2>Recent Orders</h2>
-                @forelse($orders as $order)
-                    <div class="order-item">
-                        <p><strong>Customer:</strong> {{ $order->user->name }}</p>
-                        <p><strong>Item:</strong> {{ $order->product->name }}</p>
-                        <p><strong>Total:</strong> ₱{{ number_format($order->total_price, 2) }}</p>
-                        <small style="color: #888;">{{ $order->created_at->diffForHumans() }}</small>
-                    </div>
-                @empty
-                    <p style="color: #666; text-align: center; padding: 20px;">No orders yet. Keep promoting!</p>
-                @endforelse
-                
-                @if(count($orders) > 0)
-                    <a href="{{ route('seller.orders') }}" style="display:block; text-align:center; font-size:0.8rem; color:#dd0d22; text-decoration:none; margin-top:10px;">View All Orders →</a>
-                @endif
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="6"
+                                style="text-align:center; padding:30px; color:#999;">
+                                No products found. Start adding your items!
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <div class="sidebar">
+        <div class="card">
+            <h2>Recent Orders</h2>
+
+            @forelse($orders as $order)
+                <div class="order-item">
+                    <p><strong>Customer:</strong> {{ $order->user->name ?? 'Unknown' }}</p>
+                    <p><strong>Item:</strong> {{ $order->product->name ?? 'Deleted Product' }}</p>
+                    <p><strong>Total:</strong> ₱{{ number_format($order->total_price, 2) }}</p>
+                    <small style="color:#888;">
+                        {{ $order->created_at->diffForHumans() }}
+                    </small>
+                </div>
+            @empty
+                <p style="color:#666; text-align:center; padding:20px;">
+                    No orders yet. Keep promoting!
+                </p>
+            @endforelse
+
+            @if($orders->count())
+                <a href="{{ route('seller.orders') }}"
+                   style="display:block; text-align:center; font-size:0.8rem; color:#dd0d22; text-decoration:none; margin-top:10px;">
+                    View All Orders →
+                </a>
+            @endif
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

@@ -95,20 +95,30 @@
     </style>
 </head>
 <body>
+<nav>
+    <h2 style="margin:0;">CraveCart</h2>
 
-    <nav>
-        <h2 style="margin:0;">CraveCart</h2>
-        <div class="nav-links">
-            <a href="{{ route('buyer.home') }}">Shop</a>
-            <a href="#">Lending</a>
-            <a href="#">Messages</a>
-            <a href="#">Cart (0)</a>
-            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" style="background:none; border:1px solid white; color:white; padding: 5px 10px; border-radius:5px; cursor:pointer;">Logout</button>
-            </form>
-        </div>
-    </nav>
+    <div class="nav-links">
+        <a href="{{ route('buyer.home') }}">Shop</a>
+
+        <a href="#">Lending</a>
+
+        <!-- ✅ FIX: Inbox instead of product-based chat -->
+        <a href="{{ route('messages.inbox') }}">
+            Messages
+        </a>
+
+        <a href="#">Cart (0)</a>
+
+        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="submit"
+                style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">
+                Logout
+            </button>
+        </form>
+    </div>
+</nav>
 
     <div class="search-container">
         <!-- Wrap in a form to make search actually work -->
@@ -122,7 +132,7 @@
     </div>
 
    <!-- Category Menu -->
-    <div id="category-menu" class="{{ ($showMenu ?? false) ? 'show' : 'hide' }}">
+    <div id="category-menu" class="{{ ($showMenu ?? false) ? 'show' : 'hide' }}">s
     <p style="margin-top:0; font-weight:bold; color:#555;">Filter by Category</p>
 
     <a href="{{ route('buyer.home') }}" 

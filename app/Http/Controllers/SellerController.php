@@ -13,43 +13,45 @@ class SellerController extends Controller
     /**
      * Seller Dashboard Overview
      */
-    public function dashboard()
-    {
-        $seller = Auth::user();
+   public function dashboard()
+{
+    $sellerId = Auth::id();
 
-        // 1. Fetch only this seller's products
-        $products = Product::where('user_id', $seller->id)->latest()->get();
-        
-        $orders = collect();
-        $totalEarnings = 0;
+    // IMPORTANT: use ONE correct column only (choose seller_id OR user_id)
+    $products = Product::where('seller_id', $sellerId)
+        ->latest()
+        ->get();
 
-        // Check if both the Model and Table exist before querying
-        if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
-            try {
-                // Fetch recent 5 orders for products owned by this seller
-                $orders = Order::whereHas('product', function($query) use ($seller) {
-                    $query->where('user_id', $seller->id);
-                })
-                ->with(['user', 'product'])
-                ->latest()
-                ->take(5)
-                ->get();
+    $orders = collect();
+    $totalEarnings = 0;
 
-                // Calculate earnings only from 'completed' status orders
-                $totalEarnings = Order::whereHas('product', function($query) use ($seller) {
-                    $query->where('user_id', $seller->id);
-                })
-                ->where('status', 'completed')
-                ->sum('total_price');
-                
-            } catch (\Exception $e) {
-                $orders = collect();
-            }
+    if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
+        try {
+            $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('seller_id', $sellerId); // keep consistent
+            })
+            ->with(['user', 'product'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+            $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('seller_id', $sellerId);
+            })
+            ->where('status', 'completed')
+            ->sum('total_price');
+
+        } catch (\Exception $e) {
+            $orders = collect();
         }
-
-        return view('seller.dashboard', compact('products', 'orders', 'totalEarnings'));
     }
 
+    return view('seller.dashboard', compact(
+        'products',
+        'orders',
+        'totalEarnings'
+    ));
+}
     /**
      * Full Orders Management List
      */
