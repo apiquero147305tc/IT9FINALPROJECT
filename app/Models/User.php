@@ -14,6 +14,8 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
+     *
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -26,6 +28,8 @@ class User extends Authenticatable
 
     /**
      * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -34,6 +38,8 @@ class User extends Authenticatable
 
     /**
      * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
     protected function casts(): array
     {
@@ -45,20 +51,20 @@ class User extends Authenticatable
 
     // --- HELPER METHODS ---
 
-    public function isAdmin(): bool
-    {
-        return strtolower($this->role) === 'admin';
-    }
+  public function isAdmin()
+{
+    return $this->role === 'admin';
+}
 
-    public function isSeller(): bool
-    {
-        return strtolower($this->role) === 'seller';
-    }
+public function isSeller()
+{
+    return $this->role === 'seller';
+}
 
-    public function isBuyer(): bool
-    {
-        return strtolower($this->role) === 'buyer';
-    }
+public function isBuyer()
+{
+    return $this->role === 'buyer';
+}
 
     /**
      * Custom helper for University of Mindanao student logic
@@ -86,3 +92,4 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 }
+

@@ -175,12 +175,18 @@
                 <td>
                     <form action="{{ route('admin.approve', $user->id) }}" method="POST" style="display:inline;">
                         @csrf
-                        <button class="btn btn-approve">Approve</button>
+                        <button class="btn btn-approve"
+                            onclick="return confirm('Approve this user?')">
+                            Approve
+                        </button>
                     </form>
 
                     <form action="{{ route('admin.reject', $user->id) }}" method="POST" style="display:inline;">
                         @csrf
-                        <button class="btn btn-reject">Reject</button>
+                        <button class="btn btn-reject"
+                            onclick="return confirm('Reject this user?')">
+                            Reject
+                        </button>
                     </form>
                 </td>
             </tr>

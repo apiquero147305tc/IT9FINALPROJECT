@@ -9,81 +9,146 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function loginPage() { return view('auth.login'); }
-    public function registerPage() { return view('auth.register'); }
+    public function loginPage()
+    {
+        return view('auth.login');
+    }
 
-    public function register(Request $request) {
+    public function registerPage(Request $request)
+    {
+        return view('auth.register', [
+            'role' => $request->role ?? 'buyer'
+        ]);
+    }
+
+    public function register(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:buyer,seller',
-            'grade_level' => 'required_if:role,buyer', 
+
+            // Buyer fields
+            'grade_level' => 'required_if:role,buyer',
             'monthly_budget' => 'required_if:role,buyer',
             'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
+
+            // Seller fields
+            'shop_name' => 'required_if:role,seller',
+            'seller_name' => 'required_if:role,seller',
+            'age' => 'required_if:role,seller|numeric',
+            'contact_number' => 'required_if:role,seller',
+            'valid_id' => 'required_if:role,seller|file|mimes:jpg,jpeg,png,pdf',
         ]);
 
+        // =========================
+        // 🟢 SELLER REGISTRATION
+        // =========================
+        if ($request->role === 'seller') {
+
+            if ($request->age < 18) {
+                return back()->withErrors([
+                    'age' => 'You must be 18 years old or above to register as seller.'
+                ]);
+            }
+
+            $filePath = null;
+
+            if ($request->hasFile('valid_id')) {
+                $filePath = $request->file('valid_id')->store('valid_ids', 'public');
+            }
+
+            User::create([
+                'name' => $request->seller_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'seller',
+                'status' => 'pending',
+
+                'shop_name' => $request->shop_name,
+                'contact_number' => $request->contact_number,
+                'age' => $request->age,
+                'valid_id' => $filePath,
+            ]);
+
+            return redirect('/pending-approval');
+        }
+
+        // =========================
+        // 🟡 BUYER REGISTRATION
+        // =========================
+
         $finalBudget = $request->monthly_budget;
+
         if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
             $finalBudget = "₱" . $request->custom_budget;
         }
 
-        // Creating the User with 'pending' status by default
-        $user = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'status' => 'pending', // New users start as pending
-            'grade_level' => $request->role === 'buyer' ? $request->grade_level : null,
-            'monthly_budget' => $request->role === 'buyer' ? $finalBudget : null,
+            'role' => 'buyer',
+            'status' => 'pending',
+
+            'grade_level' => $request->grade_level,
+            'monthly_budget' => $finalBudget,
         ]);
 
-        // IMPORTANT: We do NOT auto-login here anymore because they need approval
-        return redirect()->route('login')->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
+        return redirect()->route('login')
+            ->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            // Check if the user is approved or is an admin
-            if ($user->status !== 'approved' && $user->role !== 'admin'){
-                Auth::logout(); // Log them out immediately
-                return back()->withErrors(['email' => 'Your account is pending admin approval. Please try again later.']);
-            }
-
-            $request->session()->regenerate();
-            return $this->redirectUserBasedOnRole($user);
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'Invalid email or password.'
+            ]);
         }
 
-        return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // 🚨 BLOCK SELLERS IF NOT APPROVED
+        if ($user->role === 'seller' && $user->status !== 'approved') {
+            Auth::logout();
+
+            return redirect('/pending-approval')->withErrors([
+                'email' => 'Your account is still pending admin approval.'
+            ]);
+        }
+
+        // ✅ REDIRECT BASED ON ROLE
+        if ($user->isAdmin()) {
+            return redirect('/admin/controlpanel');
+        }
+
+        if ($user->isSeller()) {
+            return redirect('/seller/dashboard');
+        }
+
+        return redirect('/home');
     }
 
-    /**
-     * Helper to keep redirect logic in one place
-     */
-    private function redirectUserBasedOnRole($user) {
-    if ($user->isAdmin()) {
-        return redirect()->intended('/admin/controlpanel');
-    }
-    
-    if ($user->isSeller()) {
-        return redirect()->intended('/seller/dashboard');
-    }
-    
-    return redirect()->intended('/home');
-   }
-
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/login');
+    }
+
+    public function showSignup()
+    {
+        return view('auth.register');
     }
 }

@@ -4,36 +4,29 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Added this
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  $role  <-- Added this parameter
-     */
-    
-     public function handle(Request $request, Closure $next, string $role): Response
-{
-    if (!Auth::check()) {
-        return redirect()->route('login');
+    public function handle(Request $request, Closure $next, string $role): Response
+    {
+        // 1. Not logged in → go to login
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+
+        // 2. Normalize roles
+        $userRole = strtolower($user->role);
+        $requiredRole = strtolower($role);
+
+        // 3. Role mismatch → block access
+        if ($userRole !== $requiredRole) {
+            return redirect('/home')->with('error', 'Unauthorized access.');
+        }
+
+        return $next($request);
     }
-
-    $user = Auth::user();
-
-    // normalize role
-    $userRole = strtolower($user->role);
-    $requiredRole = strtolower($role);
-
-    // STRICT ROLE CHECK ONLY
-    if ($userRole !== $requiredRole) {
-        return redirect('/home')->with('error', 'Unauthorized access.');
-    }
-
-    return $next($request);
-}
 }

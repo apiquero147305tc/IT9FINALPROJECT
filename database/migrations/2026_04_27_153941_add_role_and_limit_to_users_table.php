@@ -15,12 +15,12 @@ return new class extends Migration
 
             // Add role only if it does not exist
             if (!Schema::hasColumn('users', 'role')) {
-                $table->string('role')->default('buyer');
+                $table->string('role')->default('buyer')->after('email');
             }
 
             // Add spending_limit only if it does not exist
             if (!Schema::hasColumn('users', 'spending_limit')) {
-                $table->decimal('spending_limit', 10, 2)->nullable();
+                $table->decimal('spending_limit', 10, 2)->nullable()->after('role');
             }
 
         });
