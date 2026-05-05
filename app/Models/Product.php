@@ -4,19 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProductImage;
 
 class Product extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', // The Seller's ID
-        'name',
-        'description',
-        'price',
-        'category',
-        'image',
-    ];
+    'user_id',
+    'name',
+    'description',
+    'price',
+    'stock',   // 🔥 THIS MUST EXIST
+    'category',
+    'image',
+    'status'
+];
 
     /**
      * Relationship: A product belongs to a Seller (User).
@@ -33,4 +36,9 @@ class Product extends Model
     {
         return $this->hasMany(Order::class);
     }
+    
+    public function images()
+{
+    return $this->hasMany(ProductImage::class);
+}
 }

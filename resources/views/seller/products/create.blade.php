@@ -87,7 +87,7 @@
             </div>
             <div class="col">
                 <label>Stock Quantity</label>
-                <input type="number" name="stock" placeholder="0" required>
+                <input type="number" name="stock" required>
             </div>
         </div>
 
@@ -95,7 +95,7 @@
         <textarea name="description" rows="3" placeholder="Tell customers about your product..."></textarea>
 
         <label>Product Image</label>
-        <input type="file" name="image" accept="image/*">
+        <input type="file" name="images[]" accept="image/*" multiple>
 
         <button type="submit">Upload to Shop</button>
         

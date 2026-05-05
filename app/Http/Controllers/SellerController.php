@@ -13,22 +13,24 @@ class SellerController extends Controller
     /**
      * Seller Dashboard Overview
      */
-   public function dashboard()
+  public function dashboard()
 {
     $sellerId = Auth::id();
+    
 
-    // IMPORTANT: use ONE correct column only (choose seller_id OR user_id)
-    $products = Product::where('seller_id', $sellerId)
-        ->latest()
-        ->get();
+    // PRODUCTS
+    $products = Product::where('user_id', Auth::id())->get();
 
+    // ORDERS
     $orders = collect();
     $totalEarnings = 0;
+    $notifCount = 0;
 
     if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
         try {
+
             $orders = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('seller_id', $sellerId); // keep consistent
+                $query->where('seller_id', $sellerId);
             })
             ->with(['user', 'product'])
             ->latest()
@@ -41,16 +43,25 @@ class SellerController extends Controller
             ->where('status', 'completed')
             ->sum('total_price');
 
+            // NOTIFICATION COUNT
+            $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('seller_id', $sellerId);
+            })
+            ->where('is_seen', false)
+            ->count();
+
         } catch (\Exception $e) {
             $orders = collect();
+            $notifCount = 0;
         }
     }
 
-    return view('seller.dashboard', compact(
-        'products',
-        'orders',
-        'totalEarnings'
-    ));
+  return view('seller.dashboard', compact(
+    'products',
+    'orders',
+    'totalEarnings',
+    'notifCount'
+));
 }
     /**
      * Full Orders Management List

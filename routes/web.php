@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\OrderController;
+
+//order
+Route::post('/orders', [OrderController::class, 'store'])
+    ->name('orders.store');
 
 //seller pending
 Route::get('/pending-approval', function () {
@@ -100,6 +105,16 @@ Route::middleware(['auth'])->group(function () {
             ->name('seller.orders');
 
     });
+
+   Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+    ->name('products.edit');
+
+    Route::put('/products/{product}', [ProductController::class, 'update'])
+    ->name('products.update');
+
+
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+    ->name('products.destroy');
 
 
     //////////////////////////////////////////////////
