@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'seller@cravecart.com',
             'password' => Hash::make('password'),
             'role' => 'seller',
+            'status' => 'pending',
         ]);
 
         // 3. Create a Sample Buyer (For Testing)
