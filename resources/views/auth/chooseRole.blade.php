@@ -7,13 +7,15 @@
 
         <div class="role-buttons">
 
-    <a href="{{ route('register') }}" class="btn role-btn buyer">
+    <a href="{{ route('register', ['role' => 'buyer']) }}" class="btn role-btn buyer">
         Register as Buyer
     </a>
 
-    <a href="{{ route('register') }}" class="btn role-btn seller">
+    <a href="{{ route('register', ['role' => 'seller']) }}" class="btn role-btn seller">
         Register as Seller
     </a>
+
+</div>
 
 </div>
 

@@ -93,6 +93,19 @@ body {
     background: transparent;
     border: none;
     color: white;
+    border-radius: 20px;
+}
+.login-btn{
+    background: transparent;
+    border: 2px;
+    padding: 8px 15px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular';
+}
+.login-btn:hover{
+    background: transparent;
+    color: var(--red);
+    border: 2px;
+    border-radius: 20px;
 }
 
 .signup {
@@ -100,6 +113,9 @@ body {
     border: none;
     padding: 8px 15px;
     border-radius: 20px;
+}
+.signup-btn {
+   font-family: 'Lucida Sans', 'Lucida Sans Regular';
 }
 
 /* HERO */
@@ -414,3 +430,51 @@ a {
     cursor: not-allowed;
     pointer-events: none;
 }
+
+#floatingCartBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    background: #dd0d22;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    text-decoration: none;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    z-index: 99999;
+}
+
+#cartCount {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: white;
+    color: #dd0d22;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cartPopup {
+    position: fixed;
+    bottom: 95px;
+    right: 25px;
+    width: 250px;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 99999;
+}
+

@@ -16,40 +16,88 @@ class AuthController extends Controller
 
     public function registerPage()
     {
-        return view('auth.register');
+       return view('auth.register', [
+        'role' => $request->role ?? 'buyer'
+    ]);
     }
 
     public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|in:buyer,seller',
-            'grade_level' => 'required_if:role,buyer',
-            'monthly_budget' => 'required_if:role,buyer',
-            'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8',
+        'role' => 'required|in:buyer,seller',
 
-        $finalBudget = $request->monthly_budget;
+        'grade_level' => 'required_if:role,buyer',
+        'monthly_budget' => 'required_if:role,buyer',
+        'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
 
-        if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
-            $finalBudget = "₱" . $request->custom_budget;
+        // seller fields
+        'shop_name' => 'required_if:role,seller',
+        'seller_name' => 'required_if:role,seller',
+        'age' => 'required_if:role,seller|numeric',
+        'contact_number' => 'required_if:role,seller',
+        'valid_id' => 'required_if:role,seller|file|mimes:jpg,jpeg,png,pdf',
+    ]);
+
+    // =========================
+    // 🟢 SELLER REGISTRATION
+    // =========================
+    if ($request->role === 'seller') {
+
+        if ($request->age < 18) {
+            return back()->withErrors([
+                'age' => 'You must be 18 years old or above to register as seller.'
+            ]);
+        }
+
+        $filePath = null;
+
+        if ($request->hasFile('valid_id')) {
+            $filePath = $request->file('valid_id')->store('valid_ids', 'public');
         }
 
         User::create([
-            'name' => $request->name,
+            'name' => $request->seller_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => 'seller',
             'status' => 'pending',
-            'grade_level' => $request->role === 'buyer' ? $request->grade_level : null,
-            'monthly_budget' => $request->role === 'buyer' ? $finalBudget : null,
+
+            'shop_name' => $request->shop_name,
+            'contact_number' => $request->contact_number,
+            'age' => $request->age,
+            'valid_id' => $filePath,
         ]);
 
-        return redirect()->route('login')
-            ->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
+        return redirect('/pending-approval');
     }
+
+    // =========================
+    // 🟡 BUYER REGISTRATION
+    // =========================
+
+    $finalBudget = $request->monthly_budget;
+
+    if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
+        $finalBudget = "₱" . $request->custom_budget;
+    }
+
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'buyer',
+        'status' => 'pending',
+
+        'grade_level' => $request->grade_level,
+        'monthly_budget' => $finalBudget,
+    ]);
+
+    return redirect()->route('login')
+        ->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
+}
 
   public function login(Request $request)
 {
@@ -69,14 +117,17 @@ class AuthController extends Controller
     /** @var User $user */
     $user = Auth::user();
 
-    // block unapproved users
-    if (!$user->isAdmin() && $user->status !== 'approved') {
+    // 🚨 BLOCK SELLERS NOT APPROVED
+    if ($user->role === 'seller' && $user->status !== 'approved') {
+
         Auth::logout();
-        return back()->withErrors([
-            'email' => 'Your account is pending admin approval.'
+
+        return redirect('/pending-approval')->withErrors([
+            'email' => 'Your account is waiting for admin approval.'
         ]);
     }
 
+    // ✅ REDIRECT USERS PROPERLY
     return $this->redirectUserBasedOnRole($user);
 }
 

@@ -25,24 +25,28 @@ class AdminController extends Controller
     /**
      * Approve a user so they can log in and use their dashboard.
      */
-    public function approveUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->status = 'approved'; // Change status from pending to approved
-        $user->save();
+   public function approveUser($id)
+{
+    $user = User::findOrFail($id);
 
-        return back()->with('success', "User {$user->name} has been approved!");
+    // safety check (optional but good)
+    if ($user->status === 'approved') {
+        return back()->with('error', 'User already approved.');
     }
 
-    /**
-     * Reject a user if they do not meet campus requirements.
-     */
-    public function rejectUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->status = 'rejected'; // Mark as rejected
-        $user->save();
+    $user->status = 'approved';
+    $user->save();
 
-        return back()->with('error', "User {$user->name} was rejected.");
-    }
+    return back()->with('success', "{$user->name} has been approved!");
+}
+
+public function rejectUser($id)
+{
+    $user = User::findOrFail($id);
+
+    $user->status = 'rejected';
+    $user->save();
+
+    return back()->with('error', "{$user->name} was rejected.");
+}
 }

@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 
+//seller pending
+Route::get('/pending-approval', function () {
+    return view('auth.pending');
+});
+
 //////////////////////////////////////////////////
 // 🏠 PUBLIC HOME (your home.blade.php)
 //////////////////////////////////////////////////
@@ -74,6 +79,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])
             ->name('buyer.home');
 
+        Route::get('/cart', function () {
+        return view('buyer.cart'); // we will create this view
+        })->name('cart.index');
+
     });
 
 
@@ -100,6 +109,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
             ->name('admin.dashboard');
+
+        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
+        ->name('admin.approve');
+
+    Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
+        ->name('admin.reject');
 
     });
 

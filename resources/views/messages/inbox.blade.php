@@ -1,9 +1,3 @@
-<div style="margin-bottom:10px;">
-    <a href="{{ route('buyer.home') }}" style="margin-right:10px; color:#dd0d22; text-decoration:none;">
-        ← Home
-    </a>
-<h2>Messages</h2>
-
 <div style="background:white; padding:15px;">
     @forelse($users as $chat)
         <a href="{{ route('messages.chat', $chat['user']->id) }}"

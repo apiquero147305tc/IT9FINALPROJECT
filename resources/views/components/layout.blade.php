@@ -24,11 +24,11 @@
         <input type="text" placeholder="Search for essentials...">
         @if (!Route::is('buyer.home') && !Route::is('seller.dashboard'))
     
-     <button class="login"><a href="{{ route('login') }}" class="login-btn authpart">
+     <button class="login"><a href="{{ route('login') }}" class="login-btn authpart" style="color: white;">
         Login
      </a></button>
 
-     <button class="signup"><a href="{{ route('chooseRole') }}" class="signup-btn authpart">
+     <button class="signup"><a href="{{ route('chooseRole') }}" class="signup-btn authpart" style="color: darkred;">
             Sign up
         </a></button>
 

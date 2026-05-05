@@ -78,102 +78,127 @@
         }
     </style>
 
-    <div class="join-page">
-        <div class="join-card">
-            <h2 class="join-title">CraveCart</h2>
+  <div class="join-page">
+    <div class="join-card">
+        <h2 class="join-title">CraveCart</h2>
 
-            @if ($errors->any())
-                <div class="join-error-box">
-                    Please fix the errors below.
-                </div>
-            @endif
+        {{-- REAL ERROR DISPLAY --}}
+        @if ($errors->any())
+            <div class="join-error-box">
+                <ul style="margin:0; padding-left:20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            <form action="{{ route('register.post') }}" method="POST">
-                @csrf
-                
+        <form action="{{ route('register.post') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+
+            {{-- NAME --}}
+            <label class="join-label">Name</label>
+            <input type="text" name="name" class="join-input"
+                value="{{ old('name') }}" placeholder="Juan Dela Cruz" required>
+
+            {{-- EMAIL --}}
+            <label class="join-label">Email Address</label>
+            <input type="email" name="email" class="join-input"
+                value="{{ old('email') }}" placeholder="juan@example.com" required>
+
+            {{-- PASSWORD --}}
+            <label class="join-label">Password</label>
+            <input type="password" name="password" class="join-input"
+                placeholder="Min. 8 characters" required>
+
+            {{-- ROLE --}}
+            <label class="join-label">I want to:</label>
+            <select name="role" id="roleSelect" class="join-select" onchange="toggleRoleFields()">
+                <option value="buyer" {{ old('role', $role ?? 'buyer') == 'buyer' ? 'selected' : '' }}>
+                    Buy Products
+                </option>
+                <option value="seller" {{ old('role', $role ?? '') == 'seller' ? 'selected' : '' }}>
+                    Sell Products
+                </option>
+            </select>
+
+            {{-- ================= SELLER FIELDS ================= --}}
+            <div id="seller-info" style="display:none; margin-top:10px;">
+
+                <label class="join-label">Shop Name</label>
+                <input type="text" name="shop_name" class="join-input" value="{{ old('shop_name') }}">
+
                 <label class="join-label">Full Name</label>
-                <input type="text" name="name" class="join-input" value="{{ old('name') }}" placeholder="Juan Dela Cruz" required>
-                @error('name') <span class="join-error-msg">{{ $message }}</span> @enderror
-                
-                <label class="join-label">Email Address</label>
-                <input type="email" name="email" class="join-input" value="{{ old('email') }}" placeholder="juan@example.com" required>
-                @error('email') <span class="join-error-msg">{{ $message }}</span> @enderror
-                
-                <label class="join-label">Password</label>
-                <input type="password" name="password" class="join-input" placeholder="Min. 8 characters" required>
-                @error('password') <span class="join-error-msg">{{ $message }}</span> @enderror
+                <input type="text" name="seller_name" class="join-input" value="{{ old('seller_name') }}">
 
-                <select name="role" id="roleSelect" class="join-select">
-    <option value="buyer" {{ (old('role', $role ?? '') == 'buyer') ? 'selected' : '' }}>
-        Buy Products
-    </option>
+                <label class="join-label">Age</label>
+                <input type="number" name="age" class="join-input" min="18" value="{{ old('age') }}">
 
-    <option value="seller" {{ (old('role', $role ?? '') == 'seller') ? 'selected' : '' }}>
-        Sell Products
-    </option>
-</select>
+                <label class="join-label">Contact Number</label>
+                <input type="text" name="contact_number" class="join-input" value="{{ old('contact_number') }}">
 
-                <div id="student-info">
-                    <label class="join-label">What is your grade level?</label>
-                    <select name="grade_level" class="join-select">
-                        <option value="High School" {{ old('grade_level') == 'High School' ? 'selected' : '' }}>High School</option>
-                        <option value="SHS" {{ old('grade_level') == 'SHS' ? 'selected' : '' }}>Senior High School (SHS)</option>
-                        <option value="College" {{ old('grade_level') == 'College' ? 'selected' : '' }}>College Student</option>
-                    </select>
+                <label class="join-label">Valid ID</label>
+                <input type="file" name="valid_id" class="join-input">
+            </div>
 
-                    <label class="join-label">Monthly Spending Budget (PHP):</label>
-                    <select name="monthly_budget" id="budgetSelect" class="join-select" onchange="toggleCustomBudget()">
-                        <option value="Below 500" {{ old('monthly_budget') == 'Below 500' ? 'selected' : '' }}>Below ₱500</option>
-                        <option value="500-1000" {{ old('monthly_budget') == '500-1000' ? 'selected' : '' }}>₱500 - ₱1,000</option>
-                        <option value="1000-2000" {{ old('monthly_budget') == '1000-2000' ? 'selected' : '' }}>₱1,000 - ₱2,000</option>
-                        <option value="2000+" {{ old('monthly_budget') == '2000+' ? 'selected' : '' }}>₱2,000+</option>
-                        <option value="others" {{ old('monthly_budget') == 'others' ? 'selected' : '' }}>Others (Set my own limit)</option>
-                    </select>
+            {{-- ================= BUYER FIELDS ================= --}}
+            <div id="student-info" style="margin-top:10px;">
 
-                    <div id="custom-budget-input">
-                        <label class="join-label">Enter your monthly limit:</label>
-                        <input type="number" name="custom_budget" class="join-input" value="{{ old('custom_budget') }}" placeholder="e.g. 1500" min="1">
-                    </div>
+                <label class="join-label">What is your grade level?</label>
+                <select name="grade_level" class="join-select">
+                    <option value="High School" {{ old('grade_level') == 'High School' ? 'selected' : '' }}>High School</option>
+                    <option value="SHS" {{ old('grade_level') == 'SHS' ? 'selected' : '' }}>Senior High School</option>
+                    <option value="College" {{ old('grade_level') == 'College' ? 'selected' : '' }}>College</option>
+                </select>
+
+                <label class="join-label">Monthly Budget</label>
+                <select name="monthly_budget" id="budgetSelect" class="join-select" onchange="toggleCustomBudget()">
+                    <option value="Below 500" {{ old('monthly_budget') == 'Below 500' ? 'selected' : '' }}>Below ₱500</option>
+                    <option value="500-1000" {{ old('monthly_budget') == '500-1000' ? 'selected' : '' }}>₱500 - ₱1,000</option>
+                    <option value="1000-2000" {{ old('monthly_budget') == '1000-2000' ? 'selected' : '' }}>₱1,000 - ₱2,000</option>
+                    <option value="2000+" {{ old('monthly_budget') == '2000+' ? 'selected' : '' }}>₱2,000+</option>
+                    <option value="others" {{ old('monthly_budget') == 'others' ? 'selected' : '' }}>Others</option>
+                </select>
+
+                <div id="custom-budget-input" style="display:none;">
+                    <label class="join-label">Enter custom budget</label>
+                    <input type="number" name="custom_budget" class="join-input"
+                        value="{{ old('custom_budget') }}" placeholder="e.g. 1500">
                 </div>
-                
-                <button type="submit" class="join-button">Create Account</button>
-            </form>
+            </div>
 
-            <p class="join-footer">
-                Already have an account?
-                <a href="{{ route('login') }}" class="join-link">Log in</a>
-            </p>
-        </div>
+            <button type="submit" class="join-button">Create Account</button>
+        </form>
+
+        <p class="join-footer">
+            Already have an account?
+            <a href="{{ route('login') }}" class="join-link">Log in</a>
+        </p>
     </div>
+</div>
 
-    <script>
-        function toggleBuyerFields() {
-            var role = document.getElementById("roleSelect").value;
-            var studentInfo = document.getElementById("student-info");
-            
-            studentInfo.style.display = (role === "seller") ? "none" : "block";
-            
-            const inputs = studentInfo.querySelectorAll('select, input');
-            inputs.forEach(input => {
-                if (role === "seller") {
-                    input.setAttribute('disabled', 'disabled');
-                } else {
-                    input.removeAttribute('disabled');
-                }
-            });
+{{-- ================= JAVASCRIPT ================= --}}
+<script>
+function toggleRoleFields() {
+    let role = document.getElementById("roleSelect").value;
 
-            if (role !== "seller") toggleCustomBudget();
-        }
+    document.getElementById("seller-info").style.display =
+        (role === "seller") ? "block" : "none";
 
-        function toggleCustomBudget() {
-            var budget = document.getElementById("budgetSelect").value;
-            var customInput = document.getElementById("custom-budget-input");
-            customInput.style.display = (budget === "others") ? "block" : "none";
-        }
-        
-       window.onload = function() {
-    toggleBuyerFields();
+    document.getElementById("student-info").style.display =
+        (role === "buyer") ? "block" : "none";
 }
-    </script>
+
+function toggleCustomBudget() {
+    let budget = document.getElementById("budgetSelect").value;
+    document.getElementById("custom-budget-input").style.display =
+        (budget === "others") ? "block" : "none";
+}
+
+window.onload = function () {
+    toggleRoleFields();
+    toggleCustomBudget();
+};
+</script>
 </x-layout>
 

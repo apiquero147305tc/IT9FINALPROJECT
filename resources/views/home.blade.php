@@ -53,7 +53,7 @@
 
 <!-- PROMO -->
 <section class="promo">
-    <h2>Get 50% OFF Your First Order!</h2>
+    <h2 style="color: white;">Get 50% OFF Your First Order!</h2>
     <p>Sign up today and enjoy exclusive deals.</p>
     <button class="signup-btn btn"><a href="chooseRole" class="cravecartlogo">SIGN UP NOW</a></button>
 </section>

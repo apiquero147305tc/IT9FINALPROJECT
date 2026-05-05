@@ -7,17 +7,17 @@ use Illuminate\Http\Request;
 
 class BuyerController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
 {
     $query = Product::query();
 
-    // Category filter
-    if ($request->has('category') && $request->category !== 'All') {
+    // ✅ Category filter (safe + cleaner check)
+    if ($request->filled('category') && $request->category !== 'All') {
         $query->where('category', $request->category);
     }
 
-    // Search filter
-    if ($request->has('search')) {
+    // ✅ Search filter (also safe)
+    if ($request->filled('search')) {
         $query->where('name', 'like', '%' . $request->search . '%');
     }
 
@@ -25,9 +25,10 @@ class BuyerController extends Controller
 
     return view('buyer.home', [
         'products' => $products,
-        'showMenu' => false
+        'showMenu' => false,
+        'search' => $request->search,
+        'category' => $request->category
     ]);
 }
-    
 }
 
