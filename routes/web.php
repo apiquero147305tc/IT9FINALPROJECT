@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BuyerController;
+use App\Http\Controllers\AdminController; // Added this import
 use Illuminate\Support\Facades\Route;
 
 // Guest Routes
@@ -18,23 +20,26 @@ Route::post('/login-process', [AuthController::class, 'login'])->name('login.pos
 // Protected Routes (Must be logged in)
 Route::middleware(['auth'])->group(function () {
     
+    // --- ADMIN ROUTES ---
+    // This was missing! This is why you got the 404 error in image_2c2ec1.png
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dash');
+        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])->name('admin.approve');
+        Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])->name('admin.reject');
+    });
+
     // --- SELLER ROUTES ---
     Route::middleware(['role:seller'])->group(function () {
-        // Main Dashboard (Stats and Orders list)
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
-        
-        // Product Management (Price, Category, Picture, Stocks)
         Route::resource('products', ProductController::class); 
-        
-        // View People who ordered
         Route::get('/seller/orders', [SellerController::class, 'orders'])->name('seller.orders');
     });
 
     // --- BUYER ROUTES ---
-Route::middleware(['role:buyer'])->group(function () {
-    // Change this line to point to the Controller instead of just a view
-    Route::get('/home', [App\Http\Controllers\BuyerController::class, 'index'])->name('buyer.home');
-});
+    Route::middleware(['role:buyer'])->group(function () {
+        Route::get('/home', [BuyerController::class, 'index'])->name('buyer.home');
+    });
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

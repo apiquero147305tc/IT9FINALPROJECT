@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // This adds the status column after the 'role' column
+            // We set the default to 'pending' as per AdminController logic
+            $table->string('status')->default('pending')->after('role');
         });
     }
 
@@ -22,7 +24,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // This allows you to roll back the migration if needed
+            $table->dropColumn('status');
         });
     }
 };
