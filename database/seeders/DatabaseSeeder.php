@@ -14,12 +14,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Create the PRE-SET ADMIN
-        User::create([
-            'name' => 'CraveCart Admin',
-            'email' => 'admin@cravecart.com',
-            'password' => Hash::make('admin123'), // Use 'admin123' to log in
-            'role' => 'admin',
-        ]);
+            User::create([
+        'name' => 'CraveCart Admin',
+        'email' => 'admin@cravecart.com',
+        'password' => Hash::make('admin123'),
+        'role' => 'admin',
+        'status' => 'approved',
+    ]);
 
         // 2. Create a Sample Seller (For Testing)
         User::create([

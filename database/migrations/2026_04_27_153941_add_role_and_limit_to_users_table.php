@@ -9,16 +9,23 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            // Role identifies if the user is an admin, seller, or buyer
-            $table->string('role')->default('buyer')->after('email'); 
-            
-            // Spending limit for buyers (allows for 10 digits total, 2 after the decimal)
-            $table->decimal('spending_limit', 10, 2)->nullable()->after('role');
-        });
-    }
+public function up(): void
+{
+    Schema::table('users', function (Blueprint $table) {
+
+        // Only add role if it doesn't exist yet
+        if (!Schema::hasColumn('users', 'role')) {
+            $table->string('role')->default('buyer')->after('email');
+        }
+
+        // Only add spending_limit if it doesn't exist yet
+        if (!Schema::hasColumn('users', 'spending_limit')) {
+            $table->decimal('spending_limit', 10, 2)
+                  ->nullable()
+                  ->after('role');
+        }
+    });
+}
 
     /**
      * Reverse the migrations.
