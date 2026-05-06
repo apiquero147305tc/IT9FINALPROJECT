@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Public & Guest Routes
+| 🏠 Public & Static Routes
 |--------------------------------------------------------------------------
 */
 
@@ -25,25 +25,32 @@ Route::get('/', function () {
     return view('home', compact('products'));
 })->name('home');
 
-Route::get('/pending-approval', fn() => view('auth.pending'))->name('pending');
-
-// Auth Guest Routes
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
-    Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
-    Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
-    Route::post('/register-process', [AuthController::class, 'register'])->name('register.post');
-    Route::get('/choose-role', fn() => view('auth.chooseRole'))->name('chooseRole');
-});
-
-// Static Pages
 Route::view('/bestSeller', 'bestSeller')->name('bestSeller');
 Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');
 
 /*
 |--------------------------------------------------------------------------
-| Protected Routes (Auth Required)
+| 🔐 Auth Pages (Login / Register)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
+Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
+Route::post('/register-process', [AuthController::class, 'register'])->name('register.post');
+
+// Buyer specific signup routes
+Route::get('/buyer/signup', [AuthController::class, 'showSignup']);
+Route::post('/buyer/signup', [AuthController::class, 'signup']);
+
+Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
+Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
+
+/*
+|--------------------------------------------------------------------------
+| 🛡️ Protected Routes (Must be Logged In)
 |--------------------------------------------------------------------------
 */
 
@@ -51,12 +58,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // 💬 Messages (Shared by all roles)
-    Route::prefix('messages')->group(function () {
-        Route::get('/', [MessageController::class, 'inbox'])->name('messages.inbox');
-        Route::get('/{userId}', [MessageController::class, 'chat'])->name('messages.chat');
-        Route::post('/send', [MessageController::class, 'send'])->name('messages.send');
-    });
+    // 💬 Messages
+    Route::get('/messages', [MessageController::class, 'inbox'])->name('messages.inbox');
+    Route::get('/messages/{userId}', [MessageController::class, 'chat'])->name('messages.chat');
+    Route::post('/messages/send', [MessageController::class, 'send'])->name('messages.send');
 
     // 🟣 ADMIN ONLY
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
@@ -68,30 +73,30 @@ Route::middleware(['auth'])->group(function () {
     // 🔴 SELLER ONLY
     Route::middleware(['role:seller'])->prefix('seller')->group(function () {
         Route::get('/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
-        Route::resource('products', ProductController::class);
+        Route::resource('products', ProductController::class); 
         Route::get('/orders', [SellerController::class, 'orders'])->name('seller.orders');
     });
 
     // 🟢 BUYER ONLY
     Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
-        Route::get('/cart', fn() => view('buyer.cart'))->name('cart.index');
+        Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
     });
 
 });
 
 /*
 |--------------------------------------------------------------------------
-| Redirect Logic & Fixes
+| 🔁 Redirect Logic & Fixes
 |--------------------------------------------------------------------------
 */
 
-// Shop entry point
+// Shop gatekeeper
 Route::get('/shop', function () {
     return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
 })->name('shop');
 
-// Universal /home redirect to prevent loops
+// Prevent redirect loops and handle the default Laravel /home path
 Route::get('/home', function () {
     if (!Auth::check()) return redirect()->route('login');
     
