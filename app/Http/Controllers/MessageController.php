@@ -39,12 +39,56 @@ class MessageController extends Controller
 
         return back();
     }
-    
+
     public function inbox()
 {
     $authId = Auth::id();
 
-    // Get all users the current user has talked to
+    $conversations = Message::where('sender_id', $authId)
+        ->orWhere('receiver_id', $authId)
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy(function ($msg) use ($authId) {
+            return $msg->sender_id == $authId
+                ? $msg->receiver_id
+                : $msg->sender_id;
+        });
+
+    $users = [];
+
+    foreach ($conversations as $userId => $msgs) {
+
+        $user = User::find($userId);
+
+        // ⚠️ safety check (prevents null crash)
+        if (!$user) continue;
+
+        $users[] = [
+            'user' => $user,
+            'last_message' => $msgs->first()
+        ];
+    }
+
+    return view('messages.inbox', compact('users'));
+}
+
+public function fetchMessages($userId)
+{
+    $messages = Message::where(function ($q) use ($userId) {
+    $q->where('sender_id', Auth::id())
+      ->where('receiver_id', $userId);
+})->orWhere(function ($q) use ($userId) {
+    $q->where('sender_id', $userId)
+      ->where('receiver_id', Auth::id());
+})->orderBy('created_at')->get();
+
+return view('messages.partials.chat-body', compact('messages', 'userId'));
+}
+
+public function sellerInbox()
+{
+    $authId = Auth::id();
+
     $conversations = Message::where('sender_id', $authId)
         ->orWhere('receiver_id', $authId)
         ->orderBy('created_at', 'desc')
@@ -64,6 +108,6 @@ class MessageController extends Controller
         ];
     }
 
-    return view('messages.inbox', compact('users'));
+    return view('messages.seller-inbox', compact('users'));
 }
 }

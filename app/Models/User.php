@@ -2,94 +2,46 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role', 
-        'grade_level',
-        'monthly_budget',
+        'role',
+        'shop_name',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
-    // --- HELPER METHODS ---
+    // ✔ ROLE HELPERS
+    public function isAdmin() { return $this->role === 'admin'; }
+    public function isSeller() { return $this->role === 'seller'; }
+    public function isBuyer() { return $this->role === 'buyer'; }
 
-  public function isAdmin()
-{
-    return $this->role === 'admin';
-}
+    // ✔ RELATIONSHIPS
 
-public function isSeller()
-{
-    return $this->role === 'seller';
-}
-
-public function isBuyer()
-{
-    return $this->role === 'buyer';
-}
-
-    /**
-     * Custom helper for University of Mindanao student logic
-     */
-    public function isStudent(): bool
-    {
-        return in_array($this->grade_level, ['High School', 'SHS', 'College']);
-    }
-
-    // --- RELATIONSHIPS ---
-
-    /**
-     * Seller Side: A seller has many products.
-     */
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'user_id');
     }
 
-    /**
-     * Buyer Side: A buyer has many orders.
-     */
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'user_id');
     }
 }
-

@@ -499,3 +499,9 @@ a {
     background: #fff3cd;
     color: #856404;
 }
+
+.card:hover {
+    transform: scale(1.02);
+    transition: 0.2s;
+    cursor: pointer;
+}

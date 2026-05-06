@@ -167,6 +167,36 @@
     
 </div>
 </nav>
+<div id="chatBox" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+">
+    
+    <div style="padding:10px; background:#dd0d22; color:white;">
+        💬 Chat
+        <span onclick="closeChat()" style="float:right; cursor:pointer;">✖</span>
+    </div>
+
+    <div id="chatMessages" style="flex:1; padding:10px; overflow-y:auto;">
+        <!-- messages load here -->
+    </div>
+
+    <form id="chatForm" style="display:flex; border-top:1px solid #eee;">
+        <input type="text" id="messageInput" placeholder="Type..." style="flex:1; border:none; padding:10px;">
+        <button type="submit" style="background:#dd0d22; color:white; border:none; padding:10px;">Send</button>
+    </form>
+
+</div>
 
 
 {{ $slot }}

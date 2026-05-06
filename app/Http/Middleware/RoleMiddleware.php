@@ -9,22 +9,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string $role): Response
-    {
-        // 1. Not logged in → go to login
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        // 2. Get roles safely
-        $userRole = strtolower(Auth::user()->role);
-        $requiredRole = strtolower($role);
-
-        // 3. If role does NOT match → stop (no redirect loop)
-        if ($userRole !== $requiredRole) {
-            abort(403, 'Unauthorized access');
-        }
-
-        return $next($request);
+   public function handle(Request $request, Closure $next, string $role): Response
+{
+    if (!Auth::check()) {
+        return redirect()->route('login');
     }
+
+    $userRole = strtolower(Auth::user()->role ?? '');
+    $requiredRole = strtolower($role);
+
+    if ($userRole !== $requiredRole) {
+        abort(403, 'Unauthorized access');
+    }
+
+    return $next($request);
+}
 }

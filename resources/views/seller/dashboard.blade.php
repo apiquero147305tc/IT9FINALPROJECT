@@ -25,9 +25,41 @@
 <body>
 
     <div class="nav">
-    <strong>CraveCart Seller Studio</strong>
+    <div>
+    <strong>🏪 {{ Auth::user()->shop_name ?? Auth::user()->name }}</strong><br>
+    <small style="opacity:0.8;">Seller Dashboard</small>
+    </div>
 
     <div style="display:flex; align-items:center; gap:15px;">
+        <a href="{{ route('messages.inbox') }}"
+   style="
+        display:inline-block;
+        background:#dd0d22;
+        color:white;
+        padding:8px 14px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:bold;
+        position:relative;
+   ">
+    💬 Messages
+
+    @if(isset($notifCount) && $notifCount > 0)
+        <span style="
+            position:absolute;
+            top:-5px;
+            right:-8px;
+            background:white;
+            color:#dd0d22;
+            font-size:10px;
+            padding:2px 5px;
+            border-radius:50%;
+            font-weight:bold;
+        ">
+            {{ $notifCount }}
+        </span>
+    @endif
+</a>
 
         {{-- 🔔 NOTIFICATION BELL --}}
         <a href="{{ route('seller.orders') }}" style="color:white; text-decoration:none; position:relative; display:inline-block;">

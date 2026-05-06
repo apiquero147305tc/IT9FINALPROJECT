@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class BuyerController extends Controller
 {
@@ -29,6 +30,26 @@ class BuyerController extends Controller
         'search' => $request->search,
         'category' => $request->category
     ]);
+}
+
+public function show($id)
+{
+    $product = \App\Models\Product::with(['images', 'user'])
+        ->findOrFail($id);
+
+    return view('buyer.product-show', compact('product'));
+}
+
+public function sellerShop($id)
+{
+    $seller = User::findOrFail($id);
+
+    $products = Product::where('user_id', $id)
+        ->with('images')
+        ->latest()
+        ->get();
+
+    return view('buyer.seller-shop', compact('seller', 'products'));
 }
 }
 

@@ -15,6 +15,13 @@
     </style>
 </head>
 <body>
+    <form action="{{ route('logout') }}" method="POST" style="position:absolute; top:20px; right:20px;">
+    @csrf
+    <button type="submit"
+        style="background:#dd0d22; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">
+        Logout
+    </button>
+</form>
 
     <h1>Admin Control Center</h1>
 

@@ -1,14 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
+
 
 //order
 Route::post('/orders', [OrderController::class, 'store'])
@@ -18,6 +20,17 @@ Route::post('/orders', [OrderController::class, 'store'])
 Route::get('/pending-approval', function () {
     return view('auth.pending');
 });
+
+Route::get('/products/create', [ProductController::class, 'create'])
+    ->name('products.create');
+
+// ✅ PUBLIC / BUYER ACCESS
+Route::get('/products/{product}', [BuyerController::class, 'show'])
+    ->name('products.show')
+      ->whereNumber('product');
+
+    Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])
+    ->name('seller.shop');
 
 //////////////////////////////////////////////////
 // 🏠 PUBLIC HOME (your home.blade.php)
@@ -33,6 +46,7 @@ Route::get('/', function () {
     ];
 
     return view('home', compact('products'));
+
 })->name('home');
 
 
@@ -59,6 +73,11 @@ Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole')
 
 Route::middleware(['auth'])->group(function () {
 
+
+    Route::post('/orders', [OrderController::class, 'store'])
+        ->name('orders.store');
+
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -74,6 +93,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/messages/send', [MessageController::class, 'send'])
         ->name('messages.send');
+
+    Route::get('/messages/{userId}/fetch', [MessageController::class, 'fetchMessages']);
 
 
     //////////////////////////////////////////////////
@@ -95,14 +116,17 @@ Route::middleware(['auth'])->group(function () {
     // 🔴 SELLER
     //////////////////////////////////////////////////
     Route::middleware(['role:seller'])->group(function () {
-
+        
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
-            ->name('seller.dash');
-
-        Route::resource('products', ProductController::class);
+        ->name('seller.dash');
+        
+        Route::resource('products', ProductController::class)->except(['show']);
 
         Route::get('/seller/orders', [SellerController::class, 'orders'])
             ->name('seller.orders');
+
+            Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])
+    ->name('seller.messages');
 
     });
 

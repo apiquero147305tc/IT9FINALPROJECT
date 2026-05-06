@@ -53,21 +53,28 @@
 <div class="grid">
 
     @forelse($products as $product)
+
         <div class="card">
 
-            {{-- ✅ MULTIPLE IMAGE SUPPORT --}}
-            @if($product->images->count() > 0)
-                <img src="{{ asset('storage/'.$product->images[0]->image_path) }}">
-            @else
-                <img src="https://via.placeholder.com/150">
-            @endif
+            <!-- CLICKABLE PRODUCT AREA -->
+            <a href="{{ route('products.show', $product->id) }}" 
+               style="text-decoration:none; color:inherit; display:block;">
 
-            <h3>{{ $product->name }}</h3>
+                {{-- IMAGE --}}
+                @if($product->images->count() > 0)
+                    <img src="{{ asset('storage/'.$product->images[0]->image_path) }}">
+                @else
+                    <img src="https://via.placeholder.com/150">
+                @endif
 
-            <div class="price">₱{{ number_format($product->price, 2) }}</div>
-            <div class="stock">Stock: {{ $product->stock }}</div>
+                <h3>{{ $product->name }}</h3>
 
-            {{-- ✅ STOCK LOGIC --}}
+                <div class="price">₱{{ number_format($product->price, 2) }}</div>
+                <div class="stock">Stock: {{ $product->stock }}</div>
+
+            </a>
+
+            {{-- STOCK / BUY BUTTON --}}
             @if($product->stock <= 0)
                 <span class="sold-out">Sold Out</span>
             @else
@@ -76,7 +83,9 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="quantity" value="1">
 
-                    <button type="submit" class="buy-btn">Buy Now</button>
+                    <button type="submit" class="buy-btn">
+                        Buy Now
+                    </button>
                 </form>
             @endif
 
