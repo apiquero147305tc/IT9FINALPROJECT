@@ -13,45 +13,47 @@ class SellerController extends Controller
     /**
      * Seller Dashboard Overview
      */
-   public function dashboard()
-{
-    $sellerId = Auth::id();
+    public function dashboard()
+    {
+        $sellerId = Auth::id();
 
-    // IMPORTANT: use ONE correct column only (choose seller_id OR user_id)
-    $products = Product::where('seller_id', $sellerId)
-        ->latest()
-        ->get();
-
-    $orders = collect();
-    $totalEarnings = 0;
-
-    if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
-        try {
-            $orders = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('seller_id', $sellerId); // keep consistent
-            })
-            ->with(['user', 'product'])
+        // FIXED: Changed 'seller_id' to 'user_id' to resolve SQLSTATE[42S22] error
+        $products = Product::where('user_id', $sellerId) 
             ->latest()
-            ->take(5)
             ->get();
 
-            $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('seller_id', $sellerId);
-            })
-            ->where('status', 'completed')
-            ->sum('total_price');
+        $orders = collect();
+        $totalEarnings = 0;
 
-        } catch (\Exception $e) {
-            $orders = collect();
+        if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
+            try {
+                // FIXED: Using 'user_id' for consistency across all relationship queries
+                $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                    $query->where('user_id', $sellerId); 
+                })
+                ->with(['user', 'product'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+                $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
+                    $query->where('user_id', $sellerId);
+                })
+                ->where('status', 'completed')
+                ->sum('total_price');
+
+            } catch (\Exception $e) {
+                $orders = collect();
+            }
         }
+
+        return view('seller.dashboard', compact(
+            'products',
+            'orders',
+            'totalEarnings'
+        ));
     }
 
-    return view('seller.dashboard', compact(
-        'products',
-        'orders',
-        'totalEarnings'
-    ));
-}
     /**
      * Full Orders Management List
      */
@@ -64,6 +66,7 @@ class SellerController extends Controller
         }
 
         $orders = Order::whereHas('product', function($query) use ($seller) {
+            // FIXED: Ensured this remains 'user_id' to match the dashboard
             $query->where('user_id', $seller->id);
         })
         ->with(['user', 'product'])
@@ -74,8 +77,8 @@ class SellerController extends Controller
     }
 
     /**
-     * Update Order Status (New Method)
-     * This allows sellers to mark items as 'Completed' or 'Cancelled'
+     * Update Order Status
+     * Allows sellers to mark items as 'completed' or 'cancelled'
      */
     public function updateOrderStatus(Request $request, $id)
     {
@@ -85,7 +88,7 @@ class SellerController extends Controller
 
         $seller = Auth::user();
 
-        // Find the order and verify the seller actually owns the product being sold
+        // Find the order and verify the seller owns the product via 'user_id'
         $order = Order::whereHas('product', function($query) use ($seller) {
             $query->where('user_id', $seller->id);
         })->findOrFail($id);

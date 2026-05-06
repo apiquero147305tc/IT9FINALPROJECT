@@ -51,20 +51,20 @@ class User extends Authenticatable
 
     // --- HELPER METHODS ---
 
-  public function isAdmin()
-{
-    return $this->role === 'admin';
-}
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 
-public function isSeller()
-{
-    return $this->role === 'seller';
-}
+    public function isSeller()
+    {
+        return $this->role === 'seller';
+    }
 
-public function isBuyer()
-{
-    return $this->role === 'buyer';
-}
+    public function isBuyer()
+    {
+        return $this->role === 'buyer';
+    }
 
     /**
      * Custom helper for University of Mindanao student logic
@@ -91,5 +91,13 @@ public function isBuyer()
     {
         return $this->hasMany(Order::class);
     }
-}
 
+    /**
+     * Buyer Side: A buyer has many items in their cart.
+     * This links to the Cart model using the 'user_id' column.
+     */
+    public function cartItems()
+    {
+        return $this->hasMany(Cart::class);
+    }
+}

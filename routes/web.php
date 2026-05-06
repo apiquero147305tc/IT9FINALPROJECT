@@ -6,6 +6,7 @@ use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\CartController; // Import the CartController
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -80,7 +81,19 @@ Route::middleware(['auth'])->group(function () {
     // 🟢 BUYER ONLY
     Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
-        Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
+        
+        // --- 🛒 Functional Cart Routes ---
+        // View the cart
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        
+        // Add item (Must be POST)
+        Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
+        
+        // Update quantity (PATCH)
+        Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+        
+        // Remove item (DELETE)
+        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     });
 
 });

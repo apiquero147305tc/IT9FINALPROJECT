@@ -1,71 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>CraveCart</title>
-
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
 <nav class="navbar">
-    <div class="logo"><a href="{{ route('home') }}" class="cravecartlogo">
-    <h2 class="h22">🛒 CraveCart</h2>
-</a></div>
+    <div class="logo">
+        <a href="{{ route('home') }}" class="cravecartlogo">
+            <h2 class="h22">🛒 CraveCart</h2>
+        </a>
+    </div>
 
-<ul>
-    <li><a href="{{ route('shop') }}" class="cravecartlogo">Shop</a></li>
-    <li><a href="{{ route('bestSeller') }}"class="cravecartlogo">Best Sellers</a></li>
-    <li><a href="{{ route('about') }}"class="cravecartlogo">About Us</a></li>
-    <li><a href="{{ route('contact') }}"class="cravecartlogo">Contact</a></li>
-</ul>
+    <ul>
+        <li><a href="{{ route('shop') }}" class="cravecartlogo">Shop</a></li>
+        <li><a href="{{ route('bestSeller') }}" class="cravecartlogo">Best Sellers</a></li>
+        <li><a href="{{ route('about') }}" class="cravecartlogo">About Us</a></li>
+        <li><a href="{{ route('contact') }}" class="cravecartlogo">Contact</a></li>
+    </ul>
 
     <div class="nav-right">
         <input type="text" placeholder="Search for essentials...">
-        @if (!Route::is('buyer.home') && !Route::is('seller.dashboard'))
-    
-     <button class="login"><a href="{{ route('login') }}" class="login-btn authpart" style="color: white;">
-        Login
-     </a></button>
+        
+        <!-- Check if a user is logged in -->
+        @auth
+            <!-- Icons/Links seen in image_78af4a.png -->
+            <a href="#" class="nav-icon-link">📁</a> 
+            <a href="#" class="nav-text-link">SmartBudget</a>
+            <a href="#" class="nav-text-link">Lending</a>
 
-     <button class="signup"><a href="{{ route('chooseRole') }}" class="signup-btn authpart" style="color: darkred;">
-            Sign up
-        </a></button>
+            <!-- The Dynamic Cart Link -->
+            <a href="{{ route('cart.index') }}" class="nav-text-link">
+                Cart {{ auth()->user()->cartItems()->count() }}
+            </a>
 
-@else
-     <button class="login"><span class="login login-btn disabled">
-            Login
-        </span></button>
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        @else
+            <!-- Show Login/Signup if not logged in -->
+            <button class="login">
+                <a href="{{ route('login') }}" class="login-btn authpart" style="color: white;">Login</a>
+            </button>
 
-        <button class="signup"><span class="signup signup-btn disabled">
-            Sign up
-        </span></button>
-
-@endif
+            <button class="signup">
+                <a href="{{ route('chooseRole') }}" class="signup-btn authpart" style="color: darkred;">Sign up</a>
+            </button>
+        @endauth
     </div>
 </nav>
-
-{{ $slot }}
-
-
-<footer class="footer">
-    <div class="footer-container">
-
-        <div class="footer-section">
-            <h3>🛒 CraveCart</h3>
-            <p>Your one-stop shop for everyday essentials.</p>
-        </div>
-        <div class="footer-section">
-            <h4>Contact</h4>
-            <p>Email: support@cravecart.com</p>
-            <p>Phone: +63 9XX XXX XXXX</p>
-        </div>
-
-    </div>
-
-    <div class="footer-bottom">
-        <p>© {{ date('Y') }} CraveCart. All rights reserved.</p>
-    </div>
-</footer>
-</body>
-</html>
