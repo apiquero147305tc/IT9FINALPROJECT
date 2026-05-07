@@ -1,16 +1,17 @@
-<!-- FLOATING CHAT BUTTON -->
 <div id="messui-btn" onclick="toggleMessUI()">
     💬 Messages
 </div>
 
-<!-- FLOATING CHAT PANEL -->
-<div id="messui-panel">
-    <div class="messui-header">
-        <span>Messages</span>
-        <span onclick="toggleMessUI()" style="cursor:pointer;">✖</span>
+<div id="messui-panel" style="display:none;">
+    <div>
+        Messages
+        <span onclick="toggleMessUI()">✖</span>
     </div>
 
-    <iframe src="{{ route('messages.inbox') }}"></iframe>
+    <div id="chatBody"></div>
+
+     <input id="messageInput" type="text">
+    <button onclick="sendMessage()">Send</button>
 </div>
 
 <style>
@@ -64,12 +65,51 @@
 
 <script>
 function toggleMessUI() {
-    let panel = document.getElementById('messui-panel');
+    const panel = document.getElementById('messui-panel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+</script>
 
-    if (panel.style.display === "block") {
-        panel.style.display = "none";
-    } else {
-        panel.style.display = "block";
+<script>
+let receiverId = null;
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.chat-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            openChat(this.dataset.id);
+        });
+    });
+
+});
+
+function openChat(id) {
+    console.log("Opening chat with seller:", id); // 🔥 debug
+
+    receiverId = id;
+
+    const panel = document.getElementById('messui-panel');
+    if (!panel) {
+        console.error("messui-panel not found");
+        return;
     }
+
+    panel.style.display = 'block';
+
+    loadMessages();
+}
+
+function loadMessages() {
+    if (!receiverId) return;
+
+    fetch('/messages/' + receiverId + '/fetch')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('chatBody').innerHTML = html;
+        });
+}
+
+function closeChat() {
+    document.getElementById('messui-panel').style.display = 'none';
 }
 </script>

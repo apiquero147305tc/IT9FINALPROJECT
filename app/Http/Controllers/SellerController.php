@@ -13,18 +13,42 @@ class SellerController extends Controller
     /**
      * Seller Dashboard Overview
      */
+<<<<<<< HEAD
     public function dashboard()
     {
         $sellerId = Auth::id();
 
         // FIXED: Changed 'seller_id' to 'user_id' to resolve SQLSTATE[42S22] error
         $products = Product::where('user_id', $sellerId) 
+=======
+  public function dashboard()
+{
+    $sellerId = Auth::id();
+    
+
+    // PRODUCTS
+    $products = Product::where('user_id', Auth::id())->get();
+
+    // ORDERS
+    $orders = collect();
+    $totalEarnings = 0;
+    $notifCount = 0;
+
+    if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
+        try {
+
+            $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('seller_id', $sellerId);
+            })
+            ->with(['user', 'product'])
+>>>>>>> mergeTesting
             ->latest()
             ->get();
 
         $orders = collect();
         $totalEarnings = 0;
 
+<<<<<<< HEAD
         if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
             try {
                 // FIXED: Using 'user_id' for consistency across all relationship queries
@@ -45,6 +69,18 @@ class SellerController extends Controller
             } catch (\Exception $e) {
                 $orders = collect();
             }
+=======
+            // NOTIFICATION COUNT
+            $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('seller_id', $sellerId);
+            })
+            ->where('is_seen', false)
+            ->count();
+
+        } catch (\Exception $e) {
+            $orders = collect();
+            $notifCount = 0;
+>>>>>>> mergeTesting
         }
 
         return view('seller.dashboard', compact(
@@ -54,6 +90,16 @@ class SellerController extends Controller
         ));
     }
 
+<<<<<<< HEAD
+=======
+  return view('seller.dashboard', compact(
+    'products',
+    'orders',
+    'totalEarnings',
+    'notifCount'
+));
+}
+>>>>>>> mergeTesting
     /**
      * Full Orders Management List
      */
