@@ -1,52 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
-<<<<<<< HEAD
 use App\Http\Controllers\CartController; // Import the CartController
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
 | 🏠 Public & Static Routes
 |--------------------------------------------------------------------------
 */
-=======
-use App\Http\Controllers\OrderController;
-
-
-//order
-Route::post('/orders', [OrderController::class, 'store'])
-    ->name('orders.store');
-
-//seller pending
-Route::get('/pending-approval', function () {
-    return view('auth.pending');
-});
-
-Route::get('/products/create', [ProductController::class, 'create'])
-    ->name('products.create');
-
-// ✅ PUBLIC / BUYER ACCESS
-Route::get('/products/{product}', [BuyerController::class, 'show'])
-    ->name('products.show')
-      ->whereNumber('product');
-
-    Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])
-    ->name('seller.shop');
-
-//////////////////////////////////////////////////
-// 🏠 PUBLIC HOME (your home.blade.php)
-//////////////////////////////////////////////////
->>>>>>> mergeTesting
 
 Route::get('/', function () {
     $products = [
@@ -90,15 +59,6 @@ Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
 
 Route::middleware(['auth'])->group(function () {
 
-<<<<<<< HEAD
-=======
-
-    Route::post('/orders', [OrderController::class, 'store'])
-        ->name('orders.store');
-
-
-    // Logout
->>>>>>> mergeTesting
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // 💬 Messages
@@ -120,7 +80,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/orders', [SellerController::class, 'orders'])->name('seller.orders');
     });
 
-<<<<<<< HEAD
     // 🟢 BUYER ONLY
     Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
@@ -137,72 +96,6 @@ Route::middleware(['auth'])->group(function () {
         
         // Remove item (DELETE)
         Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-=======
-    Route::post('/messages/send', [MessageController::class, 'send'])
-        ->name('messages.send');
-
-    Route::get('/messages/{userId}/fetch', [MessageController::class, 'fetchMessages']);
-
-
-    //////////////////////////////////////////////////
-    // 🟢 BUYER
-    //////////////////////////////////////////////////
-    Route::middleware(['role:buyer'])->group(function () {
-
-        Route::get('/buyer/home', [BuyerController::class, 'index'])
-            ->name('buyer.home');
-
-        Route::get('/cart', function () {
-        return view('buyer.cart'); // we will create this view
-        })->name('cart.index');
-
-    });
-
-
-    //////////////////////////////////////////////////
-    // 🔴 SELLER
-    //////////////////////////////////////////////////
-    Route::middleware(['role:seller'])->group(function () {
-        
-        Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
-        ->name('seller.dash');
-        
-        Route::resource('products', ProductController::class)->except(['show']);
-
-        Route::get('/seller/orders', [SellerController::class, 'orders'])
-            ->name('seller.orders');
-
-            Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])
-    ->name('seller.messages');
-
-    });
-
-   Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
-    ->name('products.edit');
-
-    Route::put('/products/{product}', [ProductController::class, 'update'])
-    ->name('products.update');
-
-
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
-    ->name('products.destroy');
-
-
-    //////////////////////////////////////////////////
-    // 🟣 ADMIN
-    //////////////////////////////////////////////////
-    Route::middleware(['role:admin'])->group(function () {
-
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-            ->name('admin.dashboard');
-
-        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
-        ->name('admin.approve');
-
-    Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
-        ->name('admin.reject');
-
->>>>>>> mergeTesting
     });
 
 });
