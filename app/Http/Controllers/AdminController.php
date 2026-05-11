@@ -20,9 +20,19 @@ class AdminController extends Controller
         $totalSellers = User::where('role', 'seller')->count();
         $totalBuyers = User::where('role', 'buyer')->count();
 
-        $pendingUsers = User::where('role', 'seller')
-            ->where('is_approved', false)
-            ->get();
+// ✅ FIXED: use status instead of is_approved
+    $pendingUsers = User::where('role', 'seller')
+        ->where('status', 'pending')
+        ->latest()
+        ->get();
+
+    $approvedSellers = User::where('role', 'seller')
+        ->where('status', 'approved')
+        ->count();
+
+    $rejectedSellers = User::where('role', 'seller')
+        ->where('status', 'rejected')
+        ->count();
 
         $complaints = Complaint::latest()->get();
 
@@ -36,25 +46,26 @@ class AdminController extends Controller
     }
 
     // APPROVE SELLER
-    public function approveUser($id)
-    {
-        $user = User::findOrFail($id);
+   public function approveUser($id)
+{
+    $user = User::findOrFail($id);
 
-        $user->is_approved = true;
-        $user->save();
+    $user->status = 'approved';
+    $user->save();
 
-        return back()->with('success', "{$user->name} approved successfully.");
-    }
+    return back()->with('success', "{$user->name} approved successfully.");
+}
 
     // REJECT SELLER
     public function rejectUser($id)
-    {
-        $user = User::findOrFail($id);
+{
+    $user = User::findOrFail($id);
 
-        $user->delete(); // fully remove account
+    $user->status = 'rejected';
+    $user->save();
 
-        return back()->with('error', "{$user->name} rejected and removed.");
-    }
+    return back()->with('error', "{$user->name} rejected successfully.");
+}
 
     // BLOCK USER
     public function block($id)
@@ -149,5 +160,27 @@ public function analytics()
     ];
 
     return view('admin.analytics', $data);
+}
+
+
+public function destroyUser($id)
+{
+    $user = User::findOrFail($id);
+
+    // safety check: never delete admin
+    if ($user->role === 'admin') {
+        return back()->with('error', 'Admin account cannot be deleted.');
+    }
+
+    $user->delete();
+
+    return back()->with('success', 'User deleted successfully.');
+}
+
+public function deleteUsersPage()
+{
+    $users = User::where('role', '!=', 'admin')->get();
+
+    return view('admin.delete-users', compact('users'));
 }
 }

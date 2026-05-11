@@ -46,12 +46,6 @@ class AuthController extends Controller
     // =========================
     if ($request->role === 'seller') {
 
-        if ($request->age < 18) {
-            return back()->withErrors([
-                'age' => 'You must be 18 years old or above to register as seller.'
-            ]);
-        }
-
         $filePath = null;
 
         if ($request->hasFile('valid_id')) {
@@ -108,7 +102,8 @@ class AuthController extends Controller
 
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.'
+            'email' => 'The provided credentials do not match our records.',
+            'contact_number' => 'Input 11 digits only.'
         ]);
     }
 
@@ -191,30 +186,41 @@ public function registerBuyer(Request $request)
 public function registerSeller(Request $request)
 {
     $request->validate([
-        'name' => 'required',
+        'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users',
         'password' => 'required|min:8',
         'shop_name' => 'required',
-        'seller_name' => 'required',
-        'age' => 'required|integer|min:18',
+        'age' => 'required|integer|min:10',
         'contact_number' => 'required',
-        'valid_id' => 'required|image',
+        'valid_id' => 'required|file|mimes:jpg,jpeg,png,pdf',
     ]);
 
-    $validIdPath = $request->file('valid_id')->store('valid_ids', 'public');
+    $filePath = null;
+
+    if ($request->hasFile('valid_id')) {
+        $filePath = $request->file('valid_id')->store('valid_ids', 'public');
+    }
 
     User::create([
-        'name' => $request->name,
+        'name' => $request->name, // ✅ FIXED HERE
         'email' => $request->email,
-        'password' => bcrypt($request->password),
+        'password' => Hash::make($request->password),
         'role' => 'seller',
+        'status' => 'pending',
+
         'shop_name' => $request->shop_name,
-        'age' => $request->age,
         'contact_number' => $request->contact_number,
-        'valid_id' => $validIdPath,
+        'age' => $request->age,
+        'valid_id' => $filePath,
     ]);
 
-    return redirect()->route('login');
+    return redirect()->route('pending');
 }
+
+ public function pending()
+    {
+        return view('auth.pending');
+    }
+
 
 }

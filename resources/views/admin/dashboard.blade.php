@@ -55,6 +55,11 @@
             Analytics
             </a>
 
+            <a href="{{ route('admin.users.delete.page') }}">
+                <i class="fa-solid fa-trash"></i>
+                Delete Accounts
+            </a>
+
             <a href="{{ route('admin.settings') }}">
              <i class="fa-solid fa-gear"></i>
                 Settings
@@ -71,7 +76,7 @@
         <div class="top-header">
 
             <div>
-                <h1>Welcome Admin 👋</h1>
+                <h1>Welcome Admin</h1>
                 <p>Manage users and complaints here.</p>
             </div>
 
@@ -209,34 +214,70 @@
 
                             <td class="action-buttons">
 
-                                @if(!$user->is_blocked)
+                               <td class="action-buttons">
 
-                                <form action="{{ route('admin.block', $user->id) }}" method="POST">
-                                    @csrf
+                                    {{-- 🟡 PENDING USERS --}}
+                                    @if($user->status === 'pending')
 
-                                    <button type="submit" class="btn-dark">
-                                        <i class="fa-solid fa-ban"></i>
-                                        Block
-                                    </button>
-                                </form>
+                                        <form action="{{ route('admin.approve', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn-blue">
+                                                <i class="fa-solid fa-check"></i>
+                                                Approve
+                                            </button>
+                                        </form>
 
-                                @else
+                                        <form action="{{ route('admin.reject', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn-dark">
+                                                <i class="fa-solid fa-xmark"></i>
+                                                Reject
+                                            </button>
+                                        </form>
 
-                                <form action="{{ route('admin.unblock', $user->id) }}" method="POST">
-                                    @csrf
+                                    {{-- 🟢 APPROVED USERS --}}
+                                    @elseif($user->status === 'approved')
 
-                                    <button type="submit" class="btn-blue">
-                                        <i class="fa-solid fa-unlock"></i>
-                                        Unblock
-                                    </button>
-                                </form>
+                                        <form action="{{ route('admin.block', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn-dark">
+                                                <i class="fa-solid fa-ban"></i>
+                                                Block
+                                            </button>
+                                        </form>
 
-                                @endif
+                                        <a href="mailto:{{ $user->email }}" class="btn-red">
+                                            <i class="fa-solid fa-envelope"></i>
+                                            Email
+                                        </a>
 
-                                <a href="mailto:{{ $user->email }}" class="btn-red">
-                                    <i class="fa-solid fa-envelope"></i>
-                                    Email
-                                </a>
+                                    {{-- 🔴 REJECTED USERS --}}
+                                    @elseif($user->status === 'rejected')
+
+                                        <span class="status rejected">Rejected</span>
+
+                                        <form action="{{ route('admin.approve', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn-blue">
+                                                <i class="fa-solid fa-arrow-rotate-right"></i>
+                                                Re-approve
+                                            </button>
+                                        </form>
+
+                                    {{-- ⚫ BLOCKED USERS --}}
+                                    @elseif($user->status === 'blocked')
+
+                                        <form action="{{ route('admin.unblock', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn-blue">
+                                                <i class="fa-solid fa-unlock"></i>
+                                                Unblock
+                                            </button>
+                                        </form>
+
+                                    @endif
+
+                                </td>
 
                             </td>
 
@@ -251,6 +292,57 @@
             </div>
 
         </section>
+
+        <section id="rejected-users" class="section-box">
+
+    <div class="section-title">
+        <h2>Rejected Users</h2>
+    </div>
+
+    <div class="table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach($users->where('status', 'rejected') as $user)
+
+                <tr>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>{{ $user->role }}</td>
+
+                    <td>
+                        <span class="status rejected">Rejected by admin</span>
+                    </td>
+
+                    <td>
+                        <form action="{{ route('admin.approve', $user->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-blue">
+                                Re-approve
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                @endforeach
+
+            </tbody>
+        </table>
+
+    </div>
+
+</section>
 
         {{-- COMPLAINTS --}}
         <section id="complaints">

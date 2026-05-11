@@ -31,12 +31,12 @@ class RoleMiddleware
             abort(403, 'Your account has been blocked by admin.');
         }
 
-        // 3. SELLER APPROVAL CHECK (ONLY FOR SELLERS)
-        if ($userRole === 'seller' && !$user->is_approved) {
-            Auth::logout();
-            abort(403, 'Your seller account is pending admin approval.');
-        }
-
+        // =========================
+    // 3. SELLER APPROVAL CHECK
+    // =========================
+    if ($userRole === 'seller' && $user->status !== 'approved') {
+        return redirect()->route('pending');
+    }
         return $next($request);
     }
 }

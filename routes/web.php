@@ -67,6 +67,9 @@ Route::post('/register-process', [AuthController::class, 'register'])->name('reg
 Route::get('/chooseRole', fn () => view('auth.chooseRole'))->name('chooseRole');
 Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
 
+Route::get('/pending', function () {
+    return view('auth.pending');
+})->name('pending');
 //////////////////////////////////////////////////
 // 🧾 SIGNUP (BUYER / SELLER)
 //////////////////////////////////////////////////
@@ -127,19 +130,19 @@ Route::middleware(['auth'])->group(function () {
     // 🔴 SELLER
     //////////////////////////////////////////////////
 
-    Route::middleware(['role:seller'])->group(function () {
+   Route::middleware(['auth', 'role:seller'])->group(function () {
 
-        Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
-            ->name('seller.dash');
+    Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
+        ->name('seller.dash');
 
-        Route::resource('products', ProductController::class)->except(['show']);
+    Route::resource('products', ProductController::class)->except(['show']);
 
-        Route::get('/seller/orders', [SellerController::class, 'orders'])
-            ->name('seller.orders');
+    Route::get('/seller/orders', [SellerController::class, 'orders'])
+        ->name('seller.orders');
 
-        Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])
-            ->name('seller.messages');
-    });
+    Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])
+        ->name('seller.messages');
+});
 
     //////////////////////////////////////////////////
     // 🛍 PRODUCT (EDIT / UPDATE / DELETE)
@@ -194,5 +197,16 @@ Route::middleware(['auth'])->group(function () {
             ->name('admin.settings.update');
 
         Route::get('/admin/analytics', [AdminController::class, 'analytics'])->name('admin.analytics');
+
+        Route::get('/admin/users/delete', [AdminController::class, 'deleteUsersPage'])
+            ->name('admin.users.delete.page');
+
+        Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])
+            ->name('admin.users.destroy');
     });
+
+    // pending
+    Route::get('/pending-approval', [AuthController::class, 'pending'])->name('pending');
+  
+    Route::post('/login', [AuthController::class, 'login']);
 });

@@ -62,7 +62,9 @@
                     value="{{ old('contact_number') }}"
                     maxlength="11"
                     pattern="[0-9]{11}"
-                    required>
+                    required
+                    oninvalid="this.setCustomValidity('Input 11 digits only')"
+                    oninput="this.setCustomValidity('')">
 
             <label style="text-align:left; display:block; margin-top:10px;">
                 Upload Valid ID

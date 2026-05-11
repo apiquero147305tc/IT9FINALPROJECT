@@ -142,12 +142,11 @@
             <div class="login-footer">
                 <p class="text-gray-600">
                     New to CraveCart?
-                    <a href="{{ route('register') }}" class="login-link hover:underline">
+                    <a href="{{ route('chooseRole') }}" class="login-link hover:underline">
                         Create Account
                     </a>
                 </p>
             </div>
-
         </div>
     </div>
 </x-layout>
