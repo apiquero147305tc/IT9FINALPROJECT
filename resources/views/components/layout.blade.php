@@ -6,6 +6,85 @@
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .join-page {
+            background: #f3e3cb;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+            min-height: 100vh;
+        }
+
+        .join-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        .join-title {
+            color: #dd0d22;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .join-label {
+            font-size: 0.85rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .join-input,
+        .join-select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 5px 0;
+            border: 1px solid #ff9b9e;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .join-button {
+            width: 100%;
+            background: #ff4a00;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .join-error-box {
+            background: #ffe6e6;
+            color: #dd0d22;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+
+        .join-error-msg {
+            color: #dd0d22;
+            font-size: 0.75rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .join-footer {
+            text-align: center;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+
+        .join-link {
+            color: #ff4a00;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar">

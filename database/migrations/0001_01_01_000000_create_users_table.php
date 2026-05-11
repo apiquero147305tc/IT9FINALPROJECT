@@ -21,6 +21,8 @@ return new class extends Migration
             // User Role
             $table->enum('role', ['admin', 'seller', 'buyer'])->default('buyer'); 
 
+            $table->boolean('is_blocked')->default(0);
+
             // Student-specific data (Buyer only)
             // We use nullable() so Admins/Sellers aren't forced to have these values
             $table->string('grade_level')->nullable(); 

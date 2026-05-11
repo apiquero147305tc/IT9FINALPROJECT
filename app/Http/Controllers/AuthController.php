@@ -157,4 +157,64 @@ class AuthController extends Controller
     {
         return view('auth.register');
     }
+
+    public function showBuyerRegister()
+{
+    return view('auth.buyer-register');
+}
+
+public function showSellerRegister()
+{
+    return view('auth.seller-register');
+}   
+
+public function registerBuyer(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:8',
+    ]);
+
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'role' => 'buyer',
+        'grade_level' => $request->grade_level,
+        'monthly_budget' => $request->monthly_budget,
+    ]);
+
+    return redirect()->route('login');
+}
+
+public function registerSeller(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:8',
+        'shop_name' => 'required',
+        'seller_name' => 'required',
+        'age' => 'required|integer|min:18',
+        'contact_number' => 'required',
+        'valid_id' => 'required|image',
+    ]);
+
+    $validIdPath = $request->file('valid_id')->store('valid_ids', 'public');
+
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'role' => 'seller',
+        'shop_name' => $request->shop_name,
+        'age' => $request->age,
+        'contact_number' => $request->contact_number,
+        'valid_id' => $validIdPath,
+    ]);
+
+    return redirect()->route('login');
+}
+
 }

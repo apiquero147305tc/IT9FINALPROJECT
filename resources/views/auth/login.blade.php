@@ -86,40 +86,68 @@
         }
     </style>
 
-    <div class="login-page">
-        <div class="login-card">
-            <h2 class="login-title">CraveCart</h2>
+    {{-- Tailwind-enhanced wrapper --}}
+    <div class="login-page px-4">
+
+        <div class="login-card relative">
+
+            {{-- subtle glow using Tailwind (non-intrusive) --}}
+            <div class="absolute -top-3 -left-3 w-6 h-6 bg-red-500 rounded-full blur-xl opacity-30"></div>
+
+            <h2 class="login-title text-xl font-extrabold">
+                CraveCart
+            </h2>
 
             @if ($errors->any())
-                <ul class="login-error-list">
+                <ul class="login-error-list bg-red-50 border border-red-200 rounded-md p-2 mb-3">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             @endif
 
-            <form action="{{ route('login.post') }}" method="POST">
+            <form action="{{ route('login.post') }}" method="POST" class="space-y-2">
                 @csrf
 
                 <div class="login-group">
                     <label class="login-label">Email Address</label>
-                    <input type="email" name="email" class="login-input" value="{{ old('email') }}" required autofocus>
+                    <input
+                        type="email"
+                        name="email"
+                        class="login-input focus:ring-2 focus:ring-red-200 transition"
+                        value="{{ old('email') }}"
+                        required
+                        autofocus
+                    >
                 </div>
 
                 <div class="login-group">
                     <label class="login-label">Password</label>
-                    <input type="password" name="password" class="login-input" required>
+                    <input
+                        type="password"
+                        name="password"
+                        class="login-input focus:ring-2 focus:ring-red-200 transition"
+                        required
+                    >
                 </div>
 
-                <button type="submit" class="login-button">LOGIN</button>
+                <button
+                    type="submit"
+                    class="login-button hover:scale-[1.02] active:scale-100 transition-transform"
+                >
+                    LOGIN
+                </button>
             </form>
 
             <div class="login-footer">
-                <p>
+                <p class="text-gray-600">
                     New to CraveCart?
-                    <a href="{{ route('register') }}" class="login-link">Create Account</a>
+                    <a href="{{ route('register') }}" class="login-link hover:underline">
+                        Create Account
+                    </a>
                 </p>
             </div>
+
         </div>
     </div>
 </x-layout>
