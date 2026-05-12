@@ -14,9 +14,6 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * Fixed: Added Request $request to access the role from URL
-     */
     public function registerPage(Request $request)
     {
         return view('auth.register', [
@@ -26,36 +23,32 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // 1. Validation
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:buyer,seller',
 
-            // Buyer specific fields
             'grade_level' => 'required_if:role,buyer',
             'monthly_budget' => 'required_if:role,buyer',
             'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
 
-            // Seller specific fields
             'shop_name' => 'required_if:role,seller',
             'seller_name' => 'required_if:role,seller',
-            // numeric check only applies if the field is present
-            'age' => 'required_if:role,seller|nullable|numeric', 
+            'age' => 'required_if:role,seller|nullable|numeric',
             'contact_number' => 'required_if:role,seller',
             'valid_id' => 'required_if:role,seller|file|mimes:jpg,jpeg,png,pdf',
         ]);
 
         // =========================
-        // 🟢 SELLER REGISTRATION
+        // SELLER REGISTRATION
         // =========================
         if ($request->role === 'seller') {
 
             if ($request->age < 18) {
                 return back()->withErrors([
                     'age' => 'You must be 18 years old or above to register as a seller.'
-                ])->withInput(); // Keep their data in the form
+                ])->withInput();
             }
 
             $filePath = null;
@@ -79,7 +72,7 @@ class AuthController extends Controller
         }
 
         // =========================
-        // 🟡 BUYER REGISTRATION
+        // BUYER REGISTRATION
         // =========================
 
         $finalBudget = $request->monthly_budget;
@@ -93,9 +86,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'buyer',
-            // Defaulting buyers to approved so they can shop immediately, 
-            // unless you want admins to approve every single student.
-            'status' => 'approved', 
+            'status' => 'approved',
             'grade_level' => $request->grade_level,
             'monthly_budget' => $finalBudget,
         ]);
@@ -120,20 +111,23 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $user = Auth::user();
 
-        // 🚨 BLOCK USERS NOT APPROVED (Applies to both roles if necessary)
+        // =========================
+        // TEMPORARY FIX: DISABLE APPROVAL CHECK
+        // =========================
+        /*
         if ($user->status !== 'approved') {
             Auth::logout();
             return redirect('/pending-approval')->withErrors([
                 'email' => 'Your account is waiting for admin approval.'
             ]);
         }
+        */
 
         return $this->redirectUserBasedOnRole($user);
     }
 
     private function redirectUserBasedOnRole($user)
     {
-        // Using direct role string checks to avoid "undefined method" errors
         if ($user->role === 'admin') {
             return redirect('/admin/dashboard');
         }

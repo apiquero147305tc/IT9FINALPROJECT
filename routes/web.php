@@ -120,3 +120,17 @@ Route::get('/home', function () {
     if ($user->role === 'seller') return redirect()->route('seller.dash');
     return redirect()->route('buyer.home');
 });
+
+Route::middleware(['auth'])->prefix('buyer')->group(function () {
+
+    Route::get('/smartbudgetcontrol', function () {
+
+        // allow ONLY buyers
+        if (auth()->user()->role !== 'buyer') {
+            abort(403);
+        }
+
+        return view('buyer.smartbudget');
+    })->name('buyer.smartbudgetcontrol');
+
+});

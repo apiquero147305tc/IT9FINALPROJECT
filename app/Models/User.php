@@ -16,6 +16,9 @@ class User extends Authenticatable
         'password',
         'role',
         'shop_name',
+        'grade_level',
+        'monthly_budget',
+        'spent_amount',
     ];
 
     protected $hidden = [
@@ -28,12 +31,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // ✔ ROLE HELPERS
-    public function isAdmin() { return $this->role === 'admin'; }
-    public function isSeller() { return $this->role === 'seller'; }
-    public function isBuyer() { return $this->role === 'buyer'; }
-
-<<<<<<< HEAD
+    // =========================
+    // ROLE HELPERS
+    // =========================
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -49,42 +49,41 @@ class User extends Authenticatable
         return $this->role === 'buyer';
     }
 
-    /**
-     * Custom helper for University of Mindanao student logic
-     */
-    public function isStudent(): bool
-    {
-        return in_array($this->grade_level, ['High School', 'SHS', 'College']);
-    }
-
-    // --- RELATIONSHIPS ---
+    // =========================
+    // RELATIONSHIPS
+    // =========================
 
     /**
-     * Seller Side: A seller has many products.
+     * Seller: products
      */
-=======
-    // ✔ RELATIONSHIPS
-
->>>>>>> mergeTesting
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
     }
 
+    /**
+     * Orders
+     */
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
     }
-<<<<<<< HEAD
 
     /**
-     * Buyer Side: A buyer has many items in their cart.
-     * This links to the Cart model using the 'user_id' column.
+     * Buyer cart items
      */
     public function cartItems()
     {
         return $this->hasMany(Cart::class);
     }
-=======
->>>>>>> mergeTesting
+
+    // =========================
+    // 💰 SMART BUDGET SYSTEM
+    // =========================
+
+    public function addSpent($amount)
+    {
+        $this->spent_amount += $amount;
+        $this->save();
+    }
 }
