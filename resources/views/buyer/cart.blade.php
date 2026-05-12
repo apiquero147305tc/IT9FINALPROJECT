@@ -8,6 +8,7 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    
 
     @if(count($cartItems) > 0)
         <div class="cart-container">
