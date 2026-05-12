@@ -10,200 +10,117 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
+use App\Models\Product;
 
-
-//order
-Route::post('/orders', [OrderController::class, 'store'])
-    ->name('orders.store');
-
-//seller pending
-Route::get('/pending-approval', function () {
-    return view('auth.pending');
-});
-
-Route::get('/products/create', [ProductController::class, 'create'])
-    ->name('products.create');
-
-// ✅ PUBLIC / BUYER ACCESS
-Route::get('/products/{product}', [BuyerController::class, 'show'])
-    ->name('products.show')
-      ->whereNumber('product');
-
-    Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])
-    ->name('seller.shop');
-
-//////////////////////////////////////////////////
-// 🏠 PUBLIC HOME (your home.blade.php)
-//////////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| 🌐 PUBLIC ROUTES
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
-
-    $products = [
-        ['name' => 'Rice (5kg)', 'price' => 250, 'image' => '/images/rice.jpg'],
-        ['name' => 'Cooking Oil', 'price' => 120, 'image' => '/images/oil.jpg'],
-        ['name' => 'Canned Goods', 'price' => 80, 'image' => '/images/canned.jpg'],
-        ['name' => 'Laundry Detergent', 'price' => 150, 'image' => '/images/detergent.jpg'],
-    ];
-
+    // Fetching actual best sellers from the DB for the landing page
+    $products = Product::latest()->take(4)->get(); 
     return view('home', compact('products'));
-
 })->name('home');
 
+Route::get('/about', fn () => view('about'))->name('about');
+Route::get('/contact', fn () => view('contact'))->name('contact');
 
-//////////////////////////////////////////////////
-// 🔐 AUTH PAGES
-//////////////////////////////////////////////////
+// Fixed Best Seller: Now fetches actual data to prevent "Undefined Variable" errors
+Route::get('/bestSeller', function () {
+$products = Product::latest()->get();    return view('bestSeller', compact('products'));
+})->name('bestSeller');
 
-Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
-Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
+Route::get('/products/{product}', [BuyerController::class, 'show'])
+    ->name('products.show')
+    ->whereNumber('product');
 
-Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
-Route::post('/register-process', [AuthController::class, 'register'])->name('register.post');
+Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])->name('seller.shop');
 
-Route::get('/chooseRole', function () {
-    return view('auth.chooseRole');
-})->name('chooseRole');
+/*
+|--------------------------------------------------------------------------
+| 🔐 AUTHENTICATION SYSTEM
+|--------------------------------------------------------------------------
+*/
+
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/login', 'loginPage')->name('login');
+    Route::post('/login-process', 'login')->name('login.post');
+    Route::get('/register', 'registerPage')->name('register');
+    Route::post('/register-process', 'register')->name('register.post');
+    Route::post('/logout', 'logout')->name('logout')->middleware('auth');
+});
 
 Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
+Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
 
-
-//////////////////////////////////////////////////
-// 🔐 AUTH REQUIRED
-//////////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| 🛡️ PROTECTED ROUTES (Auth Required)
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
-    Route::post('/orders', [OrderController::class, 'store'])
-        ->name('orders.store');
+    // --- 💬 UNIFIED MESSAGING SYSTEM ---
+    Route::controller(MessageController::class)->group(function () {
+        Route::get('/messages', 'inbox')->name('messages.inbox');
+        Route::get('/messages/{userId}', 'chat')->name('messages.chat');
+        Route::post('/messages/send', 'send')->name('messages.send');
+        Route::get('/messages/{userId}/fetch', 'fetchMessages');
+    });
 
-
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
-    //////////////////////////////////////////////////
-    // 💬 MESSAGES
-    //////////////////////////////////////////////////
-    Route::get('/messages', [MessageController::class, 'inbox'])
-        ->name('messages.inbox');
-
-    Route::get('/messages/{userId}', [MessageController::class, 'chat'])
-        ->name('messages.chat');
-
-    Route::post('/messages/send', [MessageController::class, 'send'])
-        ->name('messages.send');
-
-    Route::get('/messages/{userId}/fetch', [MessageController::class, 'fetchMessages']);
-
-
-    //////////////////////////////////////////////////
-    // 🟢 BUYER
-    //////////////////////////////////////////////////
+    // --- 🛒 BUYER HUB ---
     Route::middleware(['role:buyer'])->group(function () {
-
-        Route::get('/buyer/home', [BuyerController::class, 'index'])
-            ->name('buyer.home');
-
-        Route::get('/cart', function () {
-        return view('buyer.cart'); // we will create this view
-        })->name('cart.index');
-
+        Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
+        Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
+        Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
-
-    //////////////////////////////////////////////////
-    // 🔴 SELLER
-    //////////////////////////////////////////////////
+    // --- 🏪 SELLER STUDIO ---
     Route::middleware(['role:seller'])->group(function () {
-        
-        Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
-        ->name('seller.dash');
-        
+        Route::controller(SellerController::class)->group(function () {
+            Route::get('/seller/dashboard', 'dashboard')->name('seller.dash');
+            Route::get('/seller/profile', 'profile')->name('seller.profile');
+            Route::post('/seller/profile/update', 'updateProfile')->name('seller.profile.update');
+            Route::get('/seller/orders', 'orders')->name('seller.orders');
+        });
+
         Route::resource('products', ProductController::class)->except(['show']);
-
-        Route::get('/seller/orders', [SellerController::class, 'orders'])
-            ->name('seller.orders');
-
-            Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])
-    ->name('seller.messages');
-
+        
+        Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
+            ->name('orders.updateStatus');
+            
+        Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
     });
 
-   Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
-    ->name('products.edit');
-
-    Route::put('/products/{product}', [ProductController::class, 'update'])
-    ->name('products.update');
-
-
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
-    ->name('products.destroy');
-
-
-    //////////////////////////////////////////////////
-    // 🟣 ADMIN
-    //////////////////////////////////////////////////
+    // --- 🟣 ADMIN CONTROL PANEL ---
     Route::middleware(['role:admin'])->group(function () {
-
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-            ->name('admin.dashboard');
-
-        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
-        ->name('admin.approve');
-
-    Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
-        ->name('admin.reject');
-
+        Route::controller(AdminController::class)->group(function () {
+            Route::get('/admin/dashboard', 'dashboard')->name('admin.dashboard');
+            Route::post('/admin/approve/{id}', 'approveUser')->name('admin.approve');
+            Route::post('/admin/reject/{id}', 'rejectUser')->name('admin.reject');
+        });
     });
-
 });
 
-
-//////////////////////////////////////////////////
-// 🔁 SAFE /home FIX (prevents redirect loop)
-//////////////////////////////////////////////////
-
-Route::get('/home', function () {
-    return redirect()->route('buyer.home');
-});
-
-
-//////////////////////////////////////////////////
-// 🛍 SHOP (FIXED)
-//////////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| 🔁 SYSTEM HELPERS
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/shop', function () {
-
-    if (Auth::check()) {
-        return redirect()->route('buyer.home');
-    }
-
-    return redirect()->route('chooseRole');
-
+    return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
 })->name('shop');
 
-
-//////////////////////////////////////////////////
-// 📄 STATIC PAGES (UNCHANGED)
-//////////////////////////////////////////////////
-
-Route::get('/bestSeller', function () {
-    return view('bestSeller');
-})->name('bestSeller');
-
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
-
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
-
-
-//////////////////////////////////////////////////
-// 🧾 BUYER SIGNUP (UNCHANGED)
-//////////////////////////////////////////////////
-
-Route::get('/buyer/signup', [AuthController::class, 'showSignup']);
-Route::post('/buyer/signup', [AuthController::class, 'signup']);
+// Global redirect for /home
+Route::get('/home', function() {
+    if (!Auth::check()) return redirect()->route('home');
+    if (Auth::user()->role === 'seller') return redirect()->route('seller.dash');
+    if (Auth::user()->role === 'admin') return redirect()->route('admin.dashboard');
+    return redirect()->route('buyer.home');
+});
