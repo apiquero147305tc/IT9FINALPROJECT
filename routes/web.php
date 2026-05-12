@@ -1,29 +1,26 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SellerController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\SellerController;
 use App\Http\Controllers\OrderController;
-
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 //////////////////////////////////////////////////
 // 🏠 HOME
 //////////////////////////////////////////////////
 
 Route::get('/', function () {
-
     $products = [
         ['name' => 'Rice (5kg)', 'price' => 250, 'image' => '/images/rice.jpg'],
         ['name' => 'Cooking Oil', 'price' => 120, 'image' => '/images/oil.jpg'],
         ['name' => 'Canned Goods', 'price' => 80, 'image' => '/images/canned.jpg'],
         ['name' => 'Laundry Detergent', 'price' => 150, 'image' => '/images/detergent.jpg'],
     ];
-
     return view('home', compact('products'));
 
 })->name('home');
@@ -37,13 +34,7 @@ Route::get('/home', function () {
 //////////////////////////////////////////////////
 
 Route::get('/shop', function () {
-
-    if (Auth::check()) {
-        return redirect()->route('buyer.home');
-    }
-
-    return redirect()->route('chooseRole');
-
+    return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
 })->name('shop');
 
 //////////////////////////////////////////////////
@@ -124,6 +115,24 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/cart', fn () => view('buyer.cart'))
             ->name('cart.index');
+
+            // 🛒 CART
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
+        Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+        // 💳 CHECKOUT
+        Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+        // 🧾 RECEIPT
+        Route::get('/receipt/{order}', [OrderController::class, 'receipt'])->name('receipt');
+
+        // 💡 LENDING
+        Route::get('/lending', [LendingController::class, 'index'])->name('lending');
+        Route::post('/lending/apply', [LendingController::class, 'apply'])->name('lending.apply');
+        Route::post('/lending/repay/{loan}', [LendingController::class, 'repay'])->name('lending.repay');
     });
 
     //////////////////////////////////////////////////
