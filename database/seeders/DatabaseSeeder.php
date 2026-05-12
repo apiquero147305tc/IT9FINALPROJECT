@@ -15,19 +15,22 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Create the PRE-SET ADMIN
             User::create([
-        'name' => 'CraveCart Admin',
-        'email' => 'admin@cravecart.com',
-        'password' => Hash::make('admin123'),
-        'role' => 'admin',
-        'status' => 'approved',
-    ]);
+            'name' => 'CraveCart Admin',
+            'email' => 'admin@cravecart.com',
+            'password' => Hash::make('admin123'),
+            'role' => 'admin',
+            'is_approved' => true,
+            'is_blocked' => false,
+]);
 
         // 2. Create a Sample Seller (For Testing)
-        User::create([
+            User::create([
             'name' => 'Espiflor Shop',
             'email' => 'seller@cravecart.com',
             'password' => Hash::make('password'),
             'role' => 'seller',
+            'is_approved' => true,
+            'is_blocked' => false,
         ]);
 
         // 3. Create a Sample Buyer (For Testing)

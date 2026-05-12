@@ -17,9 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('status')->default('pending'); 
             
             // User Role
             $table->enum('role', ['admin', 'seller', 'buyer'])->default('buyer'); 
+
+            $table->boolean('is_blocked')->default(0);
 
             // Student-specific data (Buyer only)
             // We use nullable() so Admins/Sellers aren't forced to have these values

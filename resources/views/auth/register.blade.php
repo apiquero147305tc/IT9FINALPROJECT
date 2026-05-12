@@ -124,14 +124,14 @@
                     </div>
 
                     <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95 border-none cursor-pointer mt-8">
-                        Initialize Registration
+                     SIGN IN
                     </button>
                 </form>
 
                 <div class="mt-10 text-center">
                     <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">
                         Returning User? 
-                        <a href="{{ route('login') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1">Sign In</a>
+                        <a href="{{ route('login') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1">Log In</a>
                     </p>
                 </div>
             </div>

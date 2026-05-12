@@ -46,12 +46,6 @@ class AuthController extends Controller
     // =========================
     if ($request->role === 'seller') {
 
-        if ($request->age < 18) {
-            return back()->withErrors([
-                'age' => 'You must be 18 years old or above to register as seller.'
-            ]);
-        }
-
         $filePath = null;
 
         if ($request->hasFile('valid_id')) {
@@ -108,7 +102,8 @@ class AuthController extends Controller
 
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.'
+            'email' => 'The provided credentials do not match our records.',
+            'contact_number' => 'Input 11 digits only.'
         ]);
     }
 
@@ -157,4 +152,75 @@ class AuthController extends Controller
     {
         return view('auth.register');
     }
+
+    public function showBuyerRegister()
+{
+    return view('auth.buyer-register');
+}
+
+public function showSellerRegister()
+{
+    return view('auth.seller-register');
+}   
+
+public function registerBuyer(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:8',
+    ]);
+
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'role' => 'buyer',
+        'grade_level' => $request->grade_level,
+        'monthly_budget' => $request->monthly_budget,
+    ]);
+
+    return redirect()->route('login');
+}
+
+public function registerSeller(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:8',
+        'shop_name' => 'required',
+        'age' => 'required|integer|min:10',
+        'contact_number' => 'required',
+        'valid_id' => 'required|file|mimes:jpg,jpeg,png,pdf',
+    ]);
+
+    $filePath = null;
+
+    if ($request->hasFile('valid_id')) {
+        $filePath = $request->file('valid_id')->store('valid_ids', 'public');
+    }
+
+    User::create([
+        'name' => $request->name, // ✅ FIXED HERE
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'seller',
+        'status' => 'pending',
+
+        'shop_name' => $request->shop_name,
+        'contact_number' => $request->contact_number,
+        'age' => $request->age,
+        'valid_id' => $filePath,
+    ]);
+
+    return redirect()->route('pending');
+}
+
+ public function pending()
+    {
+        return view('auth.pending');
+    }
+
+
 }

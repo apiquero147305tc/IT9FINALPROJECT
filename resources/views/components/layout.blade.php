@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CraveCart | Essentials</title>
+    <title>CraveCart | Curated Studio Essentials</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -23,7 +21,6 @@
         .text-stroke { 
             -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1); 
         }
-        /* Custom scrollbar for boutique feel */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 10px; }
@@ -31,12 +28,12 @@
 </head>
 <body class="text-slate-900 antialiased overflow-x-hidden">
 
-<nav class="sticky top-0 z-[100] border-b border-orange-500/10 bg-orange-600/90 nav-blur transition-all duration-500 shadow-2xl shadow-orange-900/5">
+<nav class="sticky top-0 z-[100] border-b border-orange-500/10 bg-orange-600/95 nav-blur transition-all duration-500 shadow-2xl shadow-orange-900/5">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
         
         <div class="flex items-center gap-10">
             <a href="{{ route('home') }}" class="group flex items-center gap-3 no-underline">
-                <div class="bg-white p-2.5 rounded-2xl rotate-3 group-hover:rotate-0 transition-all duration-500 shadow-lg shadow-orange-900/20">
+                <div class="bg-white p-2.5 rounded-2xl rotate-3 group-hover:rotate-0 transition-all duration-500 shadow-lg">
                     <span class="text-xl">🛒</span>
                 </div>
                 <div class="flex flex-col leading-none">
@@ -47,9 +44,9 @@
 
             <ul class="hidden lg:flex items-center gap-8 list-none mb-0">
                 <li><a href="{{ route('shop') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">The Shop</a></li>
-                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">Best Seller</a></li>
-                <li><a href="{{ route('about') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">About Us</a></li>
-                <li><a href="{{ route('contact') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">Contact Us</a></li>
+                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">Best Sellers</a></li>
+                <li><a href="{{ route('about') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">About</a></li>
+                <li><a href="{{ route('contact') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-50/80 hover:text-white transition-all no-underline">Contact</a></li>
             </ul>
         </div>
 
@@ -61,16 +58,16 @@
             
             <div class="flex items-center gap-4">
                 @guest
-                    <a href="{{ route('login') }}" class="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-orange-100 transition-colors no-underline">LOG IN</a>
-                    <a href="{{ route('chooseRole') }}" class="bg-white text-orange-600 px-8 py-3.5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-orange-900/10 hover:bg-slate-900 hover:text-white hover:-translate-y-1 transition-all active:scale-95 no-underline">
-                        SIGN IN
+                    <a href="{{ route('login') }}" class="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-orange-100 transition-colors no-underline">Log In</a>
+                    <a href="{{ route('chooseRole') }}" class="bg-white text-orange-600 px-8 py-3.5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-900 hover:text-white hover:-translate-y-1 transition-all active:scale-95 no-underline">
+                        GET STARTED
                     </a>
                 @else
-                    <div class="flex items-center gap-3 bg-white/10 p-1.5 pr-4 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 bg-white/10 p-1.5 pr-4 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/20 transition-all">
                         <div class="bg-white w-9 h-9 rounded-xl flex items-center justify-center text-orange-600 shadow-inner">
                             <i class="fa-solid fa-user-astronaut"></i>
                         </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ Auth::user()->name ?? 'Account' }}</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ Auth::user()->name }}</span>
                     </div>
                 @endguest
             </div>
@@ -88,13 +85,12 @@
     </div>
 
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 relative z-10">
-        
         <div class="lg:col-span-5 space-y-8">
             <div class="flex items-center gap-4">
-                <div class="bg-orange-600 p-3 rounded-2xl shadow-xl shadow-orange-600/20">
+                <div class="bg-orange-600 p-3 rounded-2xl shadow-xl">
                     <span class="text-2xl text-white">🛒</span>
                 </div>
-                <h3 class="font-black text-3xl tracking-tighter uppercase italic">CraveCart<span class="text-orange-500">.</span></h3>
+                <h3 class="font-black text-3xl tracking-tighter uppercase italic text-white">CraveCart<span class="text-orange-500">.</span></h3>
             </div>
             <p class="text-slate-400 leading-relaxed font-medium text-lg max-w-md">
                 Engineered for the modern student ecosystem. Curating premium necessities with a focus on speed, reliability, and technical excellence.
@@ -117,7 +113,6 @@
                 <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Marketplace Hub</a></li>
                 <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Seller Management</a></li>
                 <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Logic & Logistics</a></li>
-                <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Student Portal</a></li>
             </ul>
         </div>
 
@@ -141,8 +136,8 @@
             © {{ date('Y') }} CraveCart Logic. Built by Alindajao Group.
         </p>
         <div class="flex gap-10">
-            <a href="#" class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white no-underline transition-colors">Privacy Protocol</a>
-            <a href="#" class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white no-underline transition-colors">Terms of Use</a>
+            <a href="#" class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white no-underline transition-colors">Privacy</a>
+            <a href="#" class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white no-underline transition-colors">Terms</a>
         </div>
     </div>
 </footer>
