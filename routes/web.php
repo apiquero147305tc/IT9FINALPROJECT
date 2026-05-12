@@ -1,15 +1,17 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SellerController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\SellerController;
 use App\Http\Controllers\OrderController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+
 //////////////////////////////////////////////////
 // 🏠 HOME
 //////////////////////////////////////////////////
@@ -112,9 +114,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/buyer/home', [BuyerController::class, 'index'])
             ->name('buyer.home');
-
-        Route::get('/cart', fn () => view('buyer.cart'))
-            ->name('cart.index');
 
             // 🛒 CART
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
