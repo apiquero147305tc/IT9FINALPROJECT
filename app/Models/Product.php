@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductImage;
+use App\Models\Review;
+use App\Models\Favorite;
 
 class Product extends Model
 {
@@ -45,5 +47,20 @@ class Product extends Model
 public function user()
 {
     return $this->belongsTo(User::class);
+}
+
+public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
+public function favorites()
+{
+    return $this->hasMany(Favorite::class);
+}
+
+public function averageRating()
+{
+    return round($this->reviews()->avg('rating'), 1);
 }
 }
