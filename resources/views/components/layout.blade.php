@@ -25,16 +25,6 @@
             <li><a href="{{ route('bestSeller') }}">Best Sellers</a></li>
             <li><a href="{{ route('about') }}">About Us</a></li>
             <li><a href="{{ route('contact') }}">Contact</a></li>
-
-            @auth
-                @if(auth()->user()->role === 'buyer')
-                    <li>
-                        <a href="{{ route('buyer.smartbudgetcontrol') }}">
-                            SmartBudget
-                        </a>
-                    </li>
-                @endif
-            @endauth
         </ul>
 
         <div class="nav-right">

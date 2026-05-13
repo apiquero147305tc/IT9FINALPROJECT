@@ -102,7 +102,7 @@
         </form>
 
         <div class="nav-links">
-            <a href="#">SmartBudget</a> 
+            <a href="{{ route('buyer.smartbudgetcontrol') }}">SmartBudget</a> 
             <a href="#">Lending</a>
             <a href="{{ route('cart.index') }}">Cart {{ auth()->user()->cartItems->count() }}</a>
         </div>

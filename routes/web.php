@@ -81,23 +81,34 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // 🟢 BUYER ONLY
-    Route::middleware(['role:buyer'])->group(function () {
-        Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
-        
-        // --- 🛒 Functional Cart Routes ---
-        // View the cart
-        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-        
-        // Add item (Must be POST)
-        Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
-        
-        // Update quantity (PATCH)
-        Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-        
-        // Remove item (DELETE)
-        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-    });
+     Route::middleware(['role:buyer'])->group(function () {
 
+    // 🏠 BUYER HOME
+    Route::get('/buyer/home', [BuyerController::class, 'index'])
+        ->name('buyer.home');   
+
+    // 🧠 SMART BUDGET CONTROL
+    Route::get('/buyer/smartbudgetcontrol', [BuyerController::class, 'smartBudget'])
+    ->name('buyer.smartbudgetcontrol');
+
+    // --- 🛒 FUNCTIONAL CART ROUTES ---
+
+    // View Cart
+    Route::get('/cart', [CartController::class, 'index'])
+        ->name('cart.index');
+
+    // Add Item
+    Route::post('/cart/add/{productId}', [CartController::class, 'add'])
+        ->name('cart.add');
+
+    // Update Quantity
+    Route::patch('/cart/update/{id}', [CartController::class, 'update'])
+        ->name('cart.update');
+
+    // Remove Item
+    Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])
+        ->name('cart.destroy');
+   });
 });
 
 /*
@@ -119,18 +130,4 @@ Route::get('/home', function () {
     if ($user->role === 'admin') return redirect()->route('admin.dash');
     if ($user->role === 'seller') return redirect()->route('seller.dash');
     return redirect()->route('buyer.home');
-});
-
-Route::middleware(['auth'])->prefix('buyer')->group(function () {
-
-    Route::get('/smartbudgetcontrol', function () {
-
-        // allow ONLY buyers
-        if (auth()->user()->role !== 'buyer') {
-            abort(403);
-        }
-
-        return view('buyer.smartbudget');
-    })->name('buyer.smartbudgetcontrol');
-
 });

@@ -51,5 +51,37 @@ public function sellerShop($id)
 
     return view('buyer.seller-shop', compact('seller', 'products'));
 }
+
+public function smartBudget()
+{
+    $user = auth()->user();
+
+    $budget = $user->monthly_budget ?? 0;
+
+    // ONLY CLEAN SOURCE: ORDERS
+    $orders = $user->orders ?? collect();
+
+    $spent = $orders->sum('total_price');
+
+    $remaining = $budget - $spent;
+
+    $percent = $budget > 0
+        ? ($spent / $budget) * 100
+        : 0;
+
+    // CATEGORY BREAKDOWN FROM ORDERS ONLY
+    $spending = $orders->groupBy('category')->map(function ($items) {
+        return $items->sum('total_price');
+    });
+
+    return view('buyer.smartbudget', compact(
+        'budget',
+        'spent',
+        'remaining',
+        'percent',
+        'spending'
+    ));
+}
+
 }
 
