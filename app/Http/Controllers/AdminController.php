@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Product; 
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -182,5 +183,11 @@ public function deleteUsersPage()
     $users = User::where('role', '!=', 'admin')->get();
 
     return view('admin.delete-users', compact('users'));
+}
+
+public function viewId($id)
+{
+    $user = User::findOrFail($id);
+    return view('admin.view-id', compact('user'));
 }
 }

@@ -61,9 +61,6 @@ Route::get('/contact', fn () => view('contact'))->name('contact');
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
 Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
 
-Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
-Route::post('/register-process', [AuthController::class, 'register'])->name('register.post');
-
 Route::get('/chooseRole', fn () => view('auth.chooseRole'))->name('chooseRole');
 Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
 
@@ -205,8 +202,10 @@ Route::middleware(['auth'])->group(function () {
             ->name('admin.users.destroy');
     });
 
+    Route::get('/admin/view-id/{id}', [AdminController::class, 'viewId']);
     // pending
-    Route::get('/pending-approval', [AuthController::class, 'pending'])->name('pending');
+    Route::get('/pending-approval', [AuthController::class, 'pending'])
+    ->name('pending');
   
     Route::post('/login', [AuthController::class, 'login']);
 });

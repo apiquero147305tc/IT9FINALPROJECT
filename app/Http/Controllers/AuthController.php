@@ -21,77 +21,6 @@ class AuthController extends Controller
     ]);
     }
 
-    public function register(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8',
-        'role' => 'required|in:buyer,seller',
-
-        'grade_level' => 'required_if:role,buyer',
-        'monthly_budget' => 'required_if:role,buyer',
-        'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
-
-        // seller fields
-        'shop_name' => 'required_if:role,seller',
-        'seller_name' => 'required_if:role,seller',
-        'age' => 'required_if:role,seller|numeric',
-        'contact_number' => 'required_if:role,seller',
-        'valid_id' => 'required_if:role,seller|file|mimes:jpg,jpeg,png,pdf',
-    ]);
-
-    // =========================
-    // 🟢 SELLER REGISTRATION
-    // =========================
-    if ($request->role === 'seller') {
-
-        $filePath = null;
-
-        if ($request->hasFile('valid_id')) {
-            $filePath = $request->file('valid_id')->store('valid_ids', 'public');
-        }
-
-        User::create([
-            'name' => $request->seller_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'seller',
-            'status' => 'pending',
-
-            'shop_name' => $request->shop_name,
-            'contact_number' => $request->contact_number,
-            'age' => $request->age,
-            'valid_id' => $filePath,
-        ]);
-
-        return redirect('/pending-approval');
-    }
-
-    // =========================
-    // 🟡 BUYER REGISTRATION
-    // =========================
-
-    $finalBudget = $request->monthly_budget;
-
-    if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
-        $finalBudget = "₱" . $request->custom_budget;
-    }
-
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'buyer',
-        'status' => 'pending',
-
-        'grade_level' => $request->grade_level,
-        'monthly_budget' => $finalBudget,
-    ]);
-
-    return redirect()->route('login')
-        ->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
-}
 
   public function login(Request $request)
 {
@@ -103,7 +32,6 @@ class AuthController extends Controller
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
-            'contact_number' => 'Input 11 digits only.'
         ]);
     }
 
@@ -176,6 +104,7 @@ public function registerBuyer(Request $request)
         'email' => $request->email,
         'password' => bcrypt($request->password),
         'role' => 'buyer',
+        'status' => 'approved',
         'grade_level' => $request->grade_level,
         'monthly_budget' => $request->monthly_budget,
     ]);
@@ -207,13 +136,11 @@ public function registerSeller(Request $request)
         'password' => Hash::make($request->password),
         'role' => 'seller',
         'status' => 'pending',
-
         'shop_name' => $request->shop_name,
         'contact_number' => $request->contact_number,
         'age' => $request->age,
         'valid_id' => $filePath,
     ]);
-
     return redirect()->route('pending');
 }
 

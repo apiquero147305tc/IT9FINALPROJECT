@@ -28,7 +28,7 @@
 <div class="flex">
 
     {{-- SIDEBAR --}}
-    <aside class="w-72 bg-red-700 text-white min-h-screen p-7 shadow-2xl">
+    <aside class="w-72 bg-red-800 text-white min-h-screen p-7 shadow-2xl">
 
         <div class="flex items-center gap-4 mb-12">
 
@@ -51,7 +51,7 @@
         <nav class="space-y-3">
 
             <a href="{{ route('admin.dashboard') }}"
-            class="flex items-center gap-3 p-4 rounded-2xl hover:bg-red-800 transition">
+            class="flex items-center gap-3 p-4 rounded-2xl hover:bg-red-900 transition">
 
                 <i class="fa-solid fa-chart-line"></i>
                 Dashboard
@@ -59,7 +59,7 @@
             </a>
 
             <a href="{{ route('admin.settings') }}"
-            class="flex items-center gap-3 p-4 rounded-2xl bg-red-800">
+            class="flex items-center gap-3 p-4 rounded-2xl bg-red-900">
 
                 <i class="fa-solid fa-gear"></i>
                 Settings
@@ -71,7 +71,7 @@
                 @csrf
 
             <button type="submit"
-                    class="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-red-800 transition text-left">
+                    class="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-red-900 transition text-left">
 
             <i class="fa-solid fa-right-from-bracket"></i>
                 Logout
@@ -84,16 +84,16 @@
     </aside>
 
     {{-- MAIN --}}
-    <main class="flex-1 p-10">
+    <main class="flex-1 p-10 bg-gray-800">
 
         {{-- HEADER --}}
         <div class="mb-10">
 
-            <h1 class="text-5xl font-bold text-gray-800">
+            <h1 class="text-5xl font-bold text-white">
                 Admin Settings
             </h1>
 
-            <p class="text-gray-500 mt-3 text-lg">
+            <p class="text-gray-100 mt-3 text-lg">
                 Manage your administrator account
             </p>
 
