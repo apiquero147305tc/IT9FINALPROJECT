@@ -9,6 +9,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CartController; // Import the CartController
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ReviewController;
 
 
 /*
@@ -120,3 +121,6 @@ Route::get('/home', function () {
     if ($user->role === 'seller') return redirect()->route('seller.dash');
     return redirect()->route('buyer.home');
 });
+Route::get('/products/{product}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::post('/reviews/{review}/helpful', [ReviewController::class, 'helpful'])->name('reviews.helpful');

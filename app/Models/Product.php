@@ -52,6 +52,7 @@ class Product extends Model
         return $this->reviews()->where('approved', true)->orderByDesc('created_at');
     }
 
+<<<<<<< Updated upstream
     public function getAverageRating()
     {
         // Rounds to 1 decimal place for a cleaner UI (e.g., 4.5)
@@ -62,4 +63,14 @@ class Product extends Model
     {
         return $this->approvedReviews()->count();
     }
+=======
+public function averageRating()
+{
+    return round($this->reviews()->avg('rating'), 1);
+}
+public function reviews()
+{
+    return $this->hasMany(\App\Models\Review::class);
+}
+>>>>>>> Stashed changes
 }
