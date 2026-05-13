@@ -9,57 +9,71 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    public function __construct()
+    /**
+     * Show all reviews for a product.
+     * Route: GET /products/{product}/reviews
+     */
+    public function index(Request $request, Product $product)
     {
-        $this->middleware('auth');
+        $query = Review::with('user')
+            ->where('product_id', $product->id);
+
+        // Filter by star rating
+        if ($request->filled('stars') && $request->stars !== 'all') {
+            $query->where('stars', $request->stars);
+        }
+
+        // Filter: with media (future — for now, just return all)
+        // Search keyword inside review body
+        if ($request->filled('search')) {
+            $query->where('body', 'like', '%' . $request->search . '%');
+        }
+
+        $reviews = $query->latest()->get();
+
+        $avgRating = Review::where('product_id', $product->id)->avg('stars') ?? 0;
+        $totalCount = Review::where('product_id', $product->id)->count();
+
+        return view('buyer.reviews', compact('product', 'reviews', 'avgRating', 'totalCount'));
     }
 
-    // Store a review
+    /**
+     * Store a new review.
+     * Route: POST /products/{product}/reviews
+     */
     public function store(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:1000',
+        $request->validate([
+            'stars' => 'required|integer|min:1|max:5',
+            'body'  => 'required|string|max:1000',
         ]);
 
-        // Check if user already reviewed this product
-        $existingReview = Review::where('user_id', Auth::id())
-                               ->where('product_id', $product->id)
-                               ->first();
+        // One review per buyer per product
+        $existing = Review::where('user_id', Auth::id())
+                          ->where('product_id', $product->id)
+                          ->first();
 
-        if ($existingReview) {
-            return back()->with('error', 'You have already reviewed this product');
+        if ($existing) {
+            return back()->with('error', 'You have already reviewed this product.');
         }
 
         Review::create([
-            'user_id' => Auth::id(),
+            'user_id'    => Auth::id(),
             'product_id' => $product->id,
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
-            'approved' => false, // Requires moderation
+            'stars'      => $request->stars,
+            'body'       => $request->body,
         ]);
 
-        return back()->with('success', 'Review submitted successfully!');
+        return back()->with('success', 'Review submitted! Thank you 🎉');
     }
 
-    // Get reviews for a product (API endpoint)
-    public function getProductReviews(Product $product)
+    /**
+     * Mark a review as helpful (+1).
+     * Route: POST /reviews/{review}/helpful
+     */
+    public function helpful(Review $review)
     {
-        $reviews = $product->approvedReviews()
-                          ->with('user')
-                          ->paginate(10);
-
-        return response()->json($reviews);
-    }
-
-    // Delete a review (by user or admin)
-    public function destroy(Review $review)
-    {
-        if (Auth::id() !== $review->user_id && !Auth::user()->is_admin) {
-            return back()->with('error', 'Unauthorized');
-        }
-
-        $review->delete();
-        return back()->with('success', 'Review deleted');
+        $review->increment('helpful');
+        return back();
     }
 }
