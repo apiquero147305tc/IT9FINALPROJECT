@@ -33,39 +33,8 @@ class User extends Authenticatable
     public function isSeller() { return $this->role === 'seller'; }
     public function isBuyer() { return $this->role === 'buyer'; }
 
-<<<<<<< HEAD
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isSeller()
-    {
-        return $this->role === 'seller';
-    }
-
-    public function isBuyer()
-    {
-        return $this->role === 'buyer';
-    }
-
-    /**
-     * Custom helper for University of Mindanao student logic
-     */
-    public function isStudent(): bool
-    {
-        return in_array($this->grade_level, ['High School', 'SHS', 'College']);
-    }
-
-    // --- RELATIONSHIPS ---
-
-    /**
-     * Seller Side: A seller has many products.
-     */
-=======
     // ✔ RELATIONSHIPS
 
->>>>>>> mergeTesting
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
@@ -75,16 +44,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'user_id');
     }
-<<<<<<< HEAD
+    public function favorites()
+{
+    return $this->belongsToMany(Product::class, 'favorites')
+                ->withTimestamps();
+}
 
-    /**
-     * Buyer Side: A buyer has many items in their cart.
-     * This links to the Cart model using the 'user_id' column.
-     */
-    public function cartItems()
-    {
-        return $this->hasMany(Cart::class);
-    }
-=======
->>>>>>> mergeTesting
+public function isFavorite($productId)
+{
+    return $this->favorites()->where('product_id', $productId)->exists();
+}
 }
