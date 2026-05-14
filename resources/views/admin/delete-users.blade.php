@@ -49,7 +49,7 @@
         <!-- TABLE HEADER -->
         <div class="p-4 border-b border-gray-800 flex justify-between items-center">
             <h2 class="text-lg font-semibold text-red-400">
-                All Users (Except Admin)
+                USERS
             </h2>
         </div>
 

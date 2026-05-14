@@ -11,6 +11,9 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, string $role): Response
     {
+        // =========================
+        // 1. CHECK LOGIN
+        // =========================
         if (!Auth::check()) {
             return redirect()->route('login');
         }
@@ -20,23 +23,32 @@ class RoleMiddleware
         $userRole = strtolower($user->role ?? '');
         $requiredRole = strtolower($role);
 
-        // 1. BLOCK ACCESS IF ROLE DOES NOT MATCH
+        // =========================
+        // 2. ROLE CHECK
+        // =========================
         if ($userRole !== $requiredRole) {
             abort(403, 'Unauthorized access');
         }
 
-        // 2. BLOCK IF USER IS BLOCKED (IMPORTANT FOR ADMIN SYSTEM)
-        if ($user->is_blocked) {
+        // =========================
+        // 3. BLOCKED USER CHECK
+        // =========================
+        if ($user->status === 'blocked') {
             Auth::logout();
-            abort(403, 'Your account has been blocked by admin.');
+            return redirect()->route('blocked');
         }
 
         // =========================
-    // 3. SELLER APPROVAL CHECK
-    // =========================
-    if ($userRole === 'seller' && $user->status !== 'approved') {
-        return redirect()->route('pending');
-    }
+        // 4. SELLER APPROVAL CHECK
+        // =========================
+        if (
+            $userRole === 'seller' &&
+            $user->status !== 'approved' &&
+            !$request->routeIs('pending')
+        ) {
+            return redirect()->route('pending');
+        }
+
         return $next($request);
     }
 }

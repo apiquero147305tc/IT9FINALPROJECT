@@ -89,4 +89,19 @@
     }
 </script>
 
+<!-- <div class="bg-white p-4 rounded-xl shadow mb-6">
+    <h2 class="text-lg font-bold mb-2">Notifications</h2>
+
+    @forelse($notifications as $note)
+
+        <div class="border-b py-2">
+            <h3 class="font-semibold">{{ $note->subject }}</h3>
+            <p class="text-gray-600">{{ $note->message }}</p>
+        </div>
+
+    @empty
+        <p class="text-gray-400">No notifications yet.</p>
+    @endforelse
+</div> -->
+
 </x-buyerDash>
