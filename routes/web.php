@@ -96,9 +96,6 @@ Route::middleware(['auth'])->group(function () {
     // 💬 MESSAGES
     //////////////////////////////////////////////////
 
-    Route::get('/messages', [MessageController::class, 'inbox'])
-        ->name('messages.inbox');
-
     Route::get('/messages/{userId}', [MessageController::class, 'chat'])
         ->name('messages.chat');
 
@@ -162,61 +159,81 @@ Route::middleware(['auth'])->group(function () {
     // 🟣 ADMIN
     //////////////////////////////////////////////////
 
-    Route::middleware(['auth', 'role:admin'])->group(function () {
+   Route::middleware(['auth', 'role:admin'])->group(function () {
 
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-            ->name('admin.dashboard');
+    //////////////////////////////////////////////////
+    // DASHBOARD
+    //////////////////////////////////////////////////
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+        ->name('admin.dashboard');
 
-        Route::get('/admin/users', [AdminController::class, 'allUsers'])
-            ->name('admin.users');
+    //////////////////////////////////////////////////
+    // USERS
+    //////////////////////////////////////////////////
+    Route::get('/admin/users', [AdminController::class, 'allUsers'])
+        ->name('admin.users');
 
-        Route::get('/admin/sellers', [AdminController::class, 'sellers'])
-            ->name('admin.sellers');
+    Route::get('/admin/sellers', [AdminController::class, 'sellers'])
+        ->name('admin.sellers');
 
-        Route::get('/admin/buyers', [AdminController::class, 'buyers'])
-            ->name('admin.buyers');
+    Route::get('/admin/buyers', [AdminController::class, 'buyers'])
+        ->name('admin.buyers');
 
-        Route::get('/admin/blocked', [AdminController::class, 'blockedUsers'])
-            ->name('admin.blocked');
+    Route::get('/admin/blocked', [AdminController::class, 'blockedUsers'])
+        ->name('admin.blocked');
 
-        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
-            ->name('admin.approve');
+    Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
+        ->name('admin.approve');
 
-        Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
-            ->name('admin.reject');
+    Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
+        ->name('admin.reject');
 
-        Route::post('/admin/block/{id}', [AdminController::class, 'block'])
-            ->name('admin.block');
+    Route::post('/admin/block/{id}', [AdminController::class, 'block'])
+        ->name('admin.block');
 
-        Route::post('/admin/unblock/{id}', [AdminController::class, 'unblock'])
-            ->name('admin.unblock');
+    Route::post('/admin/unblock/{id}', [AdminController::class, 'unblock'])
+        ->name('admin.unblock');
 
-        Route::get('/admin/settings', [AdminController::class, 'settings'])
-            ->name('admin.settings');
+    //////////////////////////////////////////////////
+    // CHAT / MESSAGES (FIXED)
+    //////////////////////////////////////////////////
 
-        Route::post('/admin/settings/update', [AdminController::class, 'updateSettings'])
-            ->name('admin.settings.update');
+    // inbox page (list users/messages)
+    Route::get('/admin/messages', [AdminController::class, 'messages'])
+    ->name('admin.messages');
 
-        Route::get('/admin/analytics', [AdminController::class, 'analytics'])->name('admin.analytics');
+Route::get('/admin/chat/{id}', [AdminController::class, 'adminChat'])
+    ->name('admin.chat');
 
-        Route::get('/admin/users/delete', [AdminController::class, 'deleteUsersPage'])
-            ->name('admin.users.delete.page');
-
-        Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])
-            ->name('admin.users.destroy');
-    });
-
-    Route::get('/admin/view-id/{id}', [AdminController::class, 'viewId']);
-    // pending
-    Route::get('/pending-approval', [AuthController::class, 'pending'])
-    ->name('pending');
-  
-    Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
-    ->name('admin.email');
+    //////////////////////////////////////////////////
+    // EMAIL SYSTEM (FIXED)
+    //////////////////////////////////////////////////
 
     Route::get('/admin/email/{id}', [AdminController::class, 'emailPage'])
-    ->name('admin.email.page');
+        ->name('admin.email.page');
 
     Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
-    ->name('admin.email.send');
+        ->name('admin.email.send');
+
+    //////////////////////////////////////////////////
+    // EXTRA
+    //////////////////////////////////////////////////
+
+    Route::get('/admin/view-id/{id}', [AdminController::class, 'viewId']);
+
+    Route::get('/admin/settings', [AdminController::class, 'settings'])
+        ->name('admin.settings');
+
+    Route::post('/admin/settings/update', [AdminController::class, 'updateSettings'])
+        ->name('admin.settings.update');
+
+    Route::get('/admin/analytics', [AdminController::class, 'analytics'])
+        ->name('admin.analytics');
+
+    Route::get('/admin/users/delete', [AdminController::class, 'deleteUsersPage'])
+        ->name('admin.users.delete.page');
+
+    Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])
+        ->name('admin.users.destroy');
+});
 });
