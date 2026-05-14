@@ -1,3 +1,4 @@
+@ -1,154 +0,0 @@
 <x-buyerDash>
 
 <div style="max-width: 1200px; margin: 0 auto;">
