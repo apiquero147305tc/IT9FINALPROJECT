@@ -65,4 +65,9 @@ class CartController extends Controller
 
         return back()->with('success', 'Removed from cart!');
     }
+    public function cartCount()
+    {
+        $count = Cart::where('user_id', Auth::id())->sum('quantity');
+        return response()->json(['count' => $count]);
+    }
 }

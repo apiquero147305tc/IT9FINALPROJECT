@@ -1,7 +1,5 @@
 <x-buyerDash>
 
-@section('title', 'Buyer Home - CraveCart')
-
 {{-- Category Menu --}}
 <div id="category-menu" style="display:none; background:white; padding:15px; border-radius:15px; position:absolute; right:5%; top:60px; box-shadow:0 5px 15px rgba(0,0,0,0.1); text-align:center; z-index: 100;">
     <p style="margin-top:0; font-weight:bold; color:#555;">Filter by Category</p>
@@ -91,5 +89,4 @@
     }
 </script>
 
-@endsection
 </x-buyerDash>

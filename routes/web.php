@@ -115,12 +115,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])
             ->name('buyer.home');
 
-            // 🛒 CART
+        // 🛒 CART
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
         Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
         Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
         Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-
+        
         // 💳 CHECKOUT
         Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
@@ -128,10 +128,14 @@ Route::middleware(['auth'])->group(function () {
         // 🧾 RECEIPT
         Route::get('/receipt/{order}', [OrderController::class, 'receipt'])->name('receipt');
 
-        // 💡 LENDING
-        Route::get('/lending', [LendingController::class, 'index'])->name('lending');
-        Route::post('/lending/apply', [LendingController::class, 'apply'])->name('lending.apply');
-        Route::post('/lending/repay/{loan}', [LendingController::class, 'repay'])->name('lending.repay');
+        // 💡 LENDING SYSTEM
+        Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
+        Route::get('/lending/request/{product}', [LendingController::class, 'create'])->name('lending.create');
+        Route::post('/lending/store', [LendingController::class, 'store'])->name('lending.store');
+        Route::post('/lending/approve/{lending}', [LendingController::class, 'approve'])->name('lending.approve');
+        Route::post('/lending/reject/{lending}', [LendingController::class, 'reject'])->name('lending.reject');
+        Route::post('/lending/return/{lending}', [LendingController::class, 'returnItem'])->name('lending.return');
+        Route::post('/lending/release-collateral/{lending}', [LendingController::class, 'releaseCollateral'])->name('lending.release-collateral');
     });
 
     //////////////////////////////////////////////////
