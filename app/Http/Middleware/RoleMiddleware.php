@@ -25,18 +25,25 @@ class RoleMiddleware
         }
 
         $user = Auth::user();
+        $userRole = strtolower($user->role ?? '');
+        $requiredRole = strtolower($role);
 
         // 2. SECURITY CHECK: BLOCKED STATUS
-        if ($user->is_blocked) {
+        // Checks both is_blocked boolean and status string for safety
+        if ($user->is_blocked || $user->status === 'blocked') {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect()->route('login')->withErrors(['email' => 'Your account has been suspended.']);
+            
+            // Redirect to a specific blocked page if it exists, otherwise login
+            return Route::has('blocked') 
+                ? redirect()->route('blocked') 
+                : redirect()->route('login')->withErrors(['email' => 'Your account has been suspended.']);
         }
 
         // 3. ACCOUNT STATUS CHECK: PENDING APPROVAL
-        // We bypass this check if the user is an admin or is already headed to the pending page.
-        if ($user->role !== 'admin' && $user->status === 'pending') {
+        // We bypass this for Admins. If a non-admin is pending, redirect them.
+        if ($userRole !== 'admin' && $user->status === 'pending') {
             if (!$request->routeIs('pending')) {
                 return redirect()->route('pending');
             }
@@ -44,16 +51,14 @@ class RoleMiddleware
         }
 
         // 4. ROLE-BASED ACCESS CONTROL (RBAC)
-        $userRole = strtolower($user->role ?? '');
-        $requiredRole = strtolower($role);
-
-        // Admins are granted "God Mode" and can bypass role checks.
-        // Otherwise, the user role must match the requirement.
+        // Admins are granted "God Mode" and can bypass specific role requirements.
         if ($userRole !== 'admin' && $userRole !== $requiredRole) {
-            // Safety: Don't abort if they are already on the pending page
-            if (!$request->routeIs('pending')) {
-                abort(403, 'Unauthorized access.');
+            // Check if they are already headed to the pending page to avoid loops
+            if ($request->routeIs('pending')) {
+                return $next($request);
             }
+            
+            abort(403, 'Unauthorized access.');
         }
 
         return $next($request);

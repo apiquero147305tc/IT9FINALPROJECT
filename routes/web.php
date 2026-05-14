@@ -62,6 +62,12 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'loginPage')->name('login');
     Route::post('/login', 'login')->name('login.post');
     Route::post('/logout', 'logout')->name('logout');
+  Route::get('/blocked', function () {
+    return view('auth.blocked');
+})->name('blocked');
+
+Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
+Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
 
     Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
 
@@ -136,4 +142,17 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/admin/user/{id}', 'destroyUser')->name('admin.user.destroy');
         });
     });
+    Route::get('/admin/view-id/{id}', [AdminController::class, 'viewId']);
+    // pending
+    Route::get('/pending-approval', [AuthController::class, 'pending'])
+    ->name('pending');
+  
+    Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
+    ->name('admin.email');
+
+    Route::get('/admin/email/{id}', [AdminController::class, 'emailPage'])
+    ->name('admin.email.page');
+
+    Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
+    ->name('admin.email.send');
 });

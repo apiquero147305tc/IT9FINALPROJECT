@@ -32,7 +32,6 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // 1. Basic Common Validation Rules
         $rules = [
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
@@ -40,7 +39,6 @@ class AuthController extends Controller
             'role'     => 'required|in:buyer,seller',
         ];
 
-        // 2. Conditional Role-Based Rules
         if ($request->role === 'buyer') {
             $rules['grade_level']    = 'required|string';
             $rules['monthly_budget'] = 'required|string';
@@ -49,30 +47,27 @@ class AuthController extends Controller
             $rules['shop_name']      = 'required|string|max:255';
             $rules['age']             = 'required|numeric|min:18';
             $rules['contact_number'] = 'required|digits:11';
-            $rules['valid_id']       = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048'; // Added max size
+            $rules['valid_id']       = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         $request->validate($rules);
 
-        // 3. Handle Seller File Upload
         $filePath = null;
         if ($request->hasFile('valid_id')) {
             $filePath = $request->file('valid_id')->store('valid_ids', 'public');
         }
 
-        // 4. Process Budget String (Formatting for consistency)
         $finalBudget = $request->monthly_budget;
         if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
             $finalBudget = "₱" . number_format($request->custom_budget, 2);
         }
 
-        // 5. Create User
         User::create([
             'name'           => $request->name,
             'email'          => $request->email,
             'password'       => Hash::make($request->password),
             'role'           => $request->role,
-            'status'         => 'pending', // Requires admin approval
+            'status'         => 'pending', 
             'grade_level'    => $request->grade_level,
             'monthly_budget' => $finalBudget,
             'shop_name'      => $request->shop_name,
@@ -97,18 +92,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // 🛡️ Security Check: Approved Status
+            // Check if account is blocked
+            if ($user->is_blocked) {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Your account has been suspended.']);
+            }
+
+            // Check for admin approval (mainly for sellers)
             if ($user->status !== 'approved') {
                 Auth::logout();
                 return redirect()->route('pending')->withErrors([
                     'email' => 'Your account is currently waiting for admin approval.'
                 ]);
-            }
-
-            // 🛡️ Security Check: Blocked Status
-            if ($user->is_blocked) {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Your account has been suspended.']);
             }
 
             $request->session()->regenerate();

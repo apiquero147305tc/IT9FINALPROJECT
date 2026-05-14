@@ -16,7 +16,6 @@
             color: #0f172a;
         }
 
-        /* ✅ Branded Solid Orange Navbar */
         .nav-branded { 
             background-color: #fb923c; 
             border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -62,19 +61,16 @@
 
         <div class="flex items-center gap-8">
             <div class="hidden md:flex items-center gap-8 text-xs font-black uppercase tracking-widest text-orange-950/80">
-                <!-- ✅ Notifications (Linked to Orders) -->
                 <a href="{{ route('seller.orders') }}" class="relative hover:text-white transition flex items-center gap-2">
                     Notifications
                     @if($notifCount > 0)
                         <span class="flex h-2 w-2 rounded-full bg-white animate-notif"></span>
                     @endif
                 </a>
-                <!-- ✅ Lending (Linked to Inbox) -->
                 <a href="{{ route('messages.inbox') }}" class="hover:text-white transition">Lending</a>
             </div>
             
             <div class="flex items-center gap-4 pl-6 border-l border-orange-900/10">
-                <!-- ✅ Security Check for Profile Route -->
                 @if(Route::has('seller.profile'))
                     <a href="{{ route('seller.profile') }}" 
                        class="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-[11px] font-black border border-white/20 uppercase text-orange-950 hover:bg-white/60 hover:scale-105 transition-all shadow-sm"
@@ -190,7 +186,8 @@
 
     <!-- ✅ Floating Action Button -->
     <a href="{{ route('messages.inbox') }}" class="fixed bottom-8 right-8 bg-orange-600 text-white flex items-center gap-3 px-8 py-5 rounded-full shadow-2xl hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest z-50">
-        <span class="text-lg">💬</span> Lending Inbox
+        <span class="text-lg">💬</span> Messages
     </a>
+
 </body>
 </html>

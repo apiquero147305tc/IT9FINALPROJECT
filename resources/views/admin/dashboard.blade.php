@@ -177,11 +177,12 @@
 
         <table>
 
-            <thead>
+           <thead>
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Shop Name</th>
+                    <th>Age</th>
                     <th>Contact</th>
                     <th>Valid ID</th>
                     <th>Status</th>
@@ -198,6 +199,7 @@
                     <td>{{ $seller->name }}</td>
                     <td>{{ $seller->email }}</td>
                     <td>{{ $seller->shop_name }}</td>
+                    <td>{{ $seller->age }}</td>
                     <td>{{ $seller->contact_number }}</td>
 
                     <td>
@@ -326,8 +328,8 @@
 
                         @endif
 
-                        {{-- EMAIL --}}
-                        <a href="mailto:{{ $user->email }}" class="btn-red">
+                       <a href="{{ route('admin.email.page', $user->id) }}"
+                        class="btn-red">
                             <i class="fa-solid fa-envelope"></i>
                             Email
                         </a>
