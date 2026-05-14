@@ -45,10 +45,13 @@
                 Users
             </a>
 
-            <a href="#complaints">
+         <a href="{{ route('admin.messages') }}"
+            class="block p-4 hover:bg-gray-100 border-b">
+
                 <i class="fa-solid fa-envelope"></i>
                 Complaints & Messages
-            </a>
+
+         </a>
 
             <a href="{{ route('admin.analytics') }}">
             <i class="fa-solid fa-chart-line"></i>
@@ -397,46 +400,64 @@
 </section>
 
         {{-- COMPLAINTS --}}
-        <section id="complaints">
+       <section id="complaints">
 
-            <div class="section-title">
-                <h2>Complaints & Messages</h2>
-            </div>
+    <div class="section-title">
+        <h2>Messages & Complaints Inbox</h2>
+    </div>
 
-            <div class="complaints-grid">
+    <div class="complaints-grid">
 
-                @foreach($complaints as $c)
+        @foreach($complaints as $c)
 
-                <div class="complaint-card">
+        <div class="complaint-card border rounded-xl p-4 bg-white shadow">
 
-                    <div class="complaint-top">
+            {{-- HEADER --}}
+            <div class="flex justify-between items-center mb-3">
 
-                        <div>
-                            <h3>{{ $c->subject }}</h3>
-                            <small>{{ $c->email }}</small>
-                        </div>
-
-                        <div class="message-icon">
-                            <i class="fa-solid fa-message"></i>
-                        </div>
-
-                    </div>
-
-                    <p>{{ $c->message }}</p>
-
-                    <a href="mailto:{{ $c->email }}" class="reply-btn">
-                        <i class="fa-solid fa-reply"></i>
-                        Reply
-                    </a>
-
+                <div>
+                    <h3 class="font-bold text-lg">{{ $c->subject }}</h3>
+                    <p class="text-sm text-gray-500">{{ $c->email }}</p>
                 </div>
 
-                @endforeach
+                <i class="fa-solid fa-message text-red-500"></i>
 
             </div>
 
-        </section>
+            {{-- MESSAGE --}}
+            <p class="text-gray-700 mb-4">
+                {{ $c->message }}
+            </p>
 
+            {{-- ACTIONS --}}
+            <div class="flex gap-2">
+
+                {{-- OPEN CHAT (IN-APP MESSENGER) --}}
+                <a href="{{ route('admin.chat.user', $c->email) }}"
+                   class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700">
+
+                    <i class="fa-solid fa-comments mr-1"></i>
+                    Open Chat
+                </a>
+
+                {{-- EMAIL FALLBACK --}}
+                <a href="mailto:{{ $c->email }}"
+                   class="bg-gray-200 px-4 py-2 rounded-lg text-sm hover:bg-gray-300">
+
+                    <i class="fa-solid fa-envelope mr-1"></i>
+                    Email
+
+                </a>
+
+            </div>
+
+        </div>
+
+        @endforeach
+
+    </div>
+
+</section>
     </main>
 
 </div>

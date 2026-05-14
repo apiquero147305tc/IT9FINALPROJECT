@@ -110,4 +110,23 @@ public function sellerInbox()
 
     return view('messages.seller-inbox', compact('users'));
 }
+
+public function adminChat($email)
+{
+    $user = User::where('email', $email)->firstOrFail();
+
+    $messages = Message::where(function ($q) use ($user) {
+        $q->where('sender_id', Auth::id())
+          ->where('receiver_id', $user->id);
+    })
+    ->orWhere(function ($q) use ($user) {
+        $q->where('sender_id', $user->id)
+          ->where('receiver_id', Auth::id());
+    })
+    ->orderBy('created_at')
+    ->get();
+
+    return view('admin.chat', compact('user', 'messages'));
+}
+
 }

@@ -5,135 +5,218 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Complaint;
+use App\Models\Message;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\AdminUserEmail;
-use App\Models\Notification;
-
-
 
 class AdminController extends Controller
 {
-    /**
-     * ADMIN DASHBOARD
-     * Resolves the "undefined method" error from image_cb6322.png.
-     */
+    //////////////////////////////////////////////////
+    // DASHBOARD
+    //////////////////////////////////////////////////
     public function dashboard()
     {
-        $stats = [
-            'pending_users'    => User::where('status', 'pending')->count(),
-            'total_products'   => Product::count(),
-            'total_complaints' => Complaint::where('status', 'open')->count(),
-        ];
+        $users = User::where('role', '!=', 'admin')->latest()->get();
 
-        return view('admin.dashboard', compact('stats'));
+        return view('admin.dashboard', [
+            'users' => $users,
+            'totalSellers' => User::where('role', 'seller')->count(),
+            'totalBuyers' => User::where('role', 'buyer')->count(),
+            'pendingUsers' => User::where('role', 'seller')->where('status', 'pending')->get(),
+            'complaints' => Complaint::latest()->get(),
+        ]);
     }
 
-    /**
-     * ANALYTICS ENGINE
-     * Provides a breakdown of user types and status.
-     */
+    //////////////////////////////////////////////////
+    // USER MANAGEMENT
+    //////////////////////////////////////////////////
+    public function allUsers()
+    {
+        $users = User::where('role', '!=', 'admin')->latest()->get();
+        return view('admin.users', compact('users'));
+    }
+
+    public function sellers()
+    {
+        $users = User::where('role', 'seller')->latest()->get();
+        return view('admin.sellers', compact('users'));
+    }
+
+    public function buyers()
+    {
+        $users = User::where('role', 'buyer')->latest()->get();
+        return view('admin.buyers', compact('users'));
+    }
+
+    public function blockedUsers()
+    {
+        $users = User::where('is_blocked', 1)
+            ->where('role', '!=', 'admin')
+            ->latest()
+            ->get();
+
+        return view('admin.blocked', compact('users'));
+    }
+
+    //////////////////////////////////////////////////
+    // APPROVAL SYSTEM
+    //////////////////////////////////////////////////
+    public function approveUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'approved';
+        $user->save();
+
+        return back();
+    }
+
+    public function rejectUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'rejected';
+        $user->save();
+
+        return back();
+    }
+
+    //////////////////////////////////////////////////
+    // BLOCK SYSTEM
+    //////////////////////////////////////////////////
+    public function block($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_blocked = 1;
+        $user->save();
+
+        return back();
+    }
+
+    public function unblock($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_blocked = 0;
+        $user->save();
+
+        return back();
+    }
+
+    //////////////////////////////////////////////////
+    // SETTINGS
+    //////////////////////////////////////////////////
+    public function settings()
+    {
+        return view('admin.settings', [
+            'admin' => Auth::user()
+        ]);
+    }
+
+    public function updateSettings(Request $request) { $admin = User::find(Auth::id()); $request->validate([ 'name' => 'required', 'email' => 'required|email', 'password' => 'nullable|min:6|confirmed' ]); $admin->name = $request->name; $admin->email = $request->email; if ($request->filled('password')) { $admin->password = Hash::make($request->password); } $admin->save(); return back()->with('success', 'Settings updated successfully.'); }
+
+    //////////////////////////////////////////////////
+    // ANALYTICS
+    //////////////////////////////////////////////////
     public function analytics()
     {
-        $data = [
-            'totalUsers' => User::where('role', '!=', 'admin')->count(),
-            'sellers'    => User::where('role', 'seller')->count(),
-            'buyers'     => User::where('role', 'buyer')->count(),
-            'blocked'    => User::where('is_blocked', 1)->count(),
-        ];
+        $users = User::all();
 
-        return view('admin.analytics', $data);
+        return view('admin.analytics', [
+            'totalUsers' => $users->count(),
+            'sellers' => $users->where('role', 'seller')->count(),
+            'buyers' => $users->where('role', 'buyer')->count(),
+            'blocked' => $users->where('is_blocked', 1)->count(),
+        ]);
     }
 
-    /**
-     * DELETE USERS PAGE
-     * Lists all non-admin users for management.
-     */
+    //////////////////////////////////////////////////
+    // DELETE USERS
+    //////////////////////////////////////////////////
     public function deleteUsersPage()
     {
         $users = User::where('role', '!=', 'admin')->get();
         return view('admin.delete-users', compact('users'));
     }
 
-    /**
-     * ACCOUNT DELETION
-     * Purges a user from the database.
-     */
     public function destroyUser($id)
     {
         $user = User::findOrFail($id);
 
-        // Security check: Prevent accidental admin suicide
         if ($user->role === 'admin') {
-            return back()->with('error', 'Critical: Admin account cannot be deleted.');
+            return back();
         }
 
-        try {
-            $user->delete();
-            return back()->with('success', 'Account successfully purged from system.');
-        } catch (\Exception $e) {
-            // Catches foreign key constraint violations
-            return back()->with('error', 'Deletion failed: User has active listings or reports that must be handled first.');
-        }
+        $user->delete();
+
+        return back();
     }
 
-    /**
-     * VIEW SELLER ID
-     * View the ID/Documents uploaded by a seller for verification.
-     */
+    //////////////////////////////////////////////////
+    // VIEW ID
+    //////////////////////////////////////////////////
     public function viewId($id)
     {
         $user = User::findOrFail($id);
         return view('admin.view-id', compact('user'));
     }
 
-    $user->delete();
+    //////////////////////////////////////////////////
+    // EMAIL SYSTEM
+    //////////////////////////////////////////////////
+    public function emailPage($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.email-compose', compact('user'));
+    }
 
-    return back()->with('success', 'User deleted successfully.');
-}
+    public function sendEmail(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
-public function deleteUsersPage()
+        Notification::create([
+            'user_id' => $user->id,
+            'subject' => $request->subject,
+            'message' => $request->message,
+        ]);
+
+        Mail::raw($request->message, function ($mail) use ($user, $request) {
+            $mail->to($user->email)
+                ->subject($request->subject);
+        });
+
+        return back();
+    }
+
+    //////////////////////////////////////////////////
+    // MESSAGES / CHAT
+    //////////////////////////////////////////////////
+
+    // INBOX (NO $user HERE)
+    public function messages()
 {
-    $users = User::where('role', '!=', 'admin')->get();
+    $users = User::whereIn('role', ['buyer', 'seller'])->latest()->get();
+    $complaints = Complaint::latest()->get();
 
-    return view('admin.delete-users', compact('users'));
+    return view('admin.messages', compact('users', 'complaints'));
 }
 
-public function viewId($id)
+    // CHAT (HAS $user)
+    public function adminChat($id)
 {
     $user = User::findOrFail($id);
-    return view('admin.view-id', compact('user'));
-}
 
-public function sendEmail(Request $request, $id)
-{
-    $user = User::findOrFail($id);
+    $messages = Message::where(function ($q) use ($user) {
+        $q->where('sender_id', Auth::id())
+          ->where('receiver_id', $user->id);
+    })
+    ->orWhere(function ($q) use ($user) {
+        $q->where('sender_id', $user->id)
+          ->where('receiver_id', Auth::id());
+    })
+    ->orderBy('created_at')
+    ->get();
 
-    // 1. Save notification (THIS is what shows in dashboard)
-    Notification::create([
-        'user_id' => $user->id,
-        'subject' => $request->subject,
-        'message' => $request->message,
-    ]);
-
-    // 2. OPTIONAL: real email
-    Mail::raw($request->message, function ($mail) use ($user, $request) {
-        $mail->to($user->email)
-             ->subject($request->subject);
-    });
-
-    return redirect()->route('admin.dashboard')
-        ->with('success', 'Email sent + notification stored.');
-}
-
-public function emailPage($id)
-{
-    $user = User::findOrFail($id);
-
-    return view('admin.email-compose', compact('user'));
+    return view('admin.chat', compact('user', 'messages'));
 }
 }
