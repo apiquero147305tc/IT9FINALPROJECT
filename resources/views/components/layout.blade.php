@@ -145,6 +145,21 @@
     <div class="footer-bottom">
         <p>© {{ date('Y') }} CraveCart. All rights reserved.</p>
     </div>
+
+        {{-- Floating Cart Button (Buyer Only) --}}
+    @auth
+        @if(auth()->user()->role === 'buyer')
+            <a href="{{ route('cart.index') }}" id="floatingCartBtn">
+                🛒
+                <span id="cartCount">
+                    {{ \App\Models\Cart::where('user_id', auth()->id())->sum('quantity') ?? 0 }}
+                </span>
+            </a>
+        @endif
+    @endauth
+
+</body>
+</html>
 </footer>
 </body>
 </html>
