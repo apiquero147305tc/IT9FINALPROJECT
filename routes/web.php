@@ -11,15 +11,45 @@ use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
+<<<<<<< HEAD
     // Fetches from DB; falls back to empty collection if none exist
     $products = Product::latest()->take(4)->get(); 
+=======
+    $products = [
+        ['name' => 'Rice (5kg)', 'price' => 250, 'image' => '/images/rice.jpg'],
+        ['name' => 'Cooking Oil', 'price' => 120, 'image' => '/images/oil.jpg'],
+        ['name' => 'Canned Goods', 'price' => 80, 'image' => '/images/canned.jpg'],
+        ['name' => 'Laundry Detergent', 'price' => 150, 'image' => '/images/detergent.jpg'],
+    ];
+>>>>>>> origin/Kino
     return view('home', compact('products'));
 })->name('home');
 
+<<<<<<< HEAD
+=======
+Route::get('/home', function () {
+    return redirect()->route('buyer.home');
+});
+
+//////////////////////////////////////////////////
+// 🛍 PUBLIC SHOP
+//////////////////////////////////////////////////
+
+Route::get('/shop', function () {
+    return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
+})->name('shop');
+
+//////////////////////////////////////////////////
+// 🧾 STATIC PAGES
+//////////////////////////////////////////////////
+
+Route::get('/bestSeller', fn () => view('bestSeller'))->name('bestSeller');
+>>>>>>> origin/Kino
 Route::get('/about', fn () => view('about'))->name('about');
 Route::get('/contact', fn () => view('contact'))->name('contact');
 
@@ -65,12 +95,63 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
+<<<<<<< HEAD
     // --- 💬 MESSAGING ---
     Route::controller(MessageController::class)->group(function () {
         Route::get('/messages', 'inbox')->name('messages.inbox');
         Route::get('/messages/{userId}', 'chat')->name('messages.chat');
         Route::post('/messages/send', 'send')->name('messages.send');
         Route::get('/messages/{userId}/fetch', 'fetchMessages');
+=======
+    //////////////////////////////////////////////////
+    // 💬 MESSAGES
+    //////////////////////////////////////////////////
+
+    Route::get('/messages', [MessageController::class, 'inbox'])
+        ->name('messages.inbox');
+
+    Route::get('/messages/{userId}', [MessageController::class, 'chat'])
+        ->name('messages.chat');
+
+    Route::post('/messages/send', [MessageController::class, 'send'])
+        ->name('messages.send');
+
+    Route::get('/messages/{userId}/fetch', [MessageController::class, 'fetchMessages']);
+
+    //////////////////////////////////////////////////
+    // 🛒 ORDERS
+    //////////////////////////////////////////////////
+
+    Route::post('/orders', [OrderController::class, 'store'])
+        ->name('orders.store');
+
+    //////////////////////////////////////////////////
+    // 🟢 BUYER
+    //////////////////////////////////////////////////
+
+    Route::middleware(['role:buyer'])->group(function () {
+
+        Route::get('/buyer/home', [BuyerController::class, 'index'])
+            ->name('buyer.home');
+
+            // 🛒 CART
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
+        Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+        // 💳 CHECKOUT
+        Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+        // 🧾 RECEIPT
+        Route::get('/receipt/{order}', [OrderController::class, 'receipt'])->name('receipt');
+
+        // 💡 LENDING
+        Route::get('/lending', [LendingController::class, 'index'])->name('lending');
+        Route::post('/lending/apply', [LendingController::class, 'apply'])->name('lending.apply');
+        Route::post('/lending/repay/{loan}', [LendingController::class, 'repay'])->name('lending.repay');
+>>>>>>> origin/Kino
     });
 
     // --- 🛒 BUYER HUB ---

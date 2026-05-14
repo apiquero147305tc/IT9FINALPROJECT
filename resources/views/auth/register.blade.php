@@ -137,7 +137,7 @@
             </div>
             
             <p class="text-center mt-10 text-slate-300 font-black uppercase text-[9px] tracking-[0.4em]">
-                System Architecture // Alindajao Group © 2026
+                
             </p>
         </div>
     </section>

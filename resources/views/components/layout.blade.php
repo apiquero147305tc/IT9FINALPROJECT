@@ -147,7 +147,7 @@
     
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 mt-32 border-t border-white/5 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
         <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em]">
-            © {{ date('Y') }} CraveCart Logic. Built by Alindajao Group.
+            © {{ date('Y') }} 
         </p>
         <div class="flex gap-10">
             <a href="#" class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white no-underline transition-colors">Privacy</a>

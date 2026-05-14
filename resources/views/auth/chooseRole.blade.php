@@ -62,7 +62,7 @@
 
             <footer class="mt-16 flex flex-col items-center gap-4">
                 <p class="text-slate-400 font-bold uppercase text-[11px] tracking-[0.2em]">
-                    System Architecture // Alindajao Group
+                    
                 </p>
                 <a href="{{ route('login') }}" class="text-slate-900 font-black no-underline border-b-2 border-orange-600 transition-all hover:text-orange-600">
                     Existing Account? Log in
