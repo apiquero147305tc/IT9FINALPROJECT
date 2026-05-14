@@ -27,8 +27,8 @@
 
                 <div class="pt-8 border-t border-slate-100">
                     <p class="text-slate-400 font-bold uppercase text-[11px] tracking-[0.3em]">
-                        Student Project Architecture <br>
-                        <span class="text-slate-900">Alindajao Group © 2026</span>
+                        <br>
+                        <span class="text-slate-900"> © 2026</span>
                     </p>
                 </div>
             </div>
@@ -59,13 +59,13 @@
                         <textarea id="message" name="message" rows="4" required placeholder=" " 
                             class="peer w-full bg-transparent border-b-2 border-slate-200 py-2 outline-none focus:border-orange-600 transition-colors font-bold text-slate-900 resize-none"></textarea>
                         <label for="message" class="absolute left-0 -top-6 text-[10px] font-black uppercase tracking-widest text-slate-400 peer-placeholder-shown:text-sm peer-placeholder-shown:top-2 peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-orange-600 transition-all">
-                            Message Logic
+                            Message
                         </label>
                     </div>
 
                     <div class="pt-4">
                         <button type="submit" class="group flex items-center justify-between w-full bg-slate-900 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95">
-                            Initialize Message
+                            Send
                             <i class="fa-solid fa-paper-plane group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform"></i>
                         </button>
                     </div>

@@ -26,7 +26,7 @@
             </h1>
         </div>
         <a href="{{ route('seller.dash') }}" class="text-[10px] font-black uppercase tracking-widest text-orange-950 hover:text-white transition">
-            Back to Studio
+            Back to Dashboard
         </a>
     </nav>
 

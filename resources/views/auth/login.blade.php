@@ -6,7 +6,7 @@
 
         <div class="relative z-10 w-full max-w-[450px]">
             <div class="text-center mb-10">
-                <div class="inline-flex bg-orange-600 p-3 rounded-2xl shadow-xl shadow-orange-200 mb-6 rotate-3">
+                <div class="inline-flex bg-orange-600 p-3 rounded-2xl shadow-xl shadow-orange-200 mb-6 rotate-3 group hover:rotate-0 transition-transform duration-500">
                     <span class="text-2xl">🛒</span>
                 </div>
                 <h2 class="text-4xl font-black uppercase tracking-tighter text-slate-900">
@@ -21,7 +21,7 @@
                     <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl">
                         <ul class="list-none p-0 m-0">
                             @foreach ($errors->all() as $error)
-                                <li class="text-red-600 text-xs font-bold uppercase tracking-tight">{{ $error }}</li>
+                                <li class="text-red-600 text-[10px] font-black uppercase tracking-tight">{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -31,15 +31,15 @@
                     @csrf
 
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                        <label for="email" class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
                             class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-semibold focus:ring-2 focus:ring-orange-600 outline-none transition-all placeholder-slate-300"
                             placeholder="name@example.com">
                     </div>
 
                     <div class="space-y-2">
                         <div class="flex justify-between items-center px-2">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
+                            <label for="loginPassword" class="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
                             <a href="#" class="text-[9px] font-black uppercase tracking-widest text-orange-600 hover:text-slate-900 transition-colors no-underline">Forgot?</a>
                         </div>
                         
@@ -56,8 +56,8 @@
                     </div>
 
                     <div class="flex items-center gap-2 px-2">
-                        <input type="checkbox" id="remember" class="accent-orange-600">
-                        <label for="remember" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer">Keep me signed in</label>
+                        <input type="checkbox" name="remember" id="remember" class="accent-orange-600 cursor-pointer">
+                        <label for="remember" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer select-none">Keep me signed in</label>
                     </div>
 
                     <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95 border-none cursor-pointer mt-4">
@@ -68,7 +68,7 @@
                 <div class="mt-10 pt-8 border-t border-slate-50 text-center">
                     <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest leading-loose">
                         New to the Platform? <br>
-                        <a href="{{ route('register') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1">Create Account</a>
+                        <a href="{{ route('register') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1 font-black">Create Account</a>
                     </p>
                 </div>
             </div>

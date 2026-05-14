@@ -1,81 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>@yield('title', 'CraveCart')</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>CraveCart | Shop</title>
+    <style>
+        /* Base Colors & Layout */
+        body { background: #f3e3cb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 50px; }
+        
+        /* Navbar Styling - Matches image_784994.png exactly */
+        nav { 
+            background: #dd0d22; 
+            padding: 10px 5%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; /* This pushes the right side to the right */
+            color: white; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-right-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-links { 
+            display: flex; 
+            gap: 15px; 
+            align-items: center;
+        }
+        
+        .nav-links a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+        }
+
+        /* Search Input Fix */
+        .search-box {
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            width: 180px;
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* PRODUCT CARD FIX: This prevents the 'Add to Cart' button from being long */
+        .product-container {
+            padding: 20px 5%;
+        }
+
+        .product-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 20px; 
+            text-align: center; 
+            width: 180px; /* Limits width to match image_784994.png */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .add-to-cart-btn {
+            background: #ff5100;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%; /* Fills only the 180px card, not the whole screen */
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-{{-- BUYER NAVBAR --}}
-<nav class="navbar" style="background: linear-gradient(to right, #dd0d22, #ff6a00); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-    
-    {{-- Logo --}}
-    <div class="logo">
-        <a href="{{ route('buyer.home') }}" style="color: white; text-decoration: none; font-size: 1.5rem; font-weight: bold;">
-            🛒 CraveCart
-        </a>
-    </div>
+<nav>
+    <!-- LEFT: Logo -->
+    <a href="{{ route('buyer.home') }}" style="text-decoration:none; color:white;">
+        <h2 style="margin:0;">🛒 CraveCart</h2>
+    </a>
 
-    {{-- Search --}}
-    <div style="flex: 1; max-width: 400px; margin: 0 20px;">
-        <input type="text" placeholder="Search..." style="width: 100%; padding: 10px 15px; border-radius: 25px; border: none; outline: none;">
-    </div>
+    <!-- RIGHT: Controls -->
+    <div class="nav-right-container">
+        <!-- SEARCH -->
+        <form action="{{ route('buyer.home') }}" method="GET" style="display:flex; align-items:center; gap:8px;">
+            <input type="text" name="search" class="search-box" placeholder="Search..." value="{{ request('search') }}">
+            <button type="button" onclick="toggleFilter()" style="background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center;">📂</button>
+        </form>
 
-    {{-- Right Menu --}}
-    <div style="display: flex; align-items: center; gap: 20px;">
-        
-        {{-- SmartBudget --}}
-        <a href="{{ route('buyer.home') }}" style="color: white; text-decoration: none; font-weight: 500;">
-            📁 SmartBudget
-        </a>
+        <div class="nav-links">
+            <a href="{{ route('buyer.smartbudgetcontrol') }}">SmartBudget</a> 
+            <a href="#">Lending</a>
+            <a href="{{ route('cart.index') }}">Cart {{ auth()->user()->cartItems->count() }}</a>
+        </div>
 
-        {{-- Lending --}}
-        <a href="{{ route('lending') }}" style="color: white; text-decoration: none; font-weight: 500;">
-            💡 Lending
-        </a>
-
-        {{-- Cart --}}
-        <a href="{{ route('cart.index') }}" style="color: white; text-decoration: none; font-weight: 500; position: relative;">
-            🛒 Cart 
-            <span style="background: #feb207; color: #dd0d22; padding: 2px 8px; border-radius: 50%; font-size: 0.8rem; font-weight: bold;">
-                {{ \App\Models\Cart::where('user_id', auth()->id())->sum('quantity') ?? 0 }}
-            </span>
-        </a>
-
-        {{-- Logout --}}
-        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
             @csrf
-            <button type="submit" style="background: white; color: #dd0d22; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold;">
-                Logout
-            </button>
+            <button type="submit" class="logout-btn">Logout</button>
         </form>
     </div>
 </nav>
+<div id="chatBox" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+">
+    
+    <div style="padding:10px; background:#dd0d22; color:white;">
+        💬 Chat
+        <span onclick="closeChat()" style="float:right; cursor:pointer;">✖</span>
+    </div>
 
-{{-- MAIN CONTENT --}}
-<main style="background: #f3e3cb; min-height: calc(100vh - 200px); padding: 30px;">
+    <div id="chatMessages" style="flex:1; padding:10px; overflow-y:auto;">
+        <!-- messages load here -->
+    </div>
+
+    <form id="chatForm" style="display:flex; border-top:1px solid #eee;">
+        <input type="text" id="messageInput" placeholder="Type..." style="flex:1; border:none; padding:10px;">
+        <button type="submit" style="background:#dd0d22; color:white; border:none; padding:10px;">Send</button>
+    </form>
+
+</div>
+
+<!-- This wrapper ensures content doesn't stretch full-width -->
+<div class="product-container">
     {{ $slot }}
-</main>
+</div>
 
-{{-- FOOTER --}}
-<footer style="background: #111; color: white; padding: 40px 30px; text-align: center;">
-    <div style="display: flex; justify-content: space-around; max-width: 800px; margin: 0 auto;">
-        <div>
-            <h3>🛒 CraveCart</h3>
-            <p>Your one-stop shop for everyday essentials.</p>
-        </div>
-        <div>
-            <h4>Contact</h4>
-            <p>Email: support@cravecart.com</p>
-            <p>Phone: +63 9XX XXX XXXX</p>
-        </div>
-    </div>
-    <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
-        <p>© {{ date('Y') }} CraveCart. All rights reserved.</p>
-    </div>
-</footer>
+<x-messui/>
 
 </body>
 </html>

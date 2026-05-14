@@ -1,94 +1,82 @@
-<x-buyerDash>
-
-<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-
-    <h1 style="color: #dd0d22; margin-bottom: 25px;">🛒 My Cart</h1>
-
-    @if(session('success'))
-        <div style="background: #d4edda; color: #155724; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px;">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(count($cartItems) > 0)
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
-            
-            {{-- Cart Items --}}
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                @foreach($cartItems as $item)
-                <div style="display: flex; align-items: center; gap: 20px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                    
-                    <img src="{{ $item->product->image ?? '/images/placeholder.jpg' }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
-                    
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0 0 5px; color: #1f2937; font-size: 1.1rem;">{{ $item->product->name }}</h3>
-                        <p style="color: #dd0d22; font-weight: bold; font-size: 1.1rem; margin: 0;">₱{{ number_format($item->product->price, 2) }}</p>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <form action="{{ route('cart.update', $item->id) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" name="quantity" value="{{ $item->quantity - 1 }}" style="width: 35px; height: 35px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer;" {{ $item->quantity <= 1 ? 'disabled' : '' }}>-</button>
-                            <span style="width: 40px; text-align: center; display: inline-block; font-weight: bold;">{{ $item->quantity }}</span>
-                            <button type="submit" name="quantity" value="{{ $item->quantity + 1 }}" style="width: 35px; height: 35px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer;">+</button>
-                        </form>
-                    </div>
-
-                    <div style="font-weight: bold; color: #dd0d22; font-size: 1.2rem;">
-                        ₱{{ number_format($item->product->price * $item->quantity, 2) }}
-                    </div>
-
-                    <form action="{{ route('cart.destroy', $item->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px;">🗑️</button>
-                    </form>
+<x-layout title="My Cart - CraveCart">
+    <section class="min-h-screen bg-slate-50 py-12 px-6 lg:px-12">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="flex items-center gap-4 mb-10">
+                <div class="bg-orange-600 p-3 rounded-2xl shadow-lg">
+                    <span class="text-2xl text-white">🛒</span>
                 </div>
-                @endforeach
+                <h1 class="text-4xl font-black italic uppercase tracking-tighter text-slate-900">
+                    My <span class="text-orange-600">Cart</span>
+                </h1>
             </div>
 
-            {{-- Summary --}}
-            <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: fit-content; position: sticky; top: 100px;">
-                <h3 style="color: #dd0d22; margin-top: 0; padding-bottom: 15px; border-bottom: 2px solid #f3e3cb;">Order Summary</h3>
-                
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
-                    <span>Subtotal</span>
-                    <span>₱{{ number_format($subtotal, 2) }}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
-                    <span>Shipping</span>
-                    <span>₱{{ number_format($shipping, 2) }}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
-                    <span>Tax (12%)</span>
-                    <span>₱{{ number_format($tax, 2) }}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding: 15px 0; border-top: 2px solid #dd0d22; margin-top: 10px; font-size: 1.2rem; color: #dd0d22; font-weight: bold;">
-                    <span>Total</span>
-                    <span>₱{{ number_format($total, 2) }}</span>
-                </div>
+            @if(count($cartItems) > 0)
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Items List -->
+                    <div class="lg:col-span-8 space-y-4">
+                        @foreach($cartItems as $item)
+                        <div class="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+                            <img src="{{ $item->product->image ? asset('storage/' . $item->product->image) : asset('images/placeholder.jpg') }}" 
+                                 class="w-32 h-32 object-cover rounded-2xl shadow-inner bg-slate-100">
+                            
+                            <div class="flex-1 text-center md:text-left">
+                                <h3 class="text-xl font-black text-slate-900 uppercase tracking-tight">{{ $item->product->name }}</h3>
+                                <p class="text-orange-600 font-black text-lg">₱{{ number_format($item->product->price, 2) }}</p>
+                            </div>
 
-                <a href="{{ route('checkout') }}" style="display: block; width: 100%; background: linear-gradient(to right, #dd0d22, #ff6a00); color: white; text-align: center; padding: 15px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px;">
-                    Proceed to Checkout
-                </a>
+                            <div class="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="m-0 flex items-center">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" name="quantity" value="{{ $item->quantity - 1 }}" 
+                                            class="w-10 h-10 flex items-center justify-center font-black hover:bg-white rounded-xl transition-all"
+                                            {{ $item->quantity <= 1 ? 'disabled' : '' }}>-</button>
+                                    
+                                    <span class="px-4 font-black text-slate-900">{{ $item->quantity }}</span>
+                                    
+                                    <button type="submit" name="quantity" value="{{ $item->quantity + 1 }}" 
+                                            class="w-10 h-10 flex items-center justify-center font-black hover:bg-white rounded-xl transition-all">+</button>
+                                </form>
+                            </div>
 
-                <a href="{{ route('buyer.home') }}" style="display: block; text-align: center; margin-top: 15px; color: #dd0d22;">
-                    ← Continue Shopping
-                </a>
-            </div>
+                            <form action="{{ route('cart.destroy', $item->id) }}" method="POST" class="m-0">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="w-12 h-12 flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Simplified Summary Sidebar -->
+                    <div class="lg:col-span-4">
+                        <div class="bg-slate-900 rounded-[2rem] p-8 text-white sticky top-24 shadow-2xl">
+                            <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-orange-500 mb-8">Order Summary</h3>
+                            
+                            <div class="space-y-4 mb-8 text-sm font-bold uppercase tracking-widest">
+                                <div class="flex justify-between items-end border-t border-white/10 pt-4">
+                                    <span class="text-[10px] text-orange-500">Total Amount</span>
+                                    <!-- Total is now just the subtotal -->
+                                    <span class="text-3xl font-black italic tracking-tighter text-white">₱{{ number_format($subtotal, 2) }}</span>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('orders.store') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl transition-all hover:-translate-y-1">
+                                    🚀 Place Order Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="text-center py-32 bg-white rounded-[3rem] border border-dashed border-slate-300">
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Your cart is empty</h2>
+                    <a href="{{ route('buyer.home') }}" class="inline-block mt-10 bg-slate-900 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest">Start Shopping</a>
+                </div>
+            @endif
         </div>
-    @else
-        <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 15px;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">🛒</div>
-            <h2 style="color: #dd0d22; margin-bottom: 10px;">Your cart is empty</h2>
-            <p style="color: #666; margin-bottom: 20px;">Looks like you haven't added anything to your cart yet.</p>
-            <a href="{{ route('buyer.home') }}" style="display: inline-block; background: linear-gradient(to right, #dd0d22, #ff6a00); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
-                Start Shopping
-            </a>
-        </div>
-    @endif
-
-</div>
-
-</x-buyerDash>
+    </section>
+</x-layout>

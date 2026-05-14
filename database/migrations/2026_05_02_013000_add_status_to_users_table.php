@@ -6,16 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('status')->default('approved')->after('role');
+            // This adds the status column after the 'role' column.
+            // We set the default to 'pending' to require Admin approval.
+            $table->string('status')->default('pending')->after('role');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            // This allows you to roll back the migration if needed.
             $table->dropColumn('status');
         });
     }
