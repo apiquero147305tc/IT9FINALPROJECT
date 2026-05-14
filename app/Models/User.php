@@ -31,9 +31,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // =========================
-    // ROLE HELPERS
-    // =========================
+    /*
+    |-------------------------
+    | ROLE HELPERS
+    |-------------------------
+    */
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -49,41 +51,49 @@ class User extends Authenticatable
         return $this->role === 'buyer';
     }
 
-    // =========================
-    // RELATIONSHIPS
-    // =========================
+    /*
+    |-------------------------
+    | RELATIONSHIPS
+    |-------------------------
+    */
 
-    /**
-     * Seller: products
-     */
+    // Products owned by seller
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
     }
 
-    /**
-     * Orders
-     */
+    // Orders made by user
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
     }
 
-    /**
-     * Buyer cart items
-     */
+    // Cart items
     public function cartItems()
     {
         return $this->hasMany(Cart::class);
     }
 
-    // =========================
-    // 💰 SMART BUDGET SYSTEM
-    // =========================
+    /*
+    |-------------------------
+    | SMART BUDGET
+    |-------------------------
+    */
 
     public function addSpent($amount)
     {
         $this->spent_amount += $amount;
         $this->save();
     }
+
+    public function favorites()
+    {
+    return $this->hasMany(Favorite::class, 'user_id');
+    }
+
+   public function favoriteProducts()
+   {
+    return $this->belongsToMany(Product::class, 'favorites');
+   }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CartController; // Import the CartController
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\FavoriteController;
 
 
 /*
@@ -131,3 +132,6 @@ Route::get('/home', function () {
     if ($user->role === 'seller') return redirect()->route('seller.dash');
     return redirect()->route('buyer.home');
 });
+
+Route::post('/favorite/{productId}', [FavoriteController::class, 'toggle'])
+    ->name('favorite.toggle');
