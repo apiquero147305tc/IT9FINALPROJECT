@@ -15,7 +15,12 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
+        'is_blocked', // Added for the block/unblock system
         'shop_name',
+        'contact_number',
+        'age',
+        'valid_id',
         'grade_level',
         'monthly_budget',
         'spent_amount',
@@ -29,6 +34,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_blocked' => 'boolean', // Cast to boolean for easier logic
     ];
 
     // =========================
@@ -53,25 +59,16 @@ class User extends Authenticatable
     // RELATIONSHIPS
     // =========================
 
-    /**
-     * Seller: products
-     */
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
     }
 
-    /**
-     * Orders
-     */
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
     }
 
-    /**
-     * Buyer cart items
-     */
     public function cartItems()
     {
         return $this->hasMany(Cart::class);

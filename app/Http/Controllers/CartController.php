@@ -2,40 +2,16 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
-=======
-use Illuminate\Http\Request;
-use App\Models\Cart;
-use App\Models\Product;
->>>>>>> origin/Kino
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-<<<<<<< HEAD
-    public function add(Request $request, $productId)
-    {
-        $user = Auth::user();
-
-        // Validation: Only Buyers should add to cart
-        if ($user->role !== 'buyer') {
-            return back()->with('error', 'Only buyers can add items to the cart.');
-        }
-
-        // Check if the item is already in the cart
-        $cartItem = Cart::where('user_id', $user->id)
-                        ->where('product_id', $productId)
-                        ->first();
-
-        if ($cartItem) {
-            $cartItem->increment('quantity');
-        } else {
-            Cart::create([
-                'user_id' => $user->id,
-=======
+    /**
+     * Display the buyer's cart with totals, tax, and shipping.
+     */
     public function index()
     {
         $cartItems = Cart::where('user_id', Auth::id())
@@ -46,53 +22,68 @@ class CartController extends Controller
             return $item->product->price * $item->quantity;
         });
 
+        // Calculations
         $shipping = 50;
-        $tax = $subtotal * 0.12;
+        $tax = $subtotal * 0.12; // 12% VAT
         $total = $subtotal + $shipping + $tax;
 
         return view('buyer.cart', compact('cartItems', 'subtotal', 'shipping', 'tax', 'total'));
     }
 
+    /**
+     * Add a product to the cart or increment quantity if it exists.
+     */
     public function add(Request $request, $productId)
     {
+        $user = Auth::user();
+
+        // 🛡️ SECURITY: Only Buyers should be able to add to cart
+        if ($user->role !== 'buyer') {
+            return back()->with('error', 'Only buyers can add items to the cart.');
+        }
+
         $product = Product::findOrFail($productId);
 
-        $cartItem = Cart::where('user_id', Auth::id())
-            ->where('product_id', $productId)
-            ->first();
+        // Check if the item is already in the cart for this user
+        $cartItem = Cart::where('user_id', $user->id)
+                        ->where('product_id', $productId)
+                        ->first();
 
         if ($cartItem) {
-            $cartItem->quantity += 1;
-            $cartItem->save();
+            // If exists, just add one more
+            $cartItem->increment('quantity');
         } else {
+            // If new, create the entry
             Cart::create([
-                'user_id' => Auth::id(),
->>>>>>> origin/Kino
+                'user_id' => $user->id,
                 'product_id' => $productId,
                 'quantity' => 1,
             ]);
         }
 
-        return back()->with('success', 'Added to cart!');
+        return back()->with('success', 'Product added to cart!');
     }
 
-<<<<<<< HEAD
-    public function index()
-    {
-        $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
-        $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
-
-        return view('buyer.cart', compact('cartItems', 'total'));
-=======
+    /**
+     * Update the quantity of an item from the cart view.
+     */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
         $cartItem = Cart::where('user_id', Auth::id())->findOrFail($id);
-        $cartItem->quantity = $request->quantity;
-        $cartItem->save();
+        $cartItem->update([
+            'quantity' => $request->quantity
+        ]);
 
         return back()->with('success', 'Cart updated!');
     }
 
+    /**
+     * Remove an item from the cart.
+     */
     public function destroy($id)
     {
         Cart::where('user_id', Auth::id())
@@ -100,6 +91,5 @@ class CartController extends Controller
             ->delete();
 
         return back()->with('success', 'Removed from cart!');
->>>>>>> origin/Kino
     }
 }
