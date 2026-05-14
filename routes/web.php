@@ -9,216 +9,118 @@ use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Models\Product;
 
-//////////////////////////////////////////////////
-// 🏠 HOME
-//////////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| 🌐 PUBLIC ROUTES
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
-    $products = [
-        ['name' => 'Rice (5kg)', 'price' => 250, 'image' => '/images/rice.jpg'],
-        ['name' => 'Cooking Oil', 'price' => 120, 'image' => '/images/oil.jpg'],
-        ['name' => 'Canned Goods', 'price' => 80, 'image' => '/images/canned.jpg'],
-        ['name' => 'Laundry Detergent', 'price' => 150, 'image' => '/images/detergent.jpg'],
-    ];
+    // Fetching actual best sellers from the DB for the landing page
+    $products = Product::latest()->take(4)->get(); 
     return view('home', compact('products'));
-
 })->name('home');
 
-Route::get('/home', function () {
-    return redirect()->route('buyer.home');
+Route::get('/about', fn () => view('about'))->name('about');
+Route::get('/contact', fn () => view('contact'))->name('contact');
+
+// Fixed Best Seller: Now fetches actual data to prevent "Undefined Variable" errors
+Route::get('/bestSeller', function () {
+$products = Product::latest()->get();    return view('bestSeller', compact('products'));
+})->name('bestSeller');
+
+Route::get('/products/{product}', [BuyerController::class, 'show'])
+    ->name('products.show')
+    ->whereNumber('product');
+
+Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])->name('seller.shop');
+
+/*
+|--------------------------------------------------------------------------
+| 🔐 AUTHENTICATION SYSTEM
+|--------------------------------------------------------------------------
+*/
+
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/login', 'loginPage')->name('login');
+    Route::post('/login-process', 'login')->name('login.post');
+    Route::get('/register', 'registerPage')->name('register');
+    Route::post('/register-process', 'register')->name('register.post');
+    Route::post('/logout', 'logout')->name('logout')->middleware('auth');
 });
 
-//////////////////////////////////////////////////
-// 🛍 PUBLIC SHOP
-//////////////////////////////////////////////////
+Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
+Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
+
+/*
+|--------------------------------------------------------------------------
+| 🛡️ PROTECTED ROUTES (Auth Required)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+    // --- 💬 UNIFIED MESSAGING SYSTEM ---
+    Route::controller(MessageController::class)->group(function () {
+        Route::get('/messages', 'inbox')->name('messages.inbox');
+        Route::get('/messages/{userId}', 'chat')->name('messages.chat');
+        Route::post('/messages/send', 'send')->name('messages.send');
+        Route::get('/messages/{userId}/fetch', 'fetchMessages');
+    });
+
+    // --- 🛒 BUYER HUB ---
+    Route::middleware(['role:buyer'])->group(function () {
+        Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
+        Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
+        Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
+    });
+
+    // --- 🏪 SELLER STUDIO ---
+    Route::middleware(['role:seller'])->group(function () {
+        Route::controller(SellerController::class)->group(function () {
+            Route::get('/seller/dashboard', 'dashboard')->name('seller.dash');
+            Route::get('/seller/profile', 'profile')->name('seller.profile');
+            Route::post('/seller/profile/update', 'updateProfile')->name('seller.profile.update');
+            Route::get('/seller/orders', 'orders')->name('seller.orders');
+        });
+
+        Route::resource('products', ProductController::class)->except(['show']);
+        
+        Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
+            ->name('orders.updateStatus');
+            
+        Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
+    });
+
+    // --- 🟣 ADMIN CONTROL PANEL ---
+    Route::middleware(['role:admin'])->group(function () {
+        Route::controller(AdminController::class)->group(function () {
+            Route::get('/admin/dashboard', 'dashboard')->name('admin.dashboard');
+            Route::post('/admin/approve/{id}', 'approveUser')->name('admin.approve');
+            Route::post('/admin/reject/{id}', 'rejectUser')->name('admin.reject');
+        });
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| 🔁 SYSTEM HELPERS
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/shop', function () {
     return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
 })->name('shop');
 
-//////////////////////////////////////////////////
-// 🧾 STATIC PAGES
-//////////////////////////////////////////////////
-
-Route::get('/bestSeller', fn () => view('bestSeller'))->name('bestSeller');
-Route::get('/about', fn () => view('about'))->name('about');
-Route::get('/contact', fn () => view('contact'))->name('contact');
-
-//////////////////////////////////////////////////
-// 🔐 AUTH
-//////////////////////////////////////////////////
-
-Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
-Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
-
-Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
-Route::post('/register-process', [AuthController::class, 'register'])->name('register.post');
-
-Route::get('/chooseRole', fn () => view('auth.chooseRole'))->name('chooseRole');
-Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
-
-Route::get('/pending', function () {
-    return view('auth.pending');
-})->name('pending');
-//////////////////////////////////////////////////
-// 🧾 SIGNUP (BUYER / SELLER)
-//////////////////////////////////////////////////
-
-Route::get('/buyer/signup', [AuthController::class, 'showSignup']);
-Route::post('/buyer/signup', [AuthController::class, 'signup']);
-
-Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
-Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
-
-Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
-Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
-
-//////////////////////////////////////////////////
-// 🔐 AUTH MIDDLEWARE
-//////////////////////////////////////////////////
-
-Route::middleware(['auth'])->group(function () {
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    //////////////////////////////////////////////////
-    // 💬 MESSAGES
-    //////////////////////////////////////////////////
-
-    Route::get('/messages', [MessageController::class, 'inbox'])
-        ->name('messages.inbox');
-
-    Route::get('/messages/{userId}', [MessageController::class, 'chat'])
-        ->name('messages.chat');
-
-    Route::post('/messages/send', [MessageController::class, 'send'])
-        ->name('messages.send');
-
-    Route::get('/messages/{userId}/fetch', [MessageController::class, 'fetchMessages']);
-
-    //////////////////////////////////////////////////
-    // 🛒 ORDERS
-    //////////////////////////////////////////////////
-
-    Route::post('/orders', [OrderController::class, 'store'])
-        ->name('orders.store');
-
-    //////////////////////////////////////////////////
-    // 🟢 BUYER
-    //////////////////////////////////////////////////
-
-    Route::middleware(['role:buyer'])->group(function () {
-
-        Route::get('/buyer/home', [BuyerController::class, 'index'])
-            ->name('buyer.home');
-
-        // 🛒 CART
-        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-        Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
-        Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-        
-        // 💳 CHECKOUT
-        Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-
-        // 🧾 RECEIPT
-        Route::get('/receipt/{order}', [OrderController::class, 'receipt'])->name('receipt');
-
-        // 💡 LENDING SYSTEM
-        Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
-        Route::get('/lending/request/{product}', [LendingController::class, 'create'])->name('lending.create');
-        Route::post('/lending/store', [LendingController::class, 'store'])->name('lending.store');
-        Route::post('/lending/approve/{lending}', [LendingController::class, 'approve'])->name('lending.approve');
-        Route::post('/lending/reject/{lending}', [LendingController::class, 'reject'])->name('lending.reject');
-        Route::post('/lending/return/{lending}', [LendingController::class, 'returnItem'])->name('lending.return');
-        Route::post('/lending/release-collateral/{lending}', [LendingController::class, 'releaseCollateral'])->name('lending.release-collateral');
-    });
-
-    //////////////////////////////////////////////////
-    // 🔴 SELLER
-    //////////////////////////////////////////////////
-
-   Route::middleware(['auth', 'role:seller'])->group(function () {
-
-    Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
-        ->name('seller.dash');
-
-    Route::resource('products', ProductController::class)->except(['show']);
-
-    Route::get('/seller/orders', [SellerController::class, 'orders'])
-        ->name('seller.orders');
-
-    Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])
-        ->name('seller.messages');
-});
-
-    //////////////////////////////////////////////////
-    // 🛍 PRODUCT (EDIT / UPDATE / DELETE)
-    //////////////////////////////////////////////////
-
-    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
-        ->name('products.edit');
-
-    Route::put('/products/{product}', [ProductController::class, 'update'])
-        ->name('products.update');
-
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
-        ->name('products.destroy');
-
-    //////////////////////////////////////////////////
-    // 🟣 ADMIN
-    //////////////////////////////////////////////////
-
-    Route::middleware(['auth', 'role:admin'])->group(function () {
-
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-            ->name('admin.dashboard');
-
-        Route::get('/admin/users', [AdminController::class, 'allUsers'])
-            ->name('admin.users');
-
-        Route::get('/admin/sellers', [AdminController::class, 'sellers'])
-            ->name('admin.sellers');
-
-        Route::get('/admin/buyers', [AdminController::class, 'buyers'])
-            ->name('admin.buyers');
-
-        Route::get('/admin/blocked', [AdminController::class, 'blockedUsers'])
-            ->name('admin.blocked');
-
-        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
-            ->name('admin.approve');
-
-        Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
-            ->name('admin.reject');
-
-        Route::post('/admin/block/{id}', [AdminController::class, 'block'])
-            ->name('admin.block');
-
-        Route::post('/admin/unblock/{id}', [AdminController::class, 'unblock'])
-            ->name('admin.unblock');
-
-        Route::get('/admin/settings', [AdminController::class, 'settings'])
-            ->name('admin.settings');
-
-        Route::post('/admin/settings/update', [AdminController::class, 'updateSettings'])
-            ->name('admin.settings.update');
-
-        Route::get('/admin/analytics', [AdminController::class, 'analytics'])->name('admin.analytics');
-
-        Route::get('/admin/users/delete', [AdminController::class, 'deleteUsersPage'])
-            ->name('admin.users.delete.page');
-
-        Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])
-            ->name('admin.users.destroy');
-    });
-
-    // pending
-    Route::get('/pending-approval', [AuthController::class, 'pending'])->name('pending');
-  
-    Route::post('/login', [AuthController::class, 'login']);
+// Global redirect for /home
+Route::get('/home', function() {
+    if (!Auth::check()) return redirect()->route('home');
+    if (Auth::user()->role === 'seller') return redirect()->route('seller.dash');
+    if (Auth::user()->role === 'admin') return redirect()->route('admin.dashboard');
+    return redirect()->route('buyer.home');
 });

@@ -1,152 +1,98 @@
 <x-layout>
-    <style>
-        .login-page {
-            background-color: #f3e3cb;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    <section class="min-h-[85vh] flex items-center justify-center bg-[#FDFCFB] px-6 py-20 relative overflow-hidden">
+        
+        <div class="absolute top-0 right-0 w-96 h-96 bg-orange-100 rounded-full blur-[100px] opacity-50 -mr-20 -mt-20"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-slate-100 rounded-full blur-[100px] opacity-50 -ml-20 -mb-20"></div>
 
-        .login-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 350px;
-            border-bottom: 5px solid #ff4a00;
-        }
-
-        .login-title {
-            color: #dd0d22;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .login-group {
-            margin-bottom: 15px;
-        }
-
-        .login-label {
-            font-size: 0.9rem;
-            color: #555;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ff9b9e;
-            border-radius: 8px;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .login-input:focus {
-            border-color: #dd0d22;
-        }
-
-        .login-button {
-            width: 100%;
-            background-color: #dd0d22;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        .login-button:hover {
-            background-color: #ff4a00;
-        }
-
-        .login-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.85rem;
-        }
-
-        .login-link {
-            color: #ff4a00;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .login-error-list {
-            color: #dd0d22;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            padding-left: 15px;
-        }
-    </style>
-
-    {{-- Tailwind-enhanced wrapper --}}
-    <div class="login-page px-4">
-
-        <div class="login-card relative">
-
-            {{-- subtle glow using Tailwind (non-intrusive) --}}
-            <div class="absolute -top-3 -left-3 w-6 h-6 bg-red-500 rounded-full blur-xl opacity-30"></div>
-
-            <h2 class="login-title text-xl font-extrabold">
-                CraveCart
-            </h2>
-
-            @if ($errors->any())
-                <ul class="login-error-list bg-red-50 border border-red-200 rounded-md p-2 mb-3">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            @endif
-
-            <form action="{{ route('login.post') }}" method="POST" class="space-y-2">
-                @csrf
-
-                <div class="login-group">
-                    <label class="login-label">Email Address</label>
-                    <input
-                        type="email"
-                        name="email"
-                        class="login-input focus:ring-2 focus:ring-red-200 transition"
-                        value="{{ old('email') }}"
-                        required
-                        autofocus
-                    >
+        <div class="relative z-10 w-full max-w-[450px]">
+            <div class="text-center mb-10">
+                <div class="inline-flex bg-orange-600 p-3 rounded-2xl shadow-xl shadow-orange-200 mb-6 rotate-3">
+                    <span class="text-2xl">🛒</span>
                 </div>
-
-                <div class="login-group">
-                    <label class="login-label">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        class="login-input focus:ring-2 focus:ring-red-200 transition"
-                        required
-                    >
-                </div>
-
-                <button
-                    type="submit"
-                    class="login-button hover:scale-[1.02] active:scale-100 transition-transform"
-                >
-                    LOGIN
-                </button>
-            </form>
-
-            <div class="login-footer">
-                <p class="text-gray-600">
-                    New to CraveCart?
-                    <a href="{{ route('chooseRole') }}" class="login-link hover:underline">
-                        Create Account
-                    </a>
-                </p>
+                <h2 class="text-4xl font-black uppercase tracking-tighter text-slate-900">
+                    Welcome <span class="text-orange-600">Back.</span>
+                </h2>
+                <p class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em] mt-3">Studio Access Portal</p>
             </div>
+
+            <div class="bg-white p-10 md:p-12 rounded-[45px] border border-slate-100 shadow-2xl shadow-slate-200/50">
+                
+                @if ($errors->any())
+                    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl">
+                        <ul class="list-none p-0 m-0">
+                            @foreach ($errors->all() as $error)
+                                <li class="text-red-600 text-xs font-bold uppercase tracking-tight">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
+                    @csrf
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                            class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-semibold focus:ring-2 focus:ring-orange-600 outline-none transition-all placeholder-slate-300"
+                            placeholder="name@example.com">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-2">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
+                            <a href="#" class="text-[9px] font-black uppercase tracking-widest text-orange-600 hover:text-slate-900 transition-colors no-underline">Forgot?</a>
+                        </div>
+                        
+                        <div class="relative group">
+                            <input type="password" name="password" id="loginPassword" required
+                                class="w-full bg-slate-50 border-none rounded-2xl p-4 pr-12 text-sm font-semibold focus:ring-2 focus:ring-orange-600 outline-none transition-all placeholder-slate-300"
+                                placeholder="••••••••">
+                            
+                            <button type="button" onclick="togglePasswordVisibility()" 
+                                class="absolute inset-y-0 right-0 flex items-center px-4 text-slate-300 hover:text-orange-600 transition-colors bg-transparent border-none cursor-pointer focus:outline-none">
+                                <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 px-2">
+                        <input type="checkbox" id="remember" class="accent-orange-600">
+                        <label for="remember" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer">Keep me signed in</label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95 border-none cursor-pointer mt-4">
+                        Initialize Session
+                    </button>
+                </form>
+
+                <div class="mt-10 pt-8 border-t border-slate-50 text-center">
+                    <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest leading-loose">
+                        New to the Platform? <br>
+                        <a href="{{ route('register') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1">Create Account</a>
+                    </p>
+                </div>
+            </div>
+
+            <p class="text-center mt-10 text-slate-300 font-black uppercase text-[9px] tracking-[0.4em]">
+                System Architecture v1.0 // UM Tagum
+            </p>
         </div>
-    </div>
+    </section>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('loginPassword');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </x-layout>

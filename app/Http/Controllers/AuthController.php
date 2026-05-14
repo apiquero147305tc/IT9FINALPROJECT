@@ -36,7 +36,7 @@ class AuthController extends Controller
         // seller fields
         'shop_name' => 'required_if:role,seller',
         'seller_name' => 'required_if:role,seller',
-        'age' => 'required_if:role,seller|numeric',
+        'age' => 'required_if:role,seller|nullable|numeric',
         'contact_number' => 'required_if:role,seller',
         'valid_id' => 'required_if:role,seller|file|mimes:jpg,jpeg,png,pdf',
     ]);
