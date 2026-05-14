@@ -57,19 +57,33 @@
             </div>
             
             <div class="flex items-center gap-4">
-                @guest
-                    <a href="{{ route('login') }}" class="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-orange-100 transition-colors no-underline">Log In</a>
-                    <a href="{{ route('chooseRole') }}" class="bg-white text-orange-600 px-8 py-3.5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-900 hover:text-white hover:-translate-y-1 transition-all active:scale-95 no-underline">
-                        GET STARTED
+                @auth
+                    <!-- CART BUTTON -->
+                    <a href="{{ route('cart.index') }}" class="text-white hover:text-orange-200 transition-all relative">
+                        <i class="fa-solid fa-cart-shopping text-xl"></i>
                     </a>
-                @else
-                    <div class="flex items-center gap-3 bg-white/10 p-1.5 pr-4 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/20 transition-all">
+
+                    <!-- USER INFO & LOGOUT -->
+                    <div class="flex items-center gap-3 bg-white/10 p-1.5 pr-4 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/20 transition-all group relative">
                         <div class="bg-white w-9 h-9 rounded-xl flex items-center justify-center text-orange-600 shadow-inner">
                             <i class="fa-solid fa-user-astronaut"></i>
                         </div>
                         <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ Auth::user()->name }}</span>
+                        
+                        <!-- Simple Logout Form integrated into UI -->
+                        <form action="{{ route('logout') }}" method="POST" class="ml-2">
+                            @csrf
+                            <button type="submit" class="text-orange-200 hover:text-white text-[9px] font-black uppercase tracking-tighter transition-colors">
+                                [Logout]
+                            </button>
+                        </form>
                     </div>
-                @endguest
+                @else
+                    <a href="{{ route('login') }}" class="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-orange-100 transition-colors no-underline">Log In</a>
+                    <a href="{{ route('chooseRole') }}" class="bg-white text-orange-600 px-8 py-3.5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-900 hover:text-white hover:-translate-y-1 transition-all active:scale-95 no-underline">
+                        GET STARTED
+                    </a>
+                @endauth
             </div>
         </div>
     </div>

@@ -14,213 +14,124 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function registerPage()
+    public function registerPage(Request $request)
     {
-       return view('auth.register', [
-        'role' => $request->role ?? 'buyer'
-    ]);
+        return view('auth.register', [
+            'role' => $request->role ?? 'buyer'
+        ]);
     }
 
     public function register(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8',
-        'role' => 'required|in:buyer,seller',
+    {
+        // 1. Unified Validation
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|in:buyer,seller',
+        ];
 
-        'grade_level' => 'required_if:role,buyer',
-        'monthly_budget' => 'required_if:role,buyer',
-        'custom_budget' => 'required_if:monthly_budget,others|nullable|numeric',
+        if ($request->role === 'buyer') {
+            $rules['grade_level'] = 'required';
+            $rules['monthly_budget'] = 'required';
+            $rules['custom_budget'] = 'required_if:monthly_budget,others|nullable|numeric';
+        } else {
+            $rules['shop_name'] = 'required';
+            $rules['age'] = 'required|numeric|min:18';
+            $rules['contact_number'] = 'required|digits:11';
+            $rules['valid_id'] = 'required|file|mimes:jpg,jpeg,png,pdf';
+        }
 
-        // seller fields
-        'shop_name' => 'required_if:role,seller',
-        'seller_name' => 'required_if:role,seller',
-        'age' => 'required_if:role,seller|nullable|numeric',
-        'contact_number' => 'required_if:role,seller',
-        'valid_id' => 'required_if:role,seller|file|mimes:jpg,jpeg,png,pdf',
-    ]);
+        $request->validate($rules);
 
-    // =========================
-    // 🟢 SELLER REGISTRATION
-    // =========================
-    if ($request->role === 'seller') {
-
+        // 2. Handle File Upload (Sellers Only)
         $filePath = null;
-
         if ($request->hasFile('valid_id')) {
             $filePath = $request->file('valid_id')->store('valid_ids', 'public');
         }
 
-        User::create([
-            'name' => $request->seller_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'seller',
-            'status' => 'pending',
+        // 3. Process Budget (Buyers Only)
+        $finalBudget = $request->monthly_budget;
+        if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
+            $finalBudget = "₱" . $request->custom_budget;
+        }
 
-            'shop_name' => $request->shop_name,
+        // 4. Create User
+        $user = User::create([
+            'name'           => $request->name,
+            'email'          => $request->email,
+            'password'       => Hash::make($request->password),
+            'role'           => $request->role,
+            'status'         => ($request->role === 'admin') ? 'approved' : 'pending',
+            
+            // Buyer Fields
+            'grade_level'    => $request->grade_level,
+            'monthly_budget' => $finalBudget,
+
+            // Seller Fields
+            'shop_name'      => $request->shop_name,
             'contact_number' => $request->contact_number,
-            'age' => $request->age,
-            'valid_id' => $filePath,
+            'age'            => $request->age,
+            'valid_id'       => $filePath,
         ]);
 
-        return redirect('/pending-approval');
+        if ($user->role === 'seller') {
+            return redirect('/pending-approval');
+        }
+
+        return redirect()->route('login')->with('success', 'Registration successful! Please wait for approval.');
     }
 
-    // =========================
-    // 🟡 BUYER REGISTRATION
-    // =========================
-
-    $finalBudget = $request->monthly_budget;
-
-    if ($request->monthly_budget === 'others' && $request->filled('custom_budget')) {
-        $finalBudget = "₱" . $request->custom_budget;
-    }
-
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'buyer',
-        'status' => 'pending',
-
-        'grade_level' => $request->grade_level,
-        'monthly_budget' => $finalBudget,
-    ]);
-
-    return redirect()->route('login')
-        ->with('success', 'Registration successful! Please wait for Admin approval before logging in.');
-}
-
-  public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
-
-    if (!Auth::attempt($credentials)) {
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-            'contact_number' => 'Input 11 digits only.'
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
+
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.'
+            ]);
+        }
+
+        $request->session()->regenerate();
+        $user = Auth::user();
+
+        // Check if Approved
+        if ($user->status !== 'approved') {
+            Auth::logout();
+            return redirect('/pending-approval')->withErrors([
+                'email' => 'Your account is waiting for admin approval.'
+            ]);
+        }
+
+        return $this->redirectUserBasedOnRole($user);
     }
 
-    $request->session()->regenerate();
+    private function redirectUserBasedOnRole($user)
+    {
+        if ($user->role === 'admin') {
+            return redirect('/admin/dashboard');
+        }
 
-    /** @var User $user */
-    $user = Auth::user();
+        if ($user->role === 'seller') {
+            return redirect('/seller/dashboard');
+        }
 
-    // 🚨 BLOCK SELLERS NOT APPROVED
-    if ($user->role === 'seller' && $user->status !== 'approved') {
-
-        Auth::logout();
-
-        return redirect('/pending-approval')->withErrors([
-            'email' => 'Your account is waiting for admin approval.'
-        ]);
+        return redirect()->route('buyer.home');
     }
-
-    // ✅ REDIRECT USERS PROPERLY
-    return $this->redirectUserBasedOnRole($user);
-}
-
-   private function redirectUserBasedOnRole($user)
-{
-    if ($user->isAdmin()) {
-        return redirect('/admin/dashboard');
-    }
-
-    if ($user->isSeller()) {
-        return redirect('/seller/dashboard');
-    }
-
-    return redirect()->route('buyer.home'); 
-}
 
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/login');
     }
-    
-       public function showSignup()
-    {
-        return view('auth.register');
-    }
 
-    public function showBuyerRegister()
-{
-    return view('auth.buyer-register');
-}
-
-public function showSellerRegister()
-{
-    return view('auth.seller-register');
-}   
-
-public function registerBuyer(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:8',
-    ]);
-
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'role' => 'buyer',
-        'grade_level' => $request->grade_level,
-        'monthly_budget' => $request->monthly_budget,
-    ]);
-
-    return redirect()->route('login');
-}
-
-public function registerSeller(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:8',
-        'shop_name' => 'required',
-        'age' => 'required|integer|min:10',
-        'contact_number' => 'required',
-        'valid_id' => 'required|file|mimes:jpg,jpeg,png,pdf',
-    ]);
-
-    $filePath = null;
-
-    if ($request->hasFile('valid_id')) {
-        $filePath = $request->file('valid_id')->store('valid_ids', 'public');
-    }
-
-    User::create([
-        'name' => $request->name, // ✅ FIXED HERE
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'seller',
-        'status' => 'pending',
-
-        'shop_name' => $request->shop_name,
-        'contact_number' => $request->contact_number,
-        'age' => $request->age,
-        'valid_id' => $filePath,
-    ]);
-
-    return redirect()->route('pending');
-}
-
- public function pending()
+    public function pending()
     {
         return view('auth.pending');
     }
-
-
 }

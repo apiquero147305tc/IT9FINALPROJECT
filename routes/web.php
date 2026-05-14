@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
 
+// Controllers
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\BuyerController;
@@ -10,15 +12,10 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
-use App\Models\Product;
-
-/*
-|--------------------------------------------------------------------------
-| 🌐 PUBLIC ROUTES
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
+    // Fetches from DB; falls back to empty collection if none exist
     $products = Product::latest()->take(4)->get(); 
     return view('home', compact('products'));
 })->name('home');
@@ -49,6 +46,10 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/register', 'registerPage')->name('register');
     Route::post('/register-process', 'register')->name('register.post');
     Route::post('/logout', 'logout')->name('logout')->middleware('auth');
+    
+    // Buyer specific signup
+    Route::get('/buyer/signup', 'showSignup');
+    Route::post('/buyer/signup', 'signup');
 });
 
 Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
@@ -64,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
-    // --- 💬 UNIFIED MESSAGING SYSTEM ---
+    // --- 💬 MESSAGING ---
     Route::controller(MessageController::class)->group(function () {
         Route::get('/messages', 'inbox')->name('messages.inbox');
         Route::get('/messages/{userId}', 'chat')->name('messages.chat');
@@ -75,7 +76,14 @@ Route::middleware(['auth'])->group(function () {
     // --- 🛒 BUYER HUB ---
     Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
-        Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
+        Route::get('/buyer/smartbudgetcontrol', [BuyerController::class, 'smartBudget'])->name('buyer.smartbudgetcontrol');
+
+        // Cart Actions
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
+        Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+        
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
@@ -90,33 +98,27 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::resource('products', ProductController::class)->except(['show']);
-        Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
     });
 
     // --- 🟣 ADMIN CONTROL PANEL ---
     Route::middleware(['role:admin'])->group(function () {
         Route::controller(AdminController::class)->group(function () {
-            // Main Dashboard & Metrics
             Route::get('/admin/dashboard', 'dashboard')->name('admin.dashboard');
-            Route::get('/admin/analytics', 'analytics')->name('admin.analytics'); // FIXED: Added this
+            Route::get('/admin/analytics', 'analytics')->name('admin.analytics');
             
-            // User Management Views
             Route::get('/admin/users', 'allUsers')->name('admin.users');
             Route::get('/admin/sellers', 'sellers')->name('admin.sellers');
             Route::get('/admin/buyers', 'buyers')->name('admin.buyers');
             Route::get('/admin/blocked', 'blockedUsers')->name('admin.blocked');
             
-            // Account Deletion Management
-            Route::get('/admin/delete-users', 'deleteUsersPage')->name('admin.users.delete.page'); // FIXED: Matches your Blade link
+            Route::get('/admin/delete-users', 'deleteUsersPage')->name('admin.users.delete.page');
             Route::delete('/admin/user/{id}/destroy', 'destroyUser')->name('admin.user.destroy');
 
-            // Administrative Actions
             Route::post('/admin/approve/{id}', 'approveUser')->name('admin.approve');
             Route::post('/admin/reject/{id}', 'rejectUser')->name('admin.reject');
             Route::post('/admin/block/{id}', 'block')->name('admin.block');
             Route::post('/admin/unblock/{id}', 'unblock')->name('admin.unblock');
             
-            // System Settings
             Route::get('/admin/settings', 'settings')->name('admin.settings');
             Route::post('/admin/settings/update', 'updateSettings')->name('admin.settings.update');
         });

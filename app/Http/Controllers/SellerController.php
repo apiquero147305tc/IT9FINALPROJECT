@@ -19,35 +19,36 @@ class SellerController extends Controller
         $sellerId = Auth::id();
 
         // 1. PRODUCTS: Fetch products owned by the seller
-        // ✅ ADDED ->with('images') to ensure photos show up on the dashboard
+        // Standardized to 'user_id' to match your Products table
         $products = Product::where('user_id', $sellerId)
             ->with('images') 
             ->get();
 
-        // Initialize defaults
+        // Initialize defaults for safety
         $orders = collect();
         $totalEarnings = 0;
         $notifCount = 0;
 
+        // Ensure the orders table exists before querying
         if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
             try {
-                // 2. ORDERS: Fetch recent orders
+                // 2. ORDERS: Fetch 10 most recent orders for this seller's products
                 $orders = Order::whereHas('product', function ($query) use ($sellerId) {
                     $query->where('user_id', $sellerId);
                 })
-                ->with(['user', 'product.images']) // ✅ Also eager load images here
+                ->with(['user', 'product.images'])
                 ->latest()
                 ->take(10)
                 ->get();
 
-                // 3. EARNINGS: Sum total price from accepted/completed orders
+                // 3. EARNINGS: Sum from accepted or completed orders
                 $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
                     $query->where('user_id', $sellerId);
                 })
                 ->whereIn('status', ['accepted', 'completed'])
                 ->sum('total_price');
 
-                // 4. NOTIFICATION COUNT: Specifically pending orders
+                // 4. NOTIFICATIONS: Count pending orders the seller hasn't processed
                 $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
                     $query->where('user_id', $sellerId);
                 })
@@ -55,8 +56,8 @@ class SellerController extends Controller
                 ->count();
 
             } catch (\Exception $e) {
+                // Fail gracefully if relations aren't perfect
                 $orders = collect();
-                $notifCount = 0;
             }
         }
 
@@ -69,7 +70,7 @@ class SellerController extends Controller
     }
 
     /**
-     * ✅ Show Seller Profile Settings
+     * Seller Profile View
      */
     public function profile()
     {
@@ -79,7 +80,7 @@ class SellerController extends Controller
     }
 
     /**
-     * ✅ Update Seller Profile Information
+     * Update Seller Shop Information
      */
     public function updateProfile(Request $request)
     {
@@ -90,7 +91,6 @@ class SellerController extends Controller
             'shop_name' => 'nullable|string|max:255',
         ]);
 
-        // Update user details
         $user->name = $request->name;
         $user->shop_name = $request->shop_name;
         
@@ -101,7 +101,7 @@ class SellerController extends Controller
     }
 
     /**
-     * Full Orders Management List
+     * Full Orders Management List (Paginated)
      */
     public function orders()
     {
@@ -114,7 +114,7 @@ class SellerController extends Controller
         $orders = Order::whereHas('product', function($query) use ($sellerId) {
             $query->where('user_id', $sellerId);
         })
-        ->with(['user', 'product.images']) // ✅ Load images for order list too
+        ->with(['user', 'product.images'])
         ->latest()
         ->paginate(15);
 
@@ -122,7 +122,7 @@ class SellerController extends Controller
     }
 
     /**
-     * Update Order Status
+     * Update Order Status & Handle Inventory Returns
      */
     public function updateOrderStatus(Request $request, $id)
     {
@@ -132,10 +132,12 @@ class SellerController extends Controller
 
         $sellerId = Auth::id();
 
+        // Find the order and verify the seller owns the product
         $order = Order::whereHas('product', function($query) use ($sellerId) {
             $query->where('user_id', $sellerId);
         })->with('product')->findOrFail($id);
 
+        // If declining, return the stock to the inventory
         if ($request->status === 'declined' && $order->status !== 'declined') {
             $order->product->increment('stock', $order->quantity);
             
