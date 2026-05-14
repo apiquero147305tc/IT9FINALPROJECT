@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Product; 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AdminUserEmail;
+use App\Models\Notification;
+
+
 
 class AdminController extends Controller
 {
@@ -189,5 +194,33 @@ public function viewId($id)
 {
     $user = User::findOrFail($id);
     return view('admin.view-id', compact('user'));
+}
+
+public function sendEmail(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    // 1. Save notification (THIS is what shows in dashboard)
+    Notification::create([
+        'user_id' => $user->id,
+        'subject' => $request->subject,
+        'message' => $request->message,
+    ]);
+
+    // 2. OPTIONAL: real email
+    Mail::raw($request->message, function ($mail) use ($user, $request) {
+        $mail->to($user->email)
+             ->subject($request->subject);
+    });
+
+    return redirect()->route('admin.dashboard')
+        ->with('success', 'Email sent + notification stored.');
+}
+
+public function emailPage($id)
+{
+    $user = User::findOrFail($id);
+
+    return view('admin.email-compose', compact('user'));
 }
 }

@@ -34,7 +34,8 @@ class RoleMiddleware
         // 3. BLOCKED USER CHECK
         // =========================
         if ($user->status === 'blocked') {
-            abort(403, 'Your account has been blocked by admin.');
+            Auth::logout();
+            return redirect()->route('blocked');
         }
 
         // =========================

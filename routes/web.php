@@ -58,6 +58,10 @@ Route::get('/contact', fn () => view('contact'))->name('contact');
 // 🔐 AUTH
 //////////////////////////////////////////////////
 
+  Route::get('/blocked', function () {
+    return view('auth.blocked');
+})->name('blocked');
+
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
 Route::post('/login-process', [AuthController::class, 'login'])->name('login.post');
 
@@ -207,5 +211,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pending-approval', [AuthController::class, 'pending'])
     ->name('pending');
   
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
+    ->name('admin.email');
+
+    Route::get('/admin/email/{id}', [AdminController::class, 'emailPage'])
+    ->name('admin.email.page');
+
+    Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
+    ->name('admin.email.send');
 });

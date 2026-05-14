@@ -40,6 +40,13 @@ class AuthController extends Controller
     /** @var User $user */
     $user = Auth::user();
 
+    if ($user->is_blocked) {
+
+    Auth::logout();
+
+    return redirect()->route('blocked');
+}
+
     // 🚨 BLOCK SELLERS NOT APPROVED
     if ($user->role === 'seller' && $user->status !== 'approved') {
 
