@@ -58,7 +58,6 @@ Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole')
 Route::get('/chooseRole', fn () => view('auth.chooseRole'))->name('chooseRole');
 Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
 Route::get('/pending', fn () => view('auth.pending'))->name('pending');
-
 Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
 
 /*
@@ -172,6 +171,13 @@ Route::middleware(['auth'])->group(function () {
         // DASHBOARD
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
             ->name('admin.dashboard');
+
+        // 📩 CONTACT MESSAGES (ADDED)
+        Route::get('/admin/contacts', [AdminController::class, 'contacts'])
+            ->name('admin.contacts');
+
+        Route::post('/admin/contacts/{id}/read', [AdminController::class, 'markAsRead'])
+            ->name('admin.contacts.read');
 
         // USERS
         Route::get('/admin/users', [AdminController::class, 'allUsers'])

@@ -1,5 +1,4 @@
 <x-layout>
-<<<<<<< HEAD
     <section class="max-w-[1440px] mx-auto px-6 lg:px-12 py-20 bg-[#FDFCFB]">
         
         <div class="flex flex-col lg:flex-row items-baseline gap-6 mb-24 border-b border-slate-100 pb-12">
@@ -55,7 +54,6 @@
                             </label>
                         </div>
                     </div>
-=======
     <head>
         {{-- Tailwind --}}
         <script src="https://cdn.tailwindcss.com"></script>
@@ -272,7 +270,6 @@
             </div>
 
         </div>
->>>>>>> origin/almostfinal
 
                     <div class="relative group">
                         <textarea id="message" name="message" rows="4" required placeholder=" " 
@@ -282,7 +279,6 @@
                         </label>
                     </div>
 
-<<<<<<< HEAD
                     <div class="pt-4">
                         <button type="submit" class="group flex items-center justify-between w-full bg-slate-900 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95">
                             Initialize Message
@@ -294,9 +290,7 @@
         </div>
 
     </section>
-=======
 </body>
 </html>
 
->>>>>>> origin/almostfinal
 </x-layout>

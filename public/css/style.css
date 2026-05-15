@@ -33,9 +33,7 @@ body {
 
 .container { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
 
-<<<<<<< HEAD
 /* --- VIBRANT ORANGE NAVBAR --- */
-=======
 h2 { color: var(--cc-red); text-align: center; margin-bottom: 1.5rem; }
 
 .h22{
@@ -73,7 +71,6 @@ body {
 }
 
 /* NAVBAR */
->>>>>>> origin/almostfinal
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -227,12 +224,10 @@ body {
     color: var(--brand-white);
     border: none;
     padding: 12px;
-<<<<<<< HEAD
     border-radius: 10px;
     font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
-=======
     border-radius: 25px;
     text-align: center;
     font-weight: bold;
@@ -308,14 +303,11 @@ body {
 .form-box select:focus {
     border-color: var(--red);
     box-shadow: 0 0 0 3px rgba(221, 13, 34, 0.15);
->>>>>>> origin/almostfinal
 }
 .cart-btn:hover { background-color: var(--brand-red); }
 
-<<<<<<< HEAD
 .btn-main {
     background: var(--brand-orange);
-=======
 /* BUTTON */
 .form-box .btn {
     width: 100%;
@@ -355,7 +347,6 @@ a:hover {
 
 .cravecartlogo{
     text-decoration: none;
->>>>>>> origin/almostfinal
     color: white;
     padding: 14px 35px;
     border-radius: 10px; 
@@ -365,9 +356,7 @@ a:hover {
     font-size: 0.95rem;
 }
 
-<<<<<<< HEAD
 /* --- FOOTER --- */
-=======
 .logins {
     color: var(--red);
     margin-top: 15px;
@@ -382,7 +371,6 @@ a:hover {
     color: blue;
 }
 
->>>>>>> origin/almostfinal
 .footer {
     background-color: #0f172a; /* Sophisticated Dark Blue-Black */
     color: #94a3b8;
