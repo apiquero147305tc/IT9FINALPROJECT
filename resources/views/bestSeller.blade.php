@@ -5,7 +5,7 @@
             <div>
                 <p class="text-orange-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4">/Our Products </p>
                 <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter text-slate-900 leading-none">
-                    Best <span class="text-orange-600">Sellers.</span>
+                    Our<span class="text-orange-600">Products.</span>
                 </h1>
             </div>
             <p class="text-slate-400 font-bold uppercase text-[11px] tracking-[0.2em] max-w-[200px] leading-relaxed">
