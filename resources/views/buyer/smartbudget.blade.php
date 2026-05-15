@@ -1,5 +1,3 @@
-<x-buyerDash>
-
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
@@ -50,37 +48,22 @@
         color: #1c1917;
     }
 
-    /* NEW SAFE BUTTON STYLE */
-    .back-btn {
-        display:inline-flex;
-        align-items:center;
-        gap:8px;
-        margin-top:12px;
-        padding:8px 14px;
-        background:#ffffff;
-        border:1px solid rgba(0,0,0,0.08);
-        border-radius:12px;
-        text-decoration:none;
-        color:#111827;
-        font-weight:600;
-        font-size:14px;
-        width:fit-content;
-        box-shadow:0 2px 6px rgba(0,0,0,0.05);
-        transition:0.2s ease;
+    /* FIXED WRAPPER FOR PROFILE EMBED */
+    .smart-budget-wrapper {
+        background: radial-gradient(circle at top, #fff7e6, #f8fafc);
+        border-radius: 18px;
+        padding: 25px;
+        margin-top: 15px;
     }
 
-    .back-btn:hover {
-        transform: translateY(-1px);
-        background:#f9fafb;
+    @media (max-width: 900px) {
+        .budget-grid {
+            grid-template-columns: 1fr !important;
+        }
     }
 </style>
 
-<div style="
-    min-height:100vh;
-    padding:30px;
-    background: radial-gradient(circle at top, #fff7e6, #f8fafc);
-    font-family:'Segoe UI', sans-serif;
-">
+<div class="smart-budget-wrapper">
 
     {{-- HEADER --}}
     <div class="fade-in" style="margin-bottom:25px;">
@@ -93,11 +76,7 @@
             align-items:center;
             gap:12px;
         ">
-            <span data-lucide="wallet" style="
-                color:#d97706;
-                width:34px;
-                height:34px;
-            "></span>
+            <span data-lucide="wallet" style="color:#d97706;width:34px;height:34px;"></span>
 
             <span style="
                 background: linear-gradient(90deg,#fbbf24,#f59e0b,#d97706);
@@ -109,18 +88,9 @@
             </span>
         </h1>
 
-        <p style="
-            color:#78716c;
-            margin-top:8px;
-            font-size:15px;
-        ">
+        <p style="color:#78716c;margin-top:8px;font-size:15px;">
             Financial overview of your spending behavior in real time!
         </p>
-
-        {{-- ✅ BACK TO DASHBOARD (NEW, SAFE, NON-INTRUSIVE) --}}
-        <a href="{{ route('buyer.home') }}" class="back-btn">
-            ← Back to Dashboard
-        </a>
 
     </div>
 
@@ -190,7 +160,7 @@
     </div>
 
     {{-- MAIN GRID --}}
-    <div style="
+    <div class="budget-grid" style="
         display:grid;
         grid-template-columns: 1.4fr 1fr;
         gap:20px;
@@ -285,7 +255,6 @@
 
 </div>
 
-{{-- CHART --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -321,5 +290,3 @@ if (ctx) {
 <script>
     lucide.createIcons();
 </script>
-
-</x-buyerDash>

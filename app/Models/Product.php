@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\ProductImage;
 use App\Models\Favorite;
+use App\Models\ProductRating;
 
 class Product extends Model
 {
@@ -29,27 +30,39 @@ class Product extends Model
     |-------------------------
     */
 
-    // Owner of product (seller)
+    // Seller
     public function seller()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Product images
+    // Images
     public function images()
     {
         return $this->hasMany(ProductImage::class);
     }
 
-    // Orders containing this product
+    // Orders
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
-    //Favorites
+    // Favorites
     public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'product_id');
+    }
+
+    // ⭐ RATINGS (THIS FIXES YOUR ERROR)
+    public function ratings()
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
+    // reviews
+    public function reviews()
    {
-    return $this->hasMany(Favorite::class, 'product_id'); 
+    return $this->hasMany(ProductReview::class);
    }
 }
