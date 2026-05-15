@@ -67,7 +67,7 @@
                         <span class="flex h-2 w-2 rounded-full bg-white animate-notif"></span>
                     @endif
                 </a>
-                <a href="{{ route('messages.inbox') }}" class="hover:text-white transition">Lending</a>
+                <a href="{{ route('seller.messages') }}" class="hover:text-white transition">Lending</a>
             </div>
             
             <div class="flex items-center gap-4 pl-6 border-l border-orange-900/10">
@@ -185,7 +185,7 @@
     </main>
 
     <!-- ✅ Floating Action Button -->
-    <a href="{{ route('messages.inbox') }}" class="fixed bottom-8 right-8 bg-orange-600 text-white flex items-center gap-3 px-8 py-5 rounded-full shadow-2xl hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest z-50">
+    <a href="{{ route('seller.messages') }}" class="fixed bottom-8 right-8 bg-orange-600 text-white flex items-center gap-3 px-8 py-5 rounded-full shadow-2xl hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest z-50">
         <span class="text-lg">💬</span> Messages
     </a>
 
