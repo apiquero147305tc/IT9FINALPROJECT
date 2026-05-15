@@ -51,7 +51,7 @@
 
             <ul class="hidden lg:flex items-center gap-8 list-none mb-0 p-0">
                 <li><a href="{{ route('shop') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">The Shop</a></li>
-                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">Best Sellers</a></li>
+                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">Our Product</a></li>
                 <li><a href="{{ route('about') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">About</a></li>
                 <li><a href="{{ route('contact') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">Contact</a></li>
             </ul>
