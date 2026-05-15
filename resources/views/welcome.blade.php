@@ -50,7 +50,7 @@
                             Log in
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-black border text-[#1b1b18] dark:border-[#3E3E3A] rounded-sm transition-all">
+                            <a href="{{ route('chooseRole') }}" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-black border text-[#1b1b18] dark:border-[#3E3E3A] rounded-sm transition-all">
                                 Register
                             </a>
                         @endif
