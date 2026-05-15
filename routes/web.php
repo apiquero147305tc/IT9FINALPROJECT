@@ -10,6 +10,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CartController;        // ✅ ADDED
+use App\Http\Controllers\ReceiptController;      // ✅ ADDED
+use App\Http\Controllers\LendingController;      // ✅ ADDED
 use App\Models\Product;
 
 /*
@@ -19,7 +22,6 @@ use App\Models\Product;
 */
 
 Route::get('/', function () {
-    // Fetching actual best sellers from the DB for the landing page
     $products = Product::latest()->take(4)->get(); 
     return view('home', compact('products'));
 })->name('home');
@@ -27,9 +29,9 @@ Route::get('/', function () {
 Route::get('/about', fn () => view('about'))->name('about');
 Route::get('/contact', fn () => view('contact'))->name('contact');
 
-// Fixed Best Seller: Now fetches actual data to prevent "Undefined Variable" errors
 Route::get('/bestSeller', function () {
-$products = Product::latest()->get();    return view('bestSeller', compact('products'));
+    $products = Product::latest()->get();
+    return view('bestSeller', compact('products'));
 })->name('bestSeller');
 
 Route::get('/products/{product}', [BuyerController::class, 'show'])
@@ -73,10 +75,31 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/messages/{userId}/fetch', 'fetchMessages');
     });
 
+    // --- 🛒 CART SYSTEM ---
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+
+    // --- 🧾 RECEIPT SYSTEM ---
+    Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
+    Route::get('/receipt/{order}/download', [ReceiptController::class, 'download'])->name('receipt.download');
+
+    // --- 📚 LENDING SYSTEM ---
+    Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
+    Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
+    Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
+    Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])->name('lending.my-requests');
+    Route::get('/lending/{id}', [LendingController::class, 'show'])->name('lending.show');
+    Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])->name('lending.seller');
+    Route::patch('/lending/{id}/status', [LendingController::class, 'updateStatus'])->name('lending.update-status');
+    Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
+
     // --- 🛒 BUYER HUB ---
     Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
-        Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
+        // ❌ REMOVED: Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
@@ -105,32 +128,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/admin/reject/{id}', 'rejectUser')->name('admin.reject');
         });
     });
-        // ==================== CART ROUTES ====================
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-        Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-        Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
-        Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-        Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
-    });
-
-    // ==================== RECEIPT ROUTES ====================
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
-        Route::get('/receipt/{order}/download', [ReceiptController::class, 'download'])->name('receipt.download');
-    });
-
-    // ==================== LENDING ROUTES ====================
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
-        Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
-        Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
-        Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])->name('lending.my-requests');
-        Route::get('/lending/{id}', [LendingController::class, 'show'])->name('lending.show');
-        Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])->name('lending.seller');
-        Route::patch('/lending/{id}/status', [LendingController::class, 'updateStatus'])->name('lending.update-status');
-        Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
-    });
 });
 
 /*
@@ -143,7 +140,6 @@ Route::get('/shop', function () {
     return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
 })->name('shop');
 
-// Global redirect for /home
 Route::get('/home', function() {
     if (!Auth::check()) return redirect()->route('home');
     if (Auth::user()->role === 'seller') return redirect()->route('seller.dash');
