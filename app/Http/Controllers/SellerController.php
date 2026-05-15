@@ -7,61 +7,61 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Notification;
 
 class SellerController extends Controller
 {
     /**
      * Seller Dashboard Overview
      */
-  public function dashboard()
+  
+public function dashboard()
 {
     $sellerId = Auth::id();
-    
 
     // PRODUCTS
-    $products = Product::where('user_id', Auth::id())->get();
+    $products = Product::where('user_id', $sellerId)->get();
 
-    // ORDERS
+    // DEFAULTS
     $orders = collect();
     $totalEarnings = 0;
     $notifCount = 0;
+    $notifications = collect();
 
-    if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
-        try {
+    // NOTIFICATIONS (always safe)
+    if (Schema::hasTable('notifications')) {
+        $notifications = Notification::where('user_id', $sellerId)
+            ->latest()
+            ->get();
 
-            $orders = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('seller_id', $sellerId);
+        $notifCount = Notification::where('user_id', $sellerId)->count();
+    }
+
+    // ORDERS (safe check)
+    if (class_exists(Order::class) && Schema::hasTable('orders')) {
+
+        $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId); // IMPORTANT FIX (was seller_id mismatch risk)
             })
             ->with(['user', 'product'])
             ->latest()
             ->take(5)
             ->get();
 
-            $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('seller_id', $sellerId);
+        $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId);
             })
             ->where('status', 'completed')
             ->sum('total_price');
-
-            // NOTIFICATION COUNT
-            $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('seller_id', $sellerId);
-            })
-            ->where('is_seen', false)
-            ->count();
-
-        } catch (\Exception $e) {
-            $orders = collect();
-            $notifCount = 0;
-        }
     }
 
-  return view('seller.dashboard', compact(
-    'products',
-    'orders',
-    'totalEarnings',
-    'notifCount'
-));
+    return view('seller.dashboard', compact(
+        'products',
+        'orders',
+        'totalEarnings',
+        'notifications',
+        'notifCount'
+    ));
 }
     /**
      * Full Orders Management List

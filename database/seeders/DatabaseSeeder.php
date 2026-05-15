@@ -39,6 +39,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'buyer@cravecart.com',
             'password' => Hash::make('password'),
             'role' => 'buyer',
+            'is_approved' => true,
+            'is_blocked' => false,
+
         ]);
     }
 }

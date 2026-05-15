@@ -52,7 +52,7 @@ class AuthController extends Controller
 
         Auth::logout();
 
-        return redirect('/pending-approval')->withErrors([
+        return redirect('/pending')->withErrors([
             'email' => 'Your account is waiting for admin approval.'
         ]);
     }
