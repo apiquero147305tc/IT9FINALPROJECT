@@ -24,13 +24,10 @@ Route::get('/', function () {
     return view('home', compact('products'));
 })->name('home');
 
+// Simplified Global Shop/Home Redirector
 Route::get('/shop', function () {
     if (Auth::check()) {
-        return match(Auth::user()->role) {
-            'seller' => redirect()->route('seller.dash'),
-            'admin'  => redirect()->route('admin.dashboard'),
-            default  => redirect()->route('buyer.home'),
-        };
+        return redirect()->route('dashboard.redirect');
     }
     return redirect()->route('chooseRole');
 })->name('shop');
@@ -49,21 +46,23 @@ Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])->name('s
 
 /*
 |--------------------------------------------------------------------------
-| 🔐 AUTHENTICATION
+| 🔐 AUTHENTICATION & GUEST ACCESS
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-    Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
+    Route::get('/choose-role', [AuthController::class, 'showChooseRole'])->name('chooseRole');
 
     // Registration Routes
     Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
-    Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
+    Route::post('/register/buyer', [AuthController::class, 'register'])->name('buyer.register.post');
     Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
-    Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
+    Route::post('/register/seller', [AuthController::class, 'register'])->name('seller.register.post');
 });
 
+// ✅ FIXED: Added the named "pending" route for unapproved users
+Route::get('/pending-approval', [AuthController::class, 'pending'])->name('pending');
 Route::get('/blocked', fn() => view('auth.blocked'))->name('blocked');
 
 /*
@@ -75,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Smart Home Redirector
+    // Smart Home Redirector (Unified)
     Route::get('/home', function() {
         return match(Auth::user()->role) {
             'seller' => redirect()->route('seller.dash'),

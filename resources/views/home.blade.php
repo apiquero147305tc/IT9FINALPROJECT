@@ -1,19 +1,20 @@
 <x-layout>
+    <!-- ✅ Hero Section -->
     <section class="max-w-7xl mx-auto flex flex-col md:flex-row items-center py-24 px-6 lg:px-12 gap-16">
         <div class="flex-[1.2]">
-            <p class="font-extrabold uppercase tracking-widest text-orange-600 mb-5 text-sm">
+            <p class="font-extrabold uppercase tracking-widest text-red-600 mb-5 text-sm">
                 CraveCart | Essentials
             </p>
             
             <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[1.1] mb-6 text-slate-900">
-                Essentials and Necessities, <span class="block text-orange-600">Delivered to Your Door!</span>
+                Essentials and Necessities, <span class="block text-red-600">Delivered to Your Door!</span>
             </h1>
 
             <p class="text-slate-500 max-w-md mb-10 leading-relaxed font-medium text-lg">
                 Shop a wide range of essential products for yourself and your family.
             </p>
             
-            <a href="{{ route('chooseRole') }}" class="inline-block bg-slate-900 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-slate-200 hover:-translate-y-1 hover:bg-orange-600 transition-all duration-300 no-underline">
+            <a href="{{ route('chooseRole') }}" class="inline-block bg-slate-900 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-slate-200 hover:-translate-y-1 hover:bg-red-600 transition-all duration-300 no-underline">
                 Shop Now
             </a>
         </div>
@@ -23,7 +24,8 @@
         </div>
     </section>
 
-    <section class="bg-[#fff4e9] py-24">
+    <!-- ✅ Category Section (Warmer Tint) -->
+    <section class="bg-red-50 py-24">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
             <h2 class="mb-14 text-4xl font-black uppercase tracking-tighter text-center text-slate-900">
                 Shop by Category
@@ -40,20 +42,21 @@
                 @endphp
 
                 @foreach($cats as $cat)
-                <div class="bg-white w-52 h-52 rounded-[40px] flex flex-col items-center justify-center shadow-sm border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                <div class="bg-white w-52 h-52 rounded-[40px] flex flex-col items-center justify-center shadow-sm border border-red-100 hover:-translate-y-2 hover:shadow-xl hover:border-red-200 transition-all duration-300 cursor-pointer group">
                     <span class="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">{{ $cat['emoji'] }}</span>
-                    <span class="font-extrabold uppercase tracking-widest text-[11px] text-slate-900">{{ $cat['name'] }}</span>
+                    <span class="font-extrabold uppercase tracking-widest text-[11px] text-slate-900 group-hover:text-red-600 transition-colors">{{ $cat['name'] }}</span>
                 </div>
                 @endforeach
             </div>
         </div>
     </section>
 
+    <!-- ✅ Best Sellers -->
     <section class="max-w-7xl mx-auto px-6 lg:px-12 py-24">
         <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-14">
             <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-slate-900">Best Sellers</h2>
-            <div class="hidden sm:block h-3 bg-orange-600 rounded-full w-32 flex-shrink-0"></div>
-            <a href="#" class="sm:ml-auto text-orange-600 font-extrabold uppercase tracking-widest text-xs border-b-2 border-orange-600 pb-1 no-underline transition-colors hover:text-orange-700 hover:border-orange-700">
+            <div class="hidden sm:block h-3 bg-red-600 rounded-full w-32 flex-shrink-0"></div>
+            <a href="#" class="sm:ml-auto text-red-600 font-extrabold uppercase tracking-widest text-xs border-b-2 border-red-600 pb-1 no-underline transition-colors hover:text-red-700 hover:border-red-700">
                 View All →
             </a>
         </div>
@@ -61,7 +64,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             @foreach($products as $product)
             <div class="relative bg-white rounded-[35px] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
-                <div class="absolute top-6 left-6 bg-slate-900 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest z-10">
+                <div class="absolute top-6 left-6 bg-red-600 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest z-10">
                     Hot
                 </div>
                 
@@ -74,9 +77,9 @@
                 </div>
 
                 <h3 class="text-sm font-black uppercase mb-2 text-slate-900 leading-tight">{{ $product['name'] }}</h3>
-                <p class="text-2xl font-black text-orange-600 mb-6">${{ number_format($product['price'], 2) }}</p>
+                <p class="text-2xl font-black text-red-600 mb-6">${{ number_format($product['price'], 2) }}</p>
                 
-                <button class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-600 transition-colors shadow-lg shadow-slate-100 border-none cursor-pointer">
+                <button class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-colors shadow-lg shadow-slate-100 border-none cursor-pointer">
                     Add to Cart
                 </button>
             </div>
@@ -84,16 +87,21 @@
         </div>
     </section>
 
+    <!-- ✅ Promo CTA Section -->
     <div class="max-w-7xl mx-auto px-6 lg:px-12 pb-24">
-        <section class="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-20 px-8 rounded-[50px] text-center overflow-hidden relative">
-            <p class="font-extrabold uppercase tracking-[4px] text-orange-500 mb-5 text-sm">Limited Time Offer</p>
+        <section class="bg-gradient-to-br from-red-700 to-slate-900 text-white py-20 px-8 rounded-[50px] text-center overflow-hidden relative">
+            <p class="font-extrabold uppercase tracking-[4px] text-red-400 mb-5 text-sm">Limited Time Offer</p>
             <h2 class="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-6">50% OFF</h2>
-            <p class="text-slate-400 max-w-xl mx-auto mb-10 font-medium text-lg">
+            <p class="text-slate-300 max-w-xl mx-auto mb-10 font-medium text-lg">
                 Unlock massive savings on your first delivery. Join the community and experience CraveCart today.
             </p>
-            <a href="{{ route('chooseRole') }}" class="inline-block bg-white text-orange-600 px-14 py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl hover:-translate-y-1 transition-all no-underline">
+            <a href="{{ route('chooseRole') }}" class="inline-block bg-white text-red-600 px-14 py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl hover:-translate-y-1 transition-all no-underline">
                 Claim Discount
             </a>
+            
+            <!-- Subtle Decorative Element -->
+            <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-red-600 rounded-full blur-3xl opacity-20"></div>
+            <div class="absolute -top-10 -left-10 w-64 h-64 bg-orange-600 rounded-full blur-3xl opacity-10"></div>
         </section>
     </div>
 </x-layout>
