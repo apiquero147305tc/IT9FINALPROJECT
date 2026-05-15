@@ -7,33 +7,54 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Notification;
 
 class SellerController extends Controller
 {
     /**
      * Seller Dashboard Overview
      */
-  public function dashboard()
+  
+public function dashboard()
 {
     $sellerId = Auth::id();
 
     // PRODUCTS
     $products = Product::where('user_id', $sellerId)->get();
 
-    // ORDERS
+    // DEFAULTS
     $orders = collect();
     $totalEarnings = 0;
     $notifCount = 0;
+    $notifications = collect();
 
+<<<<<<< HEAD
     if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
         try {
             $orders = Order::whereHas('product', function ($query) use ($sellerId) {
                 $query->where('user_id', $sellerId);  // ✅ Fixed: 'user_id' not 'seller_id'
+=======
+    // NOTIFICATIONS (always safe)
+    if (Schema::hasTable('notifications')) {
+        $notifications = Notification::where('user_id', $sellerId)
+            ->latest()
+            ->get();
+
+        $notifCount = Notification::where('user_id', $sellerId)->count();
+    }
+
+    // ORDERS (safe check)
+    if (class_exists(Order::class) && Schema::hasTable('orders')) {
+
+        $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId); // IMPORTANT FIX (was seller_id mismatch risk)
+>>>>>>> origin/almostfinal
             })
             ->with(['user', 'product'])
             ->latest()
             ->get();
 
+<<<<<<< HEAD
             // Calculate total earnings from completed orders
             $totalEarnings = $orders
                 ->where('status', 'completed')
@@ -53,13 +74,25 @@ class SellerController extends Controller
             $totalEarnings = 0;
             $notifCount = 0;
         }
+=======
+        $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId);
+            })
+            ->where('status', 'completed')
+            ->sum('total_price');
+>>>>>>> origin/almostfinal
     }
 
     return view('seller.dashboard', compact(
         'products',
         'orders',
         'totalEarnings',
+<<<<<<< HEAD
         'notifCount'      // ✅ Added missing variable
+=======
+        'notifications',
+        'notifCount'
+>>>>>>> origin/almostfinal
     ));
 }
     /**

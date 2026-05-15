@@ -68,7 +68,7 @@
                 <div class="mt-10 pt-8 border-t border-slate-50 text-center">
                     <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest leading-loose">
                         New to the Platform? <br>
-                        <a href="{{ route('register') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1">Create Account</a>
+                        <a href="{{ route('chooseRole') }}" class="text-orange-600 no-underline border-b-2 border-orange-600/20 hover:border-orange-600 transition-all ml-1">Create Account</a>
                     </p>
                 </div>
             </div>

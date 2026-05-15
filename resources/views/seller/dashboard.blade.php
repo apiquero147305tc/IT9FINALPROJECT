@@ -105,4 +105,105 @@
 
 </div>
 
+<<<<<<< HEAD
 </x-sellerDash>
+=======
+    <div class="sidebar">
+    <div class="card">
+        <h2>Recent Orders</h2>
+
+        @forelse($orders as $order)
+            <div class="order-item"
+                 style="
+                    border-left: 4px solid #ff4a00;
+                    padding: 12px;
+                    margin-bottom: 12px;
+                    background: #fffaf6;
+                    border-radius: 8px;
+                    transition: 0.2s;
+                 "
+                 onmouseover="this.style.transform='scale(1.01)'"
+                 onmouseout="this.style.transform='scale(1)'">
+
+                <p style="margin:4px 0;">
+                    <strong>👤 Customer:</strong>
+                    {{ $order->user->name ?? 'Unknown' }}
+                </p>
+
+                <p style="margin:4px 0;">
+                    <strong>📦 Item:</strong>
+                    {{ $order->product->name ?? 'Deleted Product' }}
+                </p>
+
+                <p style="margin:4px 0; color:#dd0d22;">
+                    <strong>💰 Total:</strong>
+                    ₱{{ number_format($order->total_price, 2) }}
+                </p>
+
+                <p style="margin:4px 0;">
+                    <strong>Status:</strong>
+                    <span class="
+                    status
+                    @if($order->status == 'completed') status-completed
+                    @elseif($order->status == 'cancelled') status-cancelled
+                    @else status-pending
+                    @endif
+                ">
+                    {{ ucfirst($order->status) }}
+                </span>
+                </p>
+
+                <small style="color:#888;">
+                    🕒 {{ $order->created_at->diffForHumans() }}
+                </small>
+
+            </div>
+        @empty
+            <div style="text-align:center; padding:25px;">
+                <p style="color:#999; font-size:0.9rem;">
+                    📭 No orders yet.<br>
+                    Keep promoting your products!
+                </p>
+            </div>
+        @endforelse
+
+        @if($orders->count())
+            <a href="{{ route('seller.orders') }}"
+               style="
+                    display:block;
+                    text-align:center;
+                    font-size:0.85rem;
+                    color:#dd0d22;
+                    text-decoration:none;
+                    margin-top:10px;
+                    font-weight:bold;
+               ">
+                View All Orders →
+            </a>
+        @endif
+
+    </div>
+</div>
+
+<x-messui/>
+
+<!-- <div class="bg-white p-4 rounded-xl shadow mb-6">
+    <h2 class="text-lg font-bold mb-2">Notifications</h2>
+
+    @forelse($notifications as $note)
+
+        <div class="border-b py-2">
+            <h3 class="font-semibold">{{ $note->subject }}</h3>
+            <p class="text-gray-600">{{ $note->message }}</p>
+        </div>
+
+    @empty
+        <p class="text-gray-400">No notifications yet.</p>
+    @endforelse
+</div>
+
+IBUTANG DAW NIS DASHBOARD SA BUYER SA NOTIF NIYA-->
+
+</body>
+</html>
+>>>>>>> origin/almostfinal

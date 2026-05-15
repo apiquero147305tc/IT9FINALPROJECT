@@ -6,26 +6,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+   public function up(): void
 {
     Schema::table('users', function (Blueprint $table) {
-        $table->string('shop_name')->nullable();
-        $table->string('contact_number')->nullable();
-        $table->integer('age')->nullable();
-        $table->string('valid_id')->nullable(); // file path
+
+        if (!Schema::hasColumn('users', 'shop_name')) {
+            $table->string('shop_name')->nullable()->after('name');
+        }
+
+        if (!Schema::hasColumn('users', 'contact_number')) {
+            $table->string('contact_number')->nullable();
+        }
+
+        if (!Schema::hasColumn('users', 'age')) {
+            $table->integer('age')->nullable();
+        }
+
+        if (!Schema::hasColumn('users', 'valid_id')) {
+            $table->string('valid_id')->nullable();
+        }
     });
 }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
-    }
+public function down(): void
+{
+    Schema::table('users', function (Blueprint $table) {
+
+        $table->dropColumn([
+            'shop_name',
+            'contact_number',
+            'age',
+            'valid_id',
+        ]);
+    });
+}
 };

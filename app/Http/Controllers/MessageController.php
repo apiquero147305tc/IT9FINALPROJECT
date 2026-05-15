@@ -9,25 +9,25 @@ use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
-    public function chat($userId)
-    {
-        $authId = Auth::id();
+   public function chat(int $userId)
+{
+    $authId = Auth::id();
 
-        $messages = Message::where(function ($q) use ($authId, $userId) {
-                $q->where('sender_id', $authId)
-                  ->where('receiver_id', $userId);
-            })
-            ->orWhere(function ($q) use ($authId, $userId) {
-                $q->where('sender_id', $userId)
-                  ->where('receiver_id', $authId);
-            })
-            ->orderBy('created_at')
-            ->get();
+    $receiver = User::findOrFail($userId);
 
-        $receiver = User::findOrFail($userId);
+    $messages = Message::where(function ($q) use ($authId, $userId) {
+            $q->where('sender_id', $authId)
+              ->where('receiver_id', $userId);
+        })
+        ->orWhere(function ($q) use ($authId, $userId) {
+            $q->where('sender_id', $userId)
+              ->where('receiver_id', $authId);
+        })
+        ->orderBy('created_at')
+        ->get();
 
-        return view('messages.chat', compact('messages', 'receiver'));
-    }
+    return view('messages.chat', compact('messages', 'receiver'));
+}
 
     public function send(Request $request)
     {
@@ -40,13 +40,13 @@ class MessageController extends Controller
         return back();
     }
 
-    public function inbox()
+  public function inbox()
 {
     $authId = Auth::id();
 
     $conversations = Message::where('sender_id', $authId)
         ->orWhere('receiver_id', $authId)
-        ->orderBy('created_at', 'desc')
+        ->latest()
         ->get()
         ->groupBy(function ($msg) use ($authId) {
             return $msg->sender_id == $authId
@@ -57,10 +57,8 @@ class MessageController extends Controller
     $users = [];
 
     foreach ($conversations as $userId => $msgs) {
-
         $user = User::find($userId);
 
-        // ⚠️ safety check (prevents null crash)
         if (!$user) continue;
 
         $users[] = [
@@ -74,15 +72,20 @@ class MessageController extends Controller
 
 public function fetchMessages($userId)
 {
-    $messages = Message::where(function ($q) use ($userId) {
-    $q->where('sender_id', Auth::id())
-      ->where('receiver_id', $userId);
-})->orWhere(function ($q) use ($userId) {
-    $q->where('sender_id', $userId)
-      ->where('receiver_id', Auth::id());
-})->orderBy('created_at')->get();
+    $authId = Auth::id();
 
-return view('messages.partials.chat-body', compact('messages', 'userId'));
+    $messages = Message::where(function ($q) use ($authId, $userId) {
+            $q->where('sender_id', $authId)
+              ->where('receiver_id', $userId);
+        })
+        ->orWhere(function ($q) use ($authId, $userId) {
+            $q->where('sender_id', $userId)
+              ->where('receiver_id', $authId);
+        })
+        ->orderBy('created_at')
+        ->get();
+
+    return view('messages.partials.chat-body', compact('messages', 'userId'));
 }
 
 public function sellerInbox()
@@ -110,4 +113,40 @@ public function sellerInbox()
 
     return view('messages.seller-inbox', compact('users'));
 }
+
+public function adminInbox()
+{
+    $users = User::where('role', '!=', 'admin')
+        ->latest()
+        ->get();
+
+    return view('admin.messages', compact('users'));
+}
+
+public function adminChat($id)
+{
+    $authId = Auth::id();
+
+    // always required for sidebar
+    $users = User::where('role', '!=', 'admin')->get();
+
+    // selected user
+    $user = User::findOrFail($id);
+
+    // messages between admin and selected user
+    $messages = Message::where(function ($q) use ($authId, $id) {
+            $q->where('sender_id', $authId)
+              ->where('receiver_id', $id);
+        })
+        ->orWhere(function ($q) use ($authId, $id) {
+            $q->where('sender_id', $id)
+              ->where('receiver_id', $authId);
+        })
+        ->orderBy('created_at')
+        ->get();
+
+    return view('admin.messages', compact('users', 'user', 'messages'));
+}
+
+
 }

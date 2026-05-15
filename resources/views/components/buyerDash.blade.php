@@ -155,6 +155,21 @@
             <span id="cartCount">0</span>
         </a>
         
+        <div style="display:flex; align-items:center; gap:15px;">
+        <a href="{{ route('messages.inbox') }}"
+   style="
+        display:inline-block;
+        background:#dd0d22;
+        color:white;
+        padding:8px 14px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:bold;
+        position:relative;
+   ">
+    💬 Messages
+        </a>
+</div>
         
         <!-- LOGOUT -->
         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
@@ -231,8 +246,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
-
-<x-messui/>
 
 </body>
 </html>

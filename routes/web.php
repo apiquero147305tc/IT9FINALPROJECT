@@ -10,9 +10,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\CartController;        // ✅ ADDED
-use App\Http\Controllers\ReceiptController;      // ✅ ADDED
-use App\Http\Controllers\LendingController;      // ✅ ADDED
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\LendingController;
 use App\Models\Product;
 
 /*
@@ -22,7 +22,7 @@ use App\Models\Product;
 */
 
 Route::get('/', function () {
-    $products = Product::latest()->take(4)->get(); 
+    $products = Product::latest()->take(4)->get();
     return view('home', compact('products'));
 })->name('home');
 
@@ -55,7 +55,43 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
+Route::get('/chooseRole', fn () => view('auth.chooseRole'))->name('chooseRole');
 Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
+Route::get('/pending', fn () => view('auth.pending'))->name('pending');
+
+Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
+
+/*
+|--------------------------------------------------------------------------
+| 🧾 SIGNUP (BUYER / SELLER)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/buyer/signup', [AuthController::class, 'showSignup']);
+Route::post('/buyer/signup', [AuthController::class, 'signup']);
+
+Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
+Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
+
+Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
+Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
+
+/*
+|--------------------------------------------------------------------------
+| 🔁 SYSTEM HELPERS
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/home', function () {
+    if (!Auth::check()) return redirect()->route('home');
+    if (Auth::user()->role === 'seller') return redirect()->route('seller.dash');
+    if (Auth::user()->role === 'admin') return redirect()->route('admin.dashboard');
+    return redirect()->route('buyer.home');
+});
+
+Route::get('/shop', function () {
+    return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
+})->name('shop');
 
 /*
 |--------------------------------------------------------------------------
@@ -65,8 +101,6 @@ Route::get('/pending-approval', fn () => view('auth.pending'))->name('pending');
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-
     // --- 💬 UNIFIED MESSAGING SYSTEM ---
     Route::controller(MessageController::class)->group(function () {
         Route::get('/messages', 'inbox')->name('messages.inbox');
@@ -74,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/messages/send', 'send')->name('messages.send');
         Route::get('/messages/{userId}/fetch', 'fetchMessages');
     });
+
+    // --- 🛒 ORDERS ---
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
     // --- 🛒 CART SYSTEM ---
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -99,12 +136,11 @@ Route::middleware(['auth'])->group(function () {
     // --- 🛒 BUYER HUB ---
     Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
-        // ❌ REMOVED: Route::get('/cart', fn () => view('buyer.cart'))->name('cart.index');
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
     // --- 🏪 SELLER STUDIO ---
-    Route::middleware(['role:seller'])->group(function () {
+    Route::middleware(['auth', 'role:seller'])->group(function () {
         Route::controller(SellerController::class)->group(function () {
             Route::get('/seller/dashboard', 'dashboard')->name('seller.dash');
             Route::get('/seller/profile', 'profile')->name('seller.profile');
@@ -113,36 +149,85 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::resource('products', ProductController::class)->except(['show']);
-        
+
         Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
             ->name('orders.updateStatus');
-            
+
         Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
     });
 
+    // --- 🛍 PRODUCT (EDIT / UPDATE / DELETE) ---
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+        ->name('products.edit');
+
+    Route::put('/products/{product}', [ProductController::class, 'update'])
+        ->name('products.update');
+
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+        ->name('products.destroy');
+
     // --- 🟣 ADMIN CONTROL PANEL ---
-    Route::middleware(['role:admin'])->group(function () {
-        Route::controller(AdminController::class)->group(function () {
-            Route::get('/admin/dashboard', 'dashboard')->name('admin.dashboard');
-            Route::post('/admin/approve/{id}', 'approveUser')->name('admin.approve');
-            Route::post('/admin/reject/{id}', 'rejectUser')->name('admin.reject');
-        });
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+
+        // DASHBOARD
+        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+            ->name('admin.dashboard');
+
+        // USERS
+        Route::get('/admin/users', [AdminController::class, 'allUsers'])
+            ->name('admin.users');
+
+        Route::get('/admin/sellers', [AdminController::class, 'sellers'])
+            ->name('admin.sellers');
+
+        Route::get('/admin/buyers', [AdminController::class, 'buyers'])
+            ->name('admin.buyers');
+
+        Route::get('/admin/blocked', [AdminController::class, 'blockedUsers'])
+            ->name('admin.blocked');
+
+        Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])
+            ->name('admin.approve');
+
+        Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])
+            ->name('admin.reject');
+
+        Route::post('/admin/block/{id}', [AdminController::class, 'block'])
+            ->name('admin.block');
+
+        Route::post('/admin/unblock/{id}', [AdminController::class, 'unblock'])
+            ->name('admin.unblock');
+
+        // CHAT / MESSAGES
+        Route::get('/admin/messages', [AdminController::class, 'messages'])
+            ->name('admin.messages');
+
+        Route::get('/admin/chat/{id}', [AdminController::class, 'adminChat'])
+            ->name('admin.chat');
+
+        // EMAIL SYSTEM
+        Route::get('/admin/email/{id}', [AdminController::class, 'emailPage'])
+            ->name('admin.email.page');
+
+        Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail'])
+            ->name('admin.email.send');
+
+        // EXTRA
+        Route::get('/admin/view-id/{id}', [AdminController::class, 'viewId']);
+
+        Route::get('/admin/settings', [AdminController::class, 'settings'])
+            ->name('admin.settings');
+
+        Route::post('/admin/settings/update', [AdminController::class, 'updateSettings'])
+            ->name('admin.settings.update');
+
+        Route::get('/admin/analytics', [AdminController::class, 'analytics'])
+            ->name('admin.analytics');
+
+        Route::get('/admin/users/delete', [AdminController::class, 'deleteUsersPage'])
+            ->name('admin.users.delete.page');
+
+        Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])
+            ->name('admin.users.destroy');
     });
-});
-
-/*
-|--------------------------------------------------------------------------
-| 🔁 SYSTEM HELPERS
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/shop', function () {
-    return Auth::check() ? redirect()->route('buyer.home') : redirect()->route('chooseRole');
-})->name('shop');
-
-Route::get('/home', function() {
-    if (!Auth::check()) return redirect()->route('home');
-    if (Auth::user()->role === 'seller') return redirect()->route('seller.dash');
-    if (Auth::user()->role === 'admin') return redirect()->route('admin.dashboard');
-    return redirect()->route('buyer.home');
 });

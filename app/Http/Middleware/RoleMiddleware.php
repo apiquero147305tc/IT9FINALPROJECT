@@ -9,19 +9,46 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-   public function handle(Request $request, Closure $next, string $role): Response
-{
-    if (!Auth::check()) {
-        return redirect()->route('login');
+    public function handle(Request $request, Closure $next, string $role): Response
+    {
+        // =========================
+        // 1. CHECK LOGIN
+        // =========================
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+
+        $userRole = strtolower($user->role ?? '');
+        $requiredRole = strtolower($role);
+
+        // =========================
+        // 2. ROLE CHECK
+        // =========================
+        if ($userRole !== $requiredRole) {
+            abort(403, 'Unauthorized access');
+        }
+
+        // =========================
+        // 3. BLOCKED USER CHECK
+        // =========================
+        if ($user->status === 'blocked') {
+            Auth::logout();
+            return redirect()->route('blocked');
+        }
+
+        // =========================
+        // 4. SELLER APPROVAL CHECK
+        // =========================
+        if (
+            $userRole === 'seller' &&
+            $user->status !== 'approved' &&
+            !$request->routeIs('pending')
+        ) {
+            return redirect()->route('pending');
+        }
+
+        return $next($request);
     }
-
-    $userRole = strtolower(Auth::user()->role ?? '');
-    $requiredRole = strtolower($role);
-
-    if ($userRole !== $requiredRole) {
-        abort(403, 'Unauthorized access');
-    }
-
-    return $next($request);
-}
 }
