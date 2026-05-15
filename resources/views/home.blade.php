@@ -52,7 +52,7 @@
 
     <section class="max-w-7xl mx-auto px-6 lg:px-12 py-24">
         <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-14">
-            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-slate-900">Best Sellers</h2>
+            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-slate-900">Our Products</h2>
             <div class="hidden sm:block h-3 bg-red-600 rounded-full w-32 flex-shrink-0"></div>
             <a href="#" class="sm:ml-auto text-red-600 font-extrabold uppercase tracking-widest text-xs border-b-2 border-red-600 pb-1 no-underline transition-colors hover:text-red-700 hover:border-red-700">
                 View All →
