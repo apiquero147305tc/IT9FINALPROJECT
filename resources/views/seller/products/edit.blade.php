@@ -1,3 +1,4 @@
+<x-layout>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,26 +17,27 @@
             color: #0f172a;
         }
 
-        /* ✅ Branded Solid Orange Navbar */
+        /* 🔴 Branded Solid Red Navbar */
         .nav-branded { 
-            background-color: #fb923c; 
+            background-color: #dc2626; 
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Standard Studio Input Styling */
+        /* Standard Red Studio Input Styling */
         .form-input {
             width: 100%;
-            border: 4px solid #f1f5f9;
+            border: 4px solid #f8fafc;
             border-radius: 1.5rem;
             padding: 1.25rem;
             font-weight: 700;
             transition: all 0.3s ease;
             outline: none;
+            background-color: #f8fafc;
         }
 
         .form-input:focus {
-            border-color: #fb923c;
-            background-color: #fffaf5;
+            border-color: #dc2626;
+            background-color: #fffafb;
         }
 
         label {
@@ -52,7 +54,7 @@
         /* Custom scrollbar for description textarea */
         textarea::-webkit-scrollbar { width: 8px; }
         textarea::-webkit-scrollbar-track { background: transparent; }
-        textarea::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        textarea::-webkit-scrollbar-thumb { background: #fee2e2; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen bg-slate-50/30">
@@ -63,15 +65,15 @@
                 <span class="text-xl">🏪</span>
             </a>
             <div>
-                <h1 class="text-sm font-extrabold tracking-tight uppercase text-orange-950 leading-none">
+                <h1 class="text-sm font-extrabold tracking-tight uppercase text-white leading-none">
                     Seller Studio
                 </h1>
-                <p class="text-[10px] text-orange-900/60 font-bold uppercase tracking-widest mt-1">
+                <p class="text-[10px] text-rose-100 font-bold uppercase tracking-widest mt-1">
                     Editing: {{ $product->name }}
                 </p>
             </div>
         </div>
-        <a href="{{ route('seller.dash') }}" class="text-[10px] font-black uppercase tracking-widest text-orange-950 hover:text-white transition">
+        <a href="{{ route('seller.dash') }}" class="text-[10px] font-black uppercase tracking-widest text-rose-100 hover:text-white transition">
             Cancel Changes
         </a>
     </nav>
@@ -80,11 +82,21 @@
         
         <div class="mb-10">
             <h2 class="text-6xl font-black tracking-tighter uppercase text-slate-900 leading-none">Modify Item</h2>
-            <div class="h-2 w-20 bg-orange-500 mt-4 rounded-full"></div>
+            <div class="h-2 w-20 bg-red-600 mt-4 rounded-full"></div>
         </div>
 
         <div class="bg-white border border-slate-100 rounded-[3rem] shadow-2xl shadow-slate-900/5 p-8 md:p-12 relative overflow-hidden">
             
+            @if ($errors->any())
+                <div class="mb-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-2xl">
+                    <ul class="list-none p-0 m-0">
+                        @foreach ($errors->all() as $error)
+                            <li class="text-red-600 text-[10px] font-black uppercase tracking-tight">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             {{-- ✅ UPDATE FORM --}}
             <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
@@ -92,17 +104,17 @@
 
                 <div>
                     <label>Product Name</label>
-                    <input type="text" name="name" value="{{ $product->name }}" required class="form-input" placeholder="e.g. Premium Pencil">
+                    <input type="text" name="name" value="{{ old('name', $product->name) }}" required class="form-input" placeholder="e.g. Premium Pencil">
                 </div>
 
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label>Price (PHP)</label>
-                        <input type="number" name="price" value="{{ $product->price }}" step="0.01" required class="form-input">
+                        <input type="number" name="price" value="{{ old('price', $product->price) }}" step="0.01" required class="form-input">
                     </div>
                     <div>
                         <label>Stock Level</label>
-                        <input type="number" name="stock" value="{{ $product->stock }}" required class="form-input">
+                        <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" required class="form-input">
                     </div>
                 </div>
 
@@ -118,7 +130,7 @@
 
                 <div>
                     <label>Description</label>
-                    <textarea name="description" rows="3" placeholder="Describe your item..." class="form-input resize-none">{{ $product->description }}</textarea>
+                    <textarea name="description" rows="3" placeholder="Describe your item..." class="form-input resize-none">{{ old('description', $product->description) }}</textarea>
                 </div>
 
                 <div>
@@ -127,7 +139,7 @@
                         @forelse($product->images as $img)
                             <div class="group relative w-24 h-24 rounded-3xl overflow-hidden border-4 border-white shadow-md hover:scale-110 transition-all">
                                 <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-orange-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="absolute inset-0 bg-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </div>
                         @empty
                             <div class="w-full text-center py-4">
@@ -141,12 +153,12 @@
                     <label>Add More Photos</label>
                     <div class="relative group">
                         <input type="file" name="images[]" multiple 
-                               class="w-full text-xs font-bold text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-orange-600 transition-all cursor-pointer">
+                               class="w-full text-xs font-bold text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-red-600 transition-all cursor-pointer">
                     </div>
                 </div>
 
                 <button type="submit" 
-                        class="w-full bg-orange-600 text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-sm hover:bg-slate-900 transition-all shadow-xl shadow-orange-600/20">
+                        class="w-full bg-red-600 text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-sm hover:bg-slate-950 transition-all shadow-xl shadow-red-600/20">
                     Save Changes
                 </button>
             </form>
@@ -157,7 +169,7 @@
                       onsubmit="return confirm('⚠️ CRITICAL: Are you sure? This will permanently remove the product and all images.')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="text-slate-300 hover:text-red-500 text-[10px] font-black uppercase tracking-widest transition-colors inline-flex items-center gap-2">
+                    <button type="submit" class="text-slate-300 hover:text-red-600 text-[10px] font-black uppercase tracking-widest transition-colors inline-flex items-center gap-2 bg-transparent border-none cursor-pointer">
                         <span>🗑️</span> Archive Product Permanently
                     </button>
                 </form>
@@ -166,10 +178,11 @@
         </div>
 
         <div class="mt-10 text-center">
-            <a href="{{ route('seller.dash') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-orange-500 transition-all">
+            <a href="{{ route('seller.dash') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-600 transition-all no-underline">
                 ← Return to Dashboard
             </a>
         </div>
     </main>
 </body>
 </html>
+</x-layout>
