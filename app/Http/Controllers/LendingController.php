@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\Lending;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Lending;
-use App\Models\Product;
 
 class LendingController extends Controller
 {
@@ -179,8 +179,8 @@ class LendingController extends Controller
 
         $user = Auth::user();
 
-        if ($lending->borrower_id !== $user->id && 
-            $lending->lender_id !== $user->id && 
+        if ($lending->borrower_id !== $user->id &&
+            $lending->lender_id !== $user->id &&
             !$user->isAdmin()) {
             abort(403);
         }

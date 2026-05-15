@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 
 class ReceiptController extends Controller
 {
     public function show($orderId)
     {
-        $order = Order::with(['product.images', 'product.user', 'user'])
+        $order = Order::with(['product', 'product.user', 'user'])
             ->findOrFail($orderId);
 
         $user = Auth::user();
