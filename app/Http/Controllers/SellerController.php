@@ -14,87 +14,60 @@ class SellerController extends Controller
     /**
      * Seller Dashboard Overview
      */
-  
-public function dashboard()
-{
-    $sellerId = Auth::id();
+    public function dashboard()
+    {
+        $sellerId = Auth::id();
 
-    // PRODUCTS
-    $products = Product::where('user_id', $sellerId)->get();
+        // PRODUCTS
+        $products = Product::where('user_id', $sellerId)->get();
 
-    // DEFAULTS
-    $orders = collect();
-    $totalEarnings = 0;
-    $notifCount = 0;
-    $notifications = collect();
+        // DEFAULTS
+        $orders = collect();
+        $totalEarnings = 0;
+        $notifCount = 0;
+        $notifications = collect();
 
-<<<<<<< HEAD
-    if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
-        try {
-            $orders = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('user_id', $sellerId);  // ✅ Fixed: 'user_id' not 'seller_id'
-=======
-    // NOTIFICATIONS (always safe)
-    if (Schema::hasTable('notifications')) {
-        $notifications = Notification::where('user_id', $sellerId)
-            ->latest()
-            ->get();
+        // NOTIFICATIONS (always safe)
+        if (Schema::hasTable('notifications')) {
+            $notifications = Notification::where('user_id', $sellerId)
+                ->latest()
+                ->get();
 
-        $notifCount = Notification::where('user_id', $sellerId)->count();
-    }
-
-    // ORDERS (safe check)
-    if (class_exists(Order::class) && Schema::hasTable('orders')) {
-
-        $orders = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('user_id', $sellerId); // IMPORTANT FIX (was seller_id mismatch risk)
->>>>>>> origin/almostfinal
-            })
-            ->with(['user', 'product'])
-            ->latest()
-            ->get();
-
-<<<<<<< HEAD
-            // Calculate total earnings from completed orders
-            $totalEarnings = $orders
-                ->where('status', 'completed')
-                ->sum(function ($order) {
-                    return $order->quantity * $order->product->price;
-                });
-
-            // NOTIFICATION COUNT
-            $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('user_id', $sellerId);
-            })
-            ->where('is_seen', false)
-            ->count();
-
-        } catch (\Exception $e) {
-            $orders = collect();
-            $totalEarnings = 0;
-            $notifCount = 0;
+            $notifCount = Notification::where('user_id', $sellerId)->count();
         }
-=======
-        $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
-                $query->where('user_id', $sellerId);
-            })
-            ->where('status', 'completed')
-            ->sum('total_price');
->>>>>>> origin/almostfinal
+
+        // ORDERS (safe check)
+        if (class_exists(Order::class) && Schema::hasTable('orders')) {
+            try {
+                $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                    $query->where('user_id', $sellerId);
+                })
+                ->with(['user', 'product'])
+                ->latest()
+                ->get();
+
+                // Calculate total earnings from completed orders
+                $totalEarnings = $orders
+                    ->where('status', 'completed')
+                    ->sum(function ($order) {
+                        return $order->quantity * $order->product->price;
+                    });
+
+            } catch (\Exception $e) {
+                $orders = collect();
+                $totalEarnings = 0;
+            }
+        }
+
+        return view('seller.dashboard', compact(
+            'products',
+            'orders',
+            'totalEarnings',
+            'notifications',
+            'notifCount'
+        ));
     }
 
-    return view('seller.dashboard', compact(
-        'products',
-        'orders',
-        'totalEarnings',
-<<<<<<< HEAD
-        'notifCount'      // ✅ Added missing variable
-=======
-        'notifications',
-        'notifCount'
->>>>>>> origin/almostfinal
-    ));
-}
     /**
      * Full Orders Management List
      */
@@ -107,7 +80,6 @@ public function dashboard()
         }
 
         $orders = Order::whereHas('product', function($query) use ($seller) {
-            // FIXED: Ensured this remains 'user_id' to match the dashboard
             $query->where('user_id', $seller->id);
         })
         ->with(['user', 'product'])
