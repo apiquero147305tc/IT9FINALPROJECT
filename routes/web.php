@@ -105,6 +105,32 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/admin/reject/{id}', 'rejectUser')->name('admin.reject');
         });
     });
+        // ==================== CART ROUTES ====================
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+        Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+        Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    });
+
+    // ==================== RECEIPT ROUTES ====================
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
+        Route::get('/receipt/{order}/download', [ReceiptController::class, 'download'])->name('receipt.download');
+    });
+
+    // ==================== LENDING ROUTES ====================
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
+        Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
+        Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
+        Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])->name('lending.my-requests');
+        Route::get('/lending/{id}', [LendingController::class, 'show'])->name('lending.show');
+        Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])->name('lending.seller');
+        Route::patch('/lending/{id}/status', [LendingController::class, 'updateStatus'])->name('lending.update-status');
+        Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
+    });
 });
 
 /*

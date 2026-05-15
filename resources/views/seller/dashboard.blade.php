@@ -1,180 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CraveCart | Seller Studio</title>
+<x-sellerDash>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-        
-        body { 
-            background-color: #ffffff; 
-            font-family: 'Inter', sans-serif; 
-            color: #0f172a;
-        }
+    <!-- HEADER SECTION -->
+    <div style="background: linear-gradient(135deg, #dd0d22 0%, #b30b1b 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        <h2 style="margin: 0 0 10px 0; font-size: 1.8rem;">🍱 CraveCart | Seller Studio</h2>
+        <p style="margin: 0; opacity: 0.9; font-size: 1rem;">Store Overview & Performance</p>
 
-        /* ✅ Branded Solid Orange Navbar */
-        .nav-branded { 
-            background-color: #fb923c; 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .stat-orange { background: linear-gradient(135deg, #f83600 0%, #f9d423 100%); }
-        .stat-peach { 
-            background-color: #fffaf5; 
-            border: 1px solid #ffedd5; 
-        }
-        .stat-glass { 
-            background: #ffffff; 
-            border: 1px solid #f1f5f9;
-        }
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ route('seller.profile') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">🚁 Edit Profile</a>
+            <a href="{{ route('seller.orders') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">📊 Order Hub</a>
+            <a href="{{ route('lending.seller') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">📚 Lending Management</a>
+        </div>
+    </div>
 
-        @keyframes custom-pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.7; }
-        }
-        .animate-notif { animation: custom-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    </style>
-</head>
+    <!-- STATS CARDS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="margin: 0 0 15px 0; color: #666; font-size: 1rem;">My Inventory</h3>
+            <div style="font-size: 2.5rem; font-weight: bold; color: #dd0d22; margin-bottom: 10px;">{{ $products->count() }}</div>
+            <div style="font-size: 2rem;">📦</div>
+        </div>
+        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="margin: 0 0 15px 0; color: #666; font-size: 1rem;">Total Revenue</h3>
+            <div style="font-size: 2.5rem; font-weight: bold; color: #dd0d22; margin-bottom: 10px;">₱{{ number_format($totalEarnings, 2) }}</div>
+            <div style="font-size: 2rem;">💰</div>
+        </div>
+        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="margin: 0 0 15px 0; color: #666; font-size: 1rem;">Pending Orders</h3>
+            <div style="font-size: 2.5rem; font-weight: bold; color: #dd0d22; margin-bottom: 10px;"><strong>{{ $notifCount }}</strong></div>
+            <div style="font-size: 2rem;">📊</div>
+        </div>
+    </div>
 
-<body class="min-h-screen">
-
-    <nav class="nav-branded px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
-        <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2">
-                <div class="bg-white p-1.5 rounded-xl shadow-sm">
-                    <span class="text-xl">🏪</span>
-                </div>
-                <div>
-                    <h1 class="text-sm font-extrabold tracking-tight uppercase text-orange-950 leading-none">
-                        CraveCart | <span class="opacity-70">Seller Studio</span>
-                    </h1>
-                    <p class="text-[10px] text-orange-900/60 font-bold uppercase tracking-widest mt-1">
-                        {{ Auth::user()->shop_name ?? 'My Shop' }} | Active
-                    </p>
-                </div>
-            </div>
+    <!-- PRODUCTS SECTION -->
+    <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 style="margin: 0; color: #333; font-size: 1.5rem;">🛍️ Active Inventory</h2>
+            <a href="{{ route('products.create') }}" style="padding: 10px 20px; background: #dd0d22; color: white; text-decoration: none; border-radius: 25px; font-weight: bold;">+ Add Product</a>
         </div>
 
-        <div class="flex items-center gap-8">
-            <div class="hidden md:flex items-center gap-8 text-xs font-black uppercase tracking-widest text-orange-950/80">
-                <a href="{{ route('seller.orders') }}" class="relative hover:text-white transition flex items-center gap-2">
-                    Notifications
-                    @if($notifCount > 0)
-                        <span class="flex h-2 w-2 rounded-full bg-white animate-notif"></span>
-                    @endif
-                </a>
-                <a href="{{ route('messages.inbox') }}" class="hover:text-white transition">Lending</a>
-            </div>
-            
-            <div class="flex items-center gap-4 pl-6 border-l border-orange-900/10">
-                <a href="{{ route('seller.profile') }}" 
-                   class="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-[11px] font-black border border-white/20 uppercase text-orange-950 hover:bg-white/60 hover:scale-105 transition-all shadow-sm"
-                   title="Edit Seller Profile">
-                    {{ substr(Auth::user()->name, 0, 2) }}
-                </a>
-                
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="text-[10px] bg-orange-950 text-white px-6 py-2 rounded-lg hover:bg-black transition font-black uppercase tracking-widest">
-                        Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-[1400px] mx-auto p-6 md:p-12">
-        <div class="mb-12">
-            <h2 class="text-6xl font-black tracking-tighter uppercase text-slate-900 leading-none"></h2>
-            <p class="text-xs font-bold text-orange-400 uppercase tracking-[0.3em] mt-2">Store Overview & Performance</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div class="stat-orange rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-orange-500/20 transition hover:scale-[1.02]">
-                <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-4">My Inventory</p>
-                <h3 class="text-7xl font-black leading-none">{{ $products->count() }}</h3>
-                <div class="absolute -right-4 -bottom-4 opacity-20 text-9xl">📦</div>
-            </div>
-
-            <div class="stat-peach rounded-[3rem] p-10 text-orange-950 relative overflow-hidden shadow-2xl shadow-orange-200/50 transition hover:scale-[1.02]">
-                <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-4">Total Revenue</p>
-                <h3 class="text-6xl font-black italic text-orange-900 leading-none">₱{{ number_format($totalEarnings, 2) }}</h3>
-                <div class="absolute -right-4 -bottom-4 opacity-10 text-9xl">💰</div>
-            </div>
-
-            <a href="{{ route('seller.orders') }}" class="stat-glass rounded-[3rem] p-10 text-slate-900 relative overflow-hidden shadow-2xl shadow-orange-900/5 transition hover:scale-[1.02] group">
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Pending Orders</p>
-                <h3 class="text-7xl font-black group-hover:text-orange-600 transition-colors leading-none">{{ $notifCount }}</h3>
-                <div class="absolute -right-4 -bottom-4 opacity-5 text-9xl text-orange-600">📊</div>
-            </a>
-        </div>
-
-        <div class="flex justify-between items-end mb-8 px-2">
-            <div>
-                <h3 class="text-3xl font-black uppercase tracking-tight text-slate-900">Active Inventory</h3>
-                <div class="h-2 w-16 bg-orange-500 mt-2 rounded-full"></div>
-            </div>
-            <a href="{{ route('products.create') }}" class="bg-orange-600 text-white px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20">
-                + Add Product
-            </a>
-        </div>
-
-        <div class="bg-white border border-slate-100 rounded-[2.5rem] shadow-2xl shadow-slate-900/5 overflow-hidden">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 border-b border-slate-100">
-                    <tr>
-                        <th class="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Product Details</th>
-                        <th class="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-50">
-                    @forelse($products as $product)
-                    <tr class="hover:bg-slate-50/50 transition-colors group">
-                        <td class="px-10 py-10">
-                            <div class="flex items-center gap-8">
-                                <div class="w-24 h-24 bg-orange-50 rounded-3xl flex items-center justify-center text-3xl border border-transparent group-hover:border-orange-100 transition-all overflow-hidden shadow-sm">
-                                    @if($product->images && $product->images->isNotEmpty())
-                                        {{-- Accessing the first image from the collection --}}
-                                        <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
-                                             alt="{{ $product->name }}" 
-                                             class="w-full h-full object-cover">
-                                    @else
-                                        <span class="opacity-50">🛒</span>
-                                    @endif
-                                </div>
-
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid #f3e3cb;">
+                    <th style="text-align: left; padding: 15px; color: #666; font-size: 0.9rem;">Product Details</th>
+                    <th style="text-align: left; padding: 15px; color: #666; font-size: 0.9rem;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($products as $product)
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                @if($product->images && $product->images->isNotEmpty())
+                                    <img src="{{ asset('storage/'.$product->images[0]->image_path) }}" alt="Product Image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px;">
+                                @else
+                                    <div style="width: 60px; height: 60px; background: #f3e3cb; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🛒</div>
+                                @endif
                                 <div>
-                                    <p class="text-2xl font-black text-slate-900 leading-none mb-3">{{ $product->name }}</p>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-lg font-black text-orange-600 italic">₱{{ number_format($product->price, 2) }}</span>
-                                        <span class="text-slate-200">|</span>
-                                        <span class="text-xs text-slate-400 font-bold uppercase tracking-widest">Stock: {{ $product->stock }}</span>
-                                    </div>
+                                    <div style="font-weight: bold; color: #333; margin-bottom: 5px;">{{ $product->name }}</div>
+                                    <div style="color: #dd0d22; font-weight: bold; margin-bottom: 3px;">₱{{ number_format($product->price, 2) }}</div>
+                                    <div style="color: #666; font-size: 0.85rem;">Stock: {{ $product->stock }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-10 py-10 text-right">
-                            <a href="{{ route('products.edit', $product->id) }}" class="inline-block border-2 border-slate-100 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-orange-600 hover:border-orange-200 hover:bg-orange-50 transition-all">Edit Product</a>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="2" class="p-32 text-center">
-                            <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">No products currently in studio</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </main>
+                        <td style="padding: 15px;">
+                            <!-- ✅ LENDABLE TOGGLE BUTTON WITH INLINE CSS -->
+                            <form action="{{ route('products.toggle-lendable', $product->id) }}" method="POST" style="display: inline; margin-right: 5px;">
+                                @csrf
+                                @method('patch')
+                                <button type="submit" 
+                                        style="padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold;
+                                        @if($product->is_lendable) background: #d4edda; color: #155724;
+                                        @else background: #f8f9fa; color: #666; border: 1px solid #ddd;
+                                        @endif">
+                                    {{ $product->is_lendable ? '📚 Borrowable' : '📚 Not Borrowable' }}
+                                </button>
+                            </form>
 
-    <a href="{{ route('messages.inbox') }}" class="fixed bottom-10 right-10 bg-orange-600 text-white flex items-center gap-4 px-10 py-6 rounded-[2.5rem] shadow-2xl shadow-orange-600/40 hover:scale-110 transition-all font-black text-[10px] uppercase tracking-widest z-50">
-        <span class="text-lg">💬</span> INBOX
-    </a>
-</body>
-</html>
+                            <a href="{{ route('products.edit', $product->id) }}" 
+                               style="padding: 6px 12px; background: #ffc107; color: #333; text-decoration: none; border-radius: 5px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-right: 5px;">Edit Product</a>
+
+                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; font-size: 0.8rem; font-weight: bold; cursor: pointer;"
+                                        onclick="return confirm('Are you sure you want to delete this product?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 15px;">📦</div>
+                            <p style="color: #666; margin-bottom: 15px;">No products currently in studio</p>
+                            <a href="{{ route('products.create') }}" style="padding: 10px 20px; background: #dd0d22; color: white; text-decoration: none; border-radius: 25px; font-weight: bold;">+ Add Your First Product</a>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</x-sellerDash>
