@@ -3,7 +3,7 @@
         
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b border-slate-100 pb-12">
             <div>
-                <p class="text-orange-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4">/best sellers</p>
+                <p class="text-orange-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4">/Our Products </p>
                 <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter text-slate-900 leading-none">
                     Best <span class="text-orange-600">Sellers.</span>
                 </h1>
