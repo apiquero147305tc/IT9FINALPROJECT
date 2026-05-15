@@ -66,7 +66,7 @@
         <div class="flex items-center gap-8">
             <div class="hidden md:flex items-center gap-8 text-xs font-black uppercase tracking-widest text-rose-50">
                 <a href="{{ route('seller.orders') }}" class="relative hover:text-white transition flex items-center gap-2">
-                    Orders
+                    Notifications
                     @if($notifCount > 0)
                         <span class="flex h-2 w-2 rounded-full bg-white animate-notif"></span>
                     @endif
