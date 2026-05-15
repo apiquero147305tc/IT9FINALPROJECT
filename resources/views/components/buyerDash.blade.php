@@ -6,148 +6,108 @@
         /* Base Colors & Layout */
         body { background: #f3e3cb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* Navbar Styling */
-      nav { 
-    background: #dd0d22; 
-    padding: 10px 5%; 
-    display: flex; 
-    align-items: center; 
-    color: white; 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* IMPORTANT: REMOVE automatic spacing behavior */
-.nav-links { 
-    display: flex; 
-    gap: 20px; 
-    align-items: center;
-}
-        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-        .nav-links a:hover { color: #f3e3cb; }
-
-        /* Search & Filter Container */
-        .search-container { 
+        /* Navbar Styling - Matches image_784994.png exactly */
+        nav { 
+            background: #dd0d22; 
+            padding: 10px 5%; 
             display: flex; 
-            justify-content: center; 
             align-items: center; 
-            padding: 20px; 
-            gap: 10px; 
-            max-width: 600px; 
-            margin: 0 auto; 
+            justify-content: space-between; /* This pushes the right side to the right */
+            color: white; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .search-form { display: flex; flex: 1; gap: 10px; }
-        .search-bar { 
-            flex: 1; 
-            padding: 12px 20px; 
-            border-radius: 25px; 
-            border: 2px solid #ff9b9e; 
-            outline: none; 
-        }
-        .filter-btn { 
-            background: white; 
-            border: 2px solid #ff9b9e; 
-            border-radius: 50%; 
-            width: 45px; 
-            height: 45px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-            font-size: 1.2rem;
-            transition: 0.3s;
-        }
-        .filter-btn:hover { background: #ff9b9e; color: white; }
 
-        /* Category Filter Menu */
-        #category-menu {
-            display: none;
-            background: white;
-            border-radius: 15px;
-            margin: 0 auto 20px;
-            max-width: 500px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        .nav-right-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .cat-chip {
-            display: inline-block;
-            padding: 8px 15px;
-            margin: 5px;
-            background: #f3e3cb;
+
+        .nav-links { 
+            display: flex; 
+            gap: 15px; 
+            align-items: center;
+        }
+        
+        .nav-links a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+        }
+
+        /* Search Input Fix */
+        .search-box {
+            padding: 6px 15px;
             border-radius: 20px;
-            text-decoration: none;
-            color: #dd0d22;
-            font-size: 0.85rem;
+            border: none;
+            outline: none;
+            width: 180px;
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* PRODUCT CARD FIX: This prevents the 'Add to Cart' button from being long */
+        .product-container {
+            padding: 20px 5%;
+        }
+
+        .product-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 20px; 
+            text-align: center; 
+            width: 180px; /* Limits width to match image_784994.png */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .add-to-cart-btn {
+            background: #ff5100;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%; /* Fills only the 180px card, not the whole screen */
+            cursor: pointer;
             font-weight: bold;
         }
-        .cat-chip:hover, .cat-chip.active { background: #dd0d22; color: white; }
-
-        /* Product Grid */
-        .product-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-            gap: 20px; 
-            padding: 0 5%; 
-        }
-        .product-card { background: white; padding: 15px; border-radius: 20px; text-align: center; transition: 0.3s; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; }
-        .product-card h3 { font-size: 1rem; margin: 10px 0; }
-        .price { color: #dd0d22; font-weight: bold; }
     </style>
 </head>
 <body>
+
 <nav>
+    <!-- LEFT: Logo -->
+    <a href="{{ route('buyer.home') }}" style="text-decoration:none; color:white;">
+        <h2 style="margin:0;">🛒 CraveCart</h2>
+    </a>
 
-    <!-- LEFT -->
-   <a href="{{ route('buyer.home') }}" style="text-decoration:none; color:white;">
-    <h2 style="margin:0;">🛒CraveCart</h2>
-</a>
-    <!-- RIGHT (CONTROLLED ORDER) -->
-    <div style="margin-left:auto; display:flex; align-items:center; gap:15px;">
+    <!-- RIGHT: Controls -->
+    <div class="nav-right-container">
         <!-- SEARCH -->
-       <form action="{{ route('buyer.home') }}" method="GET"
-      style="display:flex; align-items:center; gap:8px;">
+        <form action="{{ route('buyer.home') }}" method="GET" style="display:flex; align-items:center; gap:8px;">
+            <input type="text" name="search" class="search-box" placeholder="Search..." value="{{ request('search') }}">
+            <button type="button" onclick="toggleFilter()" style="background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center;">📂</button>
+        </form>
 
-    <!-- SEARCH -->
-    <input type="text"
-           name="search"
-           placeholder="Search..."
-           value="{{ request('search') }}"
-           style="
-                padding:6px 12px;
-                border-radius:20px;
-                border:none;
-                outline:none;
-           ">
-
-    <!-- HIDDEN CATEGORY (IMPORTANT) -->
-    <input type="hidden" name="category" id="categoryInput" value="{{ request('category') }}">
-
-    <!-- FILTER BUTTON -->
-    <button type="button"
-            onclick="toggleFilter()"
-            style="
-                width:35px;
-                height:35px;
-                border-radius:50%;
-                border:none;
-                background:white;
-                cursor:pointer;
-            ">
-        📂
-    </button>
-</form>
-
-        <!-- LINKS FIRST -->
         <div class="nav-links">
-            <a href="#">SmartBudget</a> <!-- i modify lang ni for buyer -->
-            <a href="#">Lending</a> <!-- same here -->
+            <a href="{{ route('buyer.smartbudgetcontrol') }}">SmartBudget</a> 
+            <a href="#">Lending</a>
+            <a href="{{ route('cart.index') }}">Cart {{ auth()->user()->cartItems->count() }}</a>
         </div>
 
+<<<<<<< HEAD
 
             <!-- FLOATING CART BUTTON -->
         <a href="{{ route('cart.index') }}" style="text-decoration: none; color: white;" id="floatingCartBtn">
@@ -173,14 +133,13 @@
         
         <!-- LOGOUT -->
         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+=======
+        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+>>>>>>> origin/SellerStartup2.0
             @csrf
-            <button type="submit"
-            style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">
-            Logout
-        </button>
-    </form>
-    
-</div>
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
 </nav>
 <div id="chatBox" style="
     position: fixed;
@@ -213,39 +172,10 @@
 
 </div>
 
-
-{{ $slot }}
-
-
-<script>
-function toggleFilter() {
-    let menu = document.getElementById("category-menu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-function setCategory(value) {
-    document.getElementById("categoryInput").value = value;
-    document.querySelector('form').submit();
-}
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const btn = document.getElementById("floatingCartBtn");
-    const popup = document.getElementById("cartPopup");
-
-    if (!btn || !popup) return;
-
-    btn.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        popup.style.display =
-            popup.style.display === "block" ? "none" : "block";
-    });
-
-});
-</script>
+<!-- This wrapper ensures content doesn't stretch full-width -->
+<div class="product-container">
+    {{ $slot }}
+</div>
 
 </body>
 </html>

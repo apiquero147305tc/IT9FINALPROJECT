@@ -67,7 +67,7 @@ class MessageController extends Controller
         ];
     }
 
-    return view('messages.inbox', compact('users'));
+    return view('seller.messages', compact('users'));
 }
 
 public function fetchMessages($userId)

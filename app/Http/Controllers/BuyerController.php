@@ -10,12 +10,15 @@ use Illuminate\Support\Facades\Auth;
 
 class BuyerController extends Controller
 {
+    /**
+     * Display the buyer's home page with products and notifications.
+     */
     public function index(Request $request)
     {
         // =========================
         // PRODUCTS
         // =========================
-        $query = Product::query();
+        $query = Product::query()->with('images'); // Eager load images for performance
 
         if ($request->filled('category') && $request->category !== 'All') {
             $query->where('category', $request->category);
@@ -39,10 +42,13 @@ class BuyerController extends Controller
             'notifications' => $notifications,
             'showMenu' => false,
             'search' => $request->search,
-            'category' => $request->category
+            'category' => $request->category ?? 'All'
         ]);
     }
 
+    /**
+     * Show a specific product detail page.
+     */
     public function show($id)
     {
         $product = Product::with(['images', 'user'])
@@ -51,6 +57,9 @@ class BuyerController extends Controller
         return view('buyer.product-show', compact('product'));
     }
 
+    /**
+     * Display a specific seller's shop and their products.
+     */
     public function sellerShop($id)
     {
         $seller = User::findOrFail($id);
@@ -61,5 +70,39 @@ class BuyerController extends Controller
             ->get();
 
         return view('buyer.seller-shop', compact('seller', 'products'));
+    }
+
+    /**
+     * Display the Smart Budget tracking page.
+     */
+    public function smartBudget()
+    {
+        $user = Auth::user();
+
+        $budget = $user->monthly_budget ?? 0;
+
+        // Ensure orders relationship is loaded
+        $orders = $user->orders()->latest()->get() ?? collect();
+
+        $spent = $orders->sum('total_price');
+
+        $remaining = max(0, $budget - $spent);
+
+        $percent = $budget > 0
+            ? min(100, ($spent / $budget) * 100) // Caps at 100% for UI progress bars
+            : 0;
+
+        // Category breakdown from orders
+        $spending = $orders->groupBy('category')->map(function ($items) {
+            return $items->sum('total_price');
+        });
+
+        return view('buyer.smartbudget', compact(
+            'budget',
+            'spent',
+            'remaining',
+            'percent',
+            'spending'
+        ));
     }
 }

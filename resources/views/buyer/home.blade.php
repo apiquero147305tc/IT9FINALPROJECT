@@ -1,123 +1,97 @@
 <x-buyerDash>
 
-   <!-- Category Menu -->
-   <div id="category-menu"
-     style="
-        display:none;
-        background:white;
-        padding:15px;
-        border-radius:15px;
-        position:absolute;
-        right:5%;
-        top:60px;
-        box-shadow:0 5px 15px rgba(0,0,0,0.1);
-        text-align:center;
-     ">
+    {{-- Notifications --}}
+    <div style="width: 90%; margin: 10px auto;">
+        @if(session('success'))
+            <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; text-align:center;">
+                <strong>Success!</strong> {{ session('success') }}
+            </div>
+        @endif
 
-    <p style="margin-top:0; font-weight:bold; color:#555;">Filter by Category</p>
-
-    <!-- CHIPS STYLE BUTTONS -->
-    <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
-
-        <button onclick="setCategory('')"
-            style="padding:6px 12px; border-radius:20px; border:none; background:#f3e3cb; color:#dd0d22; cursor:pointer; font-weight:bold;">
-            All
-        </button>
-
-        <button onclick="setCategory('Food')"
-            style="padding:6px 12px; border-radius:20px; border:none; background:#f3e3cb; color:#dd0d22; cursor:pointer; font-weight:bold;">
-            Food
-        </button>
-
-        <button onclick="setCategory('Cooking')"
-            style="padding:6px 12px; border-radius:20px; border:none; background:#f3e3cb; color:#dd0d22; cursor:pointer; font-weight:bold;">
-            Cooking
-        </button>
-
-        <button onclick="setCategory('Accessories')"
-            style="padding:6px 12px; border-radius:20px; border:none; background:#f3e3cb; color:#dd0d22; cursor:pointer; font-weight:bold;">
-            Accessories
-        </button>
-
-        <button onclick="setCategory('School Supplies')"
-            style="padding:6px 12px; border-radius:20px; border:none; background:#f3e3cb; color:#dd0d22; cursor:pointer; font-weight:bold;">
-            School Supplies
-        </button>
-
+        @if(session('error'))
+            <div style="background:#f8d7da; color:#721c24; padding:12px; border-radius:8px; text-align:center;">
+                <strong>Error!</strong> {{ session('error') }}
+            </div>
+        @endif
     </div>
-</div>
 
-   <h2>Shop Products</h2>
+    {{-- CATEGORY FILTER (optional UI) --}}
+    <div id="category-menu"
+         style="display:none; background:white; padding:15px; border-radius:15px;
+                position:absolute; right:5%; top:60px; box-shadow:0 5px 15px rgba(0,0,0,0.1);
+                z-index:1000; text-align:center;">
 
-<!-- PRODUCT GRID -->
-<div class="grid">
+        <p style="margin-top:0; font-weight:bold;">Filter by Category</p>
 
-    @forelse($products as $product)
+        <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
+            <button onclick="setCategory('')" style="padding:6px 12px;">All</button>
+            <button onclick="setCategory('Food')" style="padding:6px 12px;">Food</button>
+            <button onclick="setCategory('Cooking')" style="padding:6px 12px;">Cooking</button>
+            <button onclick="setCategory('Accessories')" style="padding:6px 12px;">Accessories</button>
+            <button onclick="setCategory('School Supplies')" style="padding:6px 12px;">School Supplies</button>
+        </div>
+    </div>
 
-        <div class="card">
+    {{-- PRODUCT GRID --}}
+    <div class="product-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:15px; padding:20px;">
 
-            <!-- CLICKABLE PRODUCT AREA -->
-            <a href="{{ route('products.show', $product->id) }}" 
-               style="text-decoration:none; color:inherit; display:block;">
+        @forelse($products as $product)
+
+            <div class="product-card" style="background:white; padding:15px; border-radius:15px; text-align:center;">
 
                 {{-- IMAGE --}}
-                @if($product->images->count() > 0)
-                    <img src="{{ asset('storage/'.$product->images[0]->image_path) }}">
-                @else
-                    <img src="https://via.placeholder.com/150">
-                @endif
+                <img src="{{ asset('storage/' . $product->image) }}"
+                     alt="{{ $product->name }}"
+                     style="width:100%; height:160px; object-fit:cover; border-radius:10px;">
 
-                <h3>{{ $product->name }}</h3>
+                {{-- NAME --}}
+                <h3 style="margin:10px 0 5px;">{{ $product->name }}</h3>
 
-                <div class="price">₱{{ number_format($product->price, 2) }}</div>
-                <div class="stock">Stock: {{ $product->stock }}</div>
+                {{-- PRICE --}}
+                <p style="font-weight:bold; color:#dd0d22;">
+                    ₱{{ number_format($product->price, 2) }}
+                </p>
 
-            </a>
-
-            {{-- STOCK / BUY BUTTON --}}
-            @if($product->stock <= 0)
-                <span class="sold-out">Sold Out</span>
-            @else
-                <form action="{{ route('orders.store') }}" method="POST">
+                {{-- ADD TO CART --}}
+                <form action="{{ route('cart.add', $product->id) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <input type="hidden" name="quantity" value="1">
-
-                    <button type="submit" class="buy-btn">
-                        Buy Now
+                    <button type="submit"
+                            style="background:#ff4a00; color:white; border:none; padding:10px;
+                                   border-radius:10px; width:100%; cursor:pointer;">
+                        Add to Cart
                     </button>
                 </form>
-            @endif
 
-        </div>
+            </div>
 
-    @empty
-        <div style="text-align:center; grid-column: 1/-1; padding: 50px;">
-            <p style="color: #666; font-size: 1.2rem;">No items found in this category.</p>
-            <a href="{{ route('buyer.home') }}" style="color: #dd0d22;">Clear all filters</a>
-        </div>
-    @endforelse
+        @empty
+            <div style="text-align:center; grid-column:1/-1;">
+                <p>No products found.</p>
+                <a href="{{ route('buyer.home') }}">Clear filters</a>
+            </div>
+        @endforelse
 
-</div>
+    </div>
 
-<script>
-    function toggleFilter() {
-        var menu = document.getElementById("category-menu");
-        menu.style.display = (menu.style.display === "block") ? "none" : "block";
-    }
-
-    function setCategory(category) {
-        let url = new URL(window.location.href);
-
-        if (category === '') {
-            url.searchParams.delete('category');
-        } else {
-            url.searchParams.set('category', category);
+    {{-- SCRIPT --}}
+    <script>
+        function toggleFilter() {
+            let menu = document.getElementById("category-menu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
         }
 
-        window.location.href = url.toString();
-    }
-</script>
+        function setCategory(category) {
+            let url = new URL(window.location.href);
+
+            if (category === '') {
+                url.searchParams.delete('category');
+            } else {
+                url.searchParams.set('category', category);
+            }
+
+            window.location.href = url.toString();
+        }
+    </script>
 
 <!-- <div class="bg-white p-4 rounded-xl shadow mb-6">
     <h2 class="text-lg font-bold mb-2">Notifications</h2>

@@ -6,28 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            // 👤 BASIC ACCOUNT INFO
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('status')->default('pending'); 
-            
-            // User Role
-            $table->enum('role', ['admin', 'seller', 'buyer'])->default('buyer'); 
-
+            $table->string('status')->default('pending'); // pending, approved, rejected
+            $table->enum('role', ['admin', 'seller', 'buyer'])->default('buyer');
             $table->boolean('is_blocked')->default(0);
 
-            // Student-specific data (Buyer only)
-            // We use nullable() so Admins/Sellers aren't forced to have these values
+            // 🛒 BUYER & SMART BUDGET DATA
             $table->string('grade_level')->nullable(); 
-            $table->string('monthly_budget')->nullable(); 
+            $table->string('monthly_budget')->nullable(); // The "Limit" set by user
+            $table->decimal('spent_amount', 10, 2)->default(0); // Total actual spending
+            $table->json('category_spending')->nullable(); // Stores { "Food": 50, "Tools": 100 }
+
+            // 🏪 SELLER-SPECIFIC DATA
+            $table->string('shop_name')->nullable();
+            $table->integer('age')->nullable();
+            $table->string('contact_number')->nullable();
+            $table->string('valid_id')->nullable(); // Stores path to the uploaded file
 
             $table->rememberToken();
             $table->timestamps();
@@ -49,9 +52,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');

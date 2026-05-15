@@ -34,6 +34,7 @@ body {
 .container { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
 
 /* --- VIBRANT ORANGE NAVBAR --- */
+<<<<<<< HEAD
 h2 { color: var(--cc-red); text-align: center; margin-bottom: 1.5rem; }
 
 .h22{
@@ -71,6 +72,8 @@ body {
 }
 
 /* NAVBAR */
+=======
+>>>>>>> origin/SellerStartup2.0
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -228,6 +231,7 @@ body {
     font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
+<<<<<<< HEAD
     border-radius: 25px;
     text-align: center;
     font-weight: bold;
@@ -303,11 +307,14 @@ body {
 .form-box select:focus {
     border-color: var(--red);
     box-shadow: 0 0 0 3px rgba(221, 13, 34, 0.15);
+=======
+>>>>>>> origin/SellerStartup2.0
 }
 .cart-btn:hover { background-color: var(--brand-red); }
 
 .btn-main {
     background: var(--brand-orange);
+<<<<<<< HEAD
 /* BUTTON */
 .form-box .btn {
     width: 100%;
@@ -347,6 +354,8 @@ a:hover {
 
 .cravecartlogo{
     text-decoration: none;
+=======
+>>>>>>> origin/SellerStartup2.0
     color: white;
     padding: 14px 35px;
     border-radius: 10px; 
@@ -357,6 +366,7 @@ a:hover {
 }
 
 /* --- FOOTER --- */
+<<<<<<< HEAD
 .logins {
     color: var(--red);
     margin-top: 15px;
@@ -371,6 +381,8 @@ a:hover {
     color: blue;
 }
 
+=======
+>>>>>>> origin/SellerStartup2.0
 .footer {
     background-color: #0f172a; /* Sophisticated Dark Blue-Black */
     color: #94a3b8;
