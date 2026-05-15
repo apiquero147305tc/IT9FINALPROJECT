@@ -65,11 +65,11 @@
                 
                 <!-- LEFT SIDE: Text Content -->
                 <div class="flex-1 text-[13px] leading-[20px] p-8 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-2xl">
-                    <p class="text-orange-500 font-bold uppercase tracking-widest text-xs mb-4">CRAVECART | ESSENTIALS</p>
+                    <p class="text-[#ff2d20] font-bold uppercase tracking-widest text-xs mb-4">CRAVECART | ESSENTIALS</p>
                     
                     <h1 class="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight uppercase mb-6">
                         Essentials and necessities, <br>
-                        <span class="text-orange-500">Delivered to your door!</span>
+                        <span class="text-[#ff2d20]">Delivered to your door!</span>
                     </h1>
                     
                     <p class="mb-8 text-[#706f6c] dark:text-[#A1A09A] text-lg lg:max-w-md">
@@ -77,7 +77,7 @@
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="{{ route('register') }}" class="inline-block bg-orange-500 text-white px-10 py-4 rounded-xl font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20 text-center">
+                        <a href="{{ route('register') }}" class="inline-block bg-[#ff2d20] text-white px-10 py-4 rounded-xl font-bold uppercase tracking-wider hover:bg-[#e0241a] transition-all shadow-lg shadow-red-500/20 text-center">
                             Get Started
                         </a>
                         <a href="#shop" class="inline-block bg-[#1b1b18] dark:bg-white dark:text-black text-white px-10 py-4 rounded-xl font-bold uppercase tracking-wider hover:opacity-90 transition-all text-center">
@@ -86,11 +86,11 @@
                     </div>
                 </div>
 
-                <!-- RIGHT SIDE: Moving Pictures (Reference: image_ca7a7c.png) -->
+                <!-- RIGHT SIDE: Moving Pictures -->
                 <div class="flex-1 relative flex justify-center items-center h-[400px] lg:h-[550px] w-full">
                     
                     <!-- Background Glow -->
-                    <div class="absolute w-64 h-64 bg-orange-500/10 blur-3xl rounded-full"></div>
+                    <div class="absolute w-64 h-64 bg-red-500/10 blur-3xl rounded-full"></div>
 
                     <!-- Main Delivery Image -->
                     <div class="animate-float z-10">
