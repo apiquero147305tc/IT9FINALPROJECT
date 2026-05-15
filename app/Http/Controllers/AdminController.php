@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Complaint;
 use App\Models\Message;
 use App\Models\Notification;
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,23 +16,37 @@ use Illuminate\Support\Facades\Mail;
 class AdminController extends Controller
 {
     //////////////////////////////////////////////////
-    // DASHBOARD
+    // 📊 DASHBOARD
     //////////////////////////////////////////////////
     public function dashboard()
     {
         $users = User::where('role', '!=', 'admin')->latest()->get();
 
-        return view('admin.dashboard', [
-            'users' => $users,
-            'totalSellers' => User::where('role', 'seller')->count(),
-            'totalBuyers' => User::where('role', 'buyer')->count(),
-            'pendingUsers' => User::where('role', 'seller')->where('status', 'pending')->get(),
-            'complaints' => Complaint::latest()->get(),
-        ]);
+        $totalSellers = User::where('role', 'seller')->count();
+        $totalBuyers  = User::where('role', 'buyer')->count();
+
+        $pendingSellers = User::where('role', 'seller')
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        $complaints = Complaint::latest()->get();
+        $contacts = ContactMessage::latest()->get();
+        $unreadContacts = ContactMessage::where('is_read', false)->count();
+
+        return view('admin.dashboard', compact(
+            'users',
+            'totalSellers',
+            'totalBuyers',
+            'pendingSellers',
+            'complaints',
+            'contacts',
+            'unreadContacts'
+        ));
     }
 
     //////////////////////////////////////////////////
-    // USER MANAGEMENT
+    // 👥 USER MANAGEMENT
     //////////////////////////////////////////////////
     public function allUsers()
     {
@@ -62,49 +77,37 @@ class AdminController extends Controller
     }
 
     //////////////////////////////////////////////////
-    // APPROVAL SYSTEM
+    // ✅ APPROVAL SYSTEM
     //////////////////////////////////////////////////
     public function approveUser($id)
     {
-        $user = User::findOrFail($id);
-        $user->status = 'approved';
-        $user->save();
-
+        User::findOrFail($id)->update(['status' => 'approved']);
         return back();
     }
 
     public function rejectUser($id)
     {
-        $user = User::findOrFail($id);
-        $user->status = 'rejected';
-        $user->save();
-
+        User::findOrFail($id)->update(['status' => 'rejected']);
         return back();
     }
 
     //////////////////////////////////////////////////
-    // BLOCK SYSTEM
+    // 🚫 BLOCK SYSTEM
     //////////////////////////////////////////////////
     public function block($id)
     {
-        $user = User::findOrFail($id);
-        $user->is_blocked = 1;
-        $user->save();
-
+        User::findOrFail($id)->update(['is_blocked' => 1]);
         return back();
     }
 
     public function unblock($id)
     {
-        $user = User::findOrFail($id);
-        $user->is_blocked = 0;
-        $user->save();
-
+        User::findOrFail($id)->update(['is_blocked' => 0]);
         return back();
     }
 
     //////////////////////////////////////////////////
-    // SETTINGS
+    // ⚙️ SETTINGS
     //////////////////////////////////////////////////
     public function settings()
     {
@@ -113,10 +116,30 @@ class AdminController extends Controller
         ]);
     }
 
-    public function updateSettings(Request $request) { $admin = User::find(Auth::id()); $request->validate([ 'name' => 'required', 'email' => 'required|email', 'password' => 'nullable|min:6|confirmed' ]); $admin->name = $request->name; $admin->email = $request->email; if ($request->filled('password')) { $admin->password = Hash::make($request->password); } $admin->save(); return back()->with('success', 'Settings updated successfully.'); }
+    public function updateSettings(Request $request)
+    {
+        $admin = User::find(Auth::id());
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'nullable|min:6|confirmed'
+        ]);
+
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+
+        if ($request->filled('password')) {
+            $admin->password = Hash::make($request->password);
+        }
+
+        $admin->save();
+
+        return back()->with('success', 'Settings updated successfully.');
+    }
 
     //////////////////////////////////////////////////
-    // ANALYTICS
+    // 📈 ANALYTICS
     //////////////////////////////////////////////////
     public function analytics()
     {
@@ -131,7 +154,7 @@ class AdminController extends Controller
     }
 
     //////////////////////////////////////////////////
-    // DELETE USERS
+    // 🗑 DELETE USERS
     //////////////////////////////////////////////////
     public function deleteUsersPage()
     {
@@ -143,17 +166,15 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if ($user->role === 'admin') {
-            return back();
+        if ($user->role !== 'admin') {
+            $user->delete();
         }
-
-        $user->delete();
 
         return back();
     }
 
     //////////////////////////////////////////////////
-    // VIEW ID
+    // 🪪 VIEW ID
     //////////////////////////////////////////////////
     public function viewId($id)
     {
@@ -162,7 +183,7 @@ class AdminController extends Controller
     }
 
     //////////////////////////////////////////////////
-    // EMAIL SYSTEM
+    // 📧 EMAIL SYSTEM
     //////////////////////////////////////////////////
     public function emailPage($id)
     {
@@ -189,34 +210,52 @@ class AdminController extends Controller
     }
 
     //////////////////////////////////////////////////
-    // MESSAGES / CHAT
+    // 💬 ADMIN MESSAGES
     //////////////////////////////////////////////////
-
-    // INBOX (NO $user HERE)
     public function messages()
-{
-    $users = User::whereIn('role', ['buyer', 'seller'])->latest()->get();
-    $complaints = Complaint::latest()->get();
+    {
+        $users = User::whereIn('role', ['buyer', 'seller'])->latest()->get();
+        $complaints = Complaint::latest()->get();
 
-    return view('admin.messages', compact('users', 'complaints'));
-}
+        return view('admin.messages', compact('users', 'complaints'));
+    }
 
-    // CHAT (HAS $user)
     public function adminChat($id)
+    {
+        $authId = Auth::id();
+
+        $users = User::where('role', '!=', 'admin')->get();
+        $user = User::findOrFail($id);
+
+        $messages = Message::where(function ($q) use ($authId, $id) {
+                $q->where('sender_id', $authId)
+                  ->where('receiver_id', $id);
+            })
+            ->orWhere(function ($q) use ($authId, $id) {
+                $q->where('sender_id', $id)
+                  ->where('receiver_id', $authId);
+            })
+            ->orderBy('created_at')
+            ->get();
+
+        return view('admin.messages', compact('users', 'user', 'messages'));
+    }
+
+    //////////////////////////////////////////////////
+    // 📩 CONTACT SYSTEM
+    //////////////////////////////////////////////////
+    public function contacts()
+    {
+        $contacts = ContactMessage::latest()->get();
+      return view('admin.contacts', compact('contacts'));
+    }
+
+   public function markAsRead($id)
 {
-    $user = User::findOrFail($id);
+    ContactMessage::findOrFail($id)->update([
+        'is_read' => true
+    ]);
 
-    $messages = Message::where(function ($q) use ($user) {
-        $q->where('sender_id', Auth::id())
-          ->where('receiver_id', $user->id);
-    })
-    ->orWhere(function ($q) use ($user) {
-        $q->where('sender_id', $user->id)
-          ->where('receiver_id', Auth::id());
-    })
-    ->orderBy('created_at')
-    ->get();
-
-    return view('admin.chat', compact('user', 'messages'));
+    return back();
 }
 }

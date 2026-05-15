@@ -4,117 +4,80 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Order; 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Notification;
 
 class SellerController extends Controller
 {
     /**
      * Seller Dashboard Overview
      */
-    public function dashboard()
-    {
-        $sellerId = Auth::id();
+  
+public function dashboard()
+{
+    $sellerId = Auth::id();
 
-        // 1. PRODUCTS: Fetch products owned by the seller
-        // Standardized to 'user_id' to match your Products table
-        $products = Product::where('user_id', $sellerId)
-            ->with('images') 
+    // PRODUCTS
+    $products = Product::where('user_id', $sellerId)->get();
+
+    // DEFAULTS
+    $orders = collect();
+    $totalEarnings = 0;
+    $notifCount = 0;
+    $notifications = collect();
+
+    // NOTIFICATIONS (always safe)
+    if (Schema::hasTable('notifications')) {
+        $notifications = Notification::where('user_id', $sellerId)
+            ->latest()
             ->get();
 
-        // Initialize defaults for safety
-        $orders = collect();
-        $totalEarnings = 0;
-        $notifCount = 0;
-
-        // Ensure the orders table exists before querying
-        if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
-            try {
-                // 2. ORDERS: Fetch 10 most recent orders for this seller's products
-                $orders = Order::whereHas('product', function ($query) use ($sellerId) {
-                    $query->where('user_id', $sellerId);
-                })
-                ->with(['user', 'product.images'])
-                ->latest()
-                ->take(10)
-                ->get();
-
-                // 3. EARNINGS: Sum from accepted or completed orders
-                $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
-                    $query->where('user_id', $sellerId);
-                })
-                ->whereIn('status', ['accepted', 'completed'])
-                ->sum('total_price');
-
-                // 4. NOTIFICATIONS: Count pending orders the seller hasn't processed
-                $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
-                    $query->where('user_id', $sellerId);
-                })
-                ->where('status', 'pending')
-                ->count();
-
-            } catch (\Exception $e) {
-                // Fail gracefully if relations aren't perfect
-                $orders = collect();
-            }
-        }
-
-        return view('seller.dashboard', compact(
-            'products',
-            'orders',
-            'totalEarnings',
-            'notifCount'
-        ));
+        $notifCount = Notification::where('user_id', $sellerId)->count();
     }
 
-    /**
-     * Seller Profile View
-     */
-    public function profile()
-    {
-        return view('seller.profile', [
-            'user' => Auth::user()
-        ]);
+    // ORDERS (safe check)
+    if (class_exists(Order::class) && Schema::hasTable('orders')) {
+
+        $orders = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId); // IMPORTANT FIX (was seller_id mismatch risk)
+            })
+            ->with(['user', 'product'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId);
+            })
+            ->where('status', 'completed')
+            ->sum('total_price');
     }
 
+    return view('seller.dashboard', compact(
+        'products',
+        'orders',
+        'totalEarnings',
+        'notifications',
+        'notifCount'
+    ));
+}
     /**
-     * Update Seller Shop Information
-     */
-    public function updateProfile(Request $request)
-    {
-        $user = Auth::user();
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'shop_name' => 'nullable|string|max:255',
-        ]);
-
-        $user->name = $request->name;
-        $user->shop_name = $request->shop_name;
-        
-        /** @var \App\Models\User $user */
-        $user->save();
-
-        return back()->with('success', 'Profile and Shop settings updated successfully!');
-    }
-
-    /**
-     * Full Orders Management List (Paginated)
+     * Full Orders Management List
      */
     public function orders()
     {
-        $sellerId = Auth::id();
+        $seller = Auth::user();
         
         if (!Schema::hasTable('orders')) {
             return view('seller.orders', ['orders' => collect()]);
         }
 
-        $orders = Order::whereHas('product', function($query) use ($sellerId) {
-            $query->where('user_id', $sellerId);
+        $orders = Order::whereHas('product', function($query) use ($seller) {
+            $query->where('user_id', $seller->id);
         })
-        ->with(['user', 'product.images'])
+        ->with(['user', 'product'])
         ->latest()
         ->paginate(15);
 
@@ -122,33 +85,25 @@ class SellerController extends Controller
     }
 
     /**
-     * Update Order Status & Handle Inventory Returns
+     * Update Order Status (New Method)
+     * This allows sellers to mark items as 'Completed' or 'Cancelled'
      */
     public function updateOrderStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,accepted,completed,cancelled,declined'
+            'status' => 'required|in:pending,completed,cancelled'
         ]);
 
-        $sellerId = Auth::id();
+        $seller = Auth::user();
 
-        // Find the order and verify the seller owns the product
-        $order = Order::whereHas('product', function($query) use ($sellerId) {
-            $query->where('user_id', $sellerId);
-        })->with('product')->findOrFail($id);
-
-        // If declining, return the stock to the inventory
-        if ($request->status === 'declined' && $order->status !== 'declined') {
-            $order->product->increment('stock', $order->quantity);
-            
-            if ($order->product->status === 'sold_out') {
-                $order->product->update(['status' => 'available']);
-            }
-        }
+        // Find the order and verify the seller actually owns the product being sold
+        $order = Order::whereHas('product', function($query) use ($seller) {
+            $query->where('user_id', $seller->id);
+        })->findOrFail($id);
 
         $order->status = $request->status;
         $order->save();
 
-        return back()->with('success', 'Order status updated to ' . ucfirst($request->status));
+        return back()->with('success', 'Order status updated to ' . $request->status);
     }
 }

@@ -10,14 +10,22 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
 
-            // Seller approval system
-            $table->boolean('is_approved')->default(false);
+            // SELLER APPROVAL
+            if (!Schema::hasColumn('users', 'is_approved')) {
 
-            // Block/unblock system
-            $table->boolean('is_blocked')->default(false);
+                $table->boolean('is_approved')
+                      ->default(false);
 
-            // Optional status tracking (cleaner alternative later)
-            // $table->string('status')->default('pending');
+            }
+
+            // BLOCK SYSTEM
+            if (!Schema::hasColumn('users', 'is_blocked')) {
+
+                $table->boolean('is_blocked')
+                      ->default(false);
+
+            }
+
         });
     }
 
@@ -25,14 +33,32 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
 
-            $table->dropColumn([
-                'is_approved',
-                'is_blocked',
-                'shop_name',
-                'seller_name',
-                'contact_number',
-                'valid_id',
-            ]);
+            // DROP ONLY IF EXISTS
+
+            if (Schema::hasColumn('users', 'is_approved')) {
+                $table->dropColumn('is_approved');
+            }
+
+            if (Schema::hasColumn('users', 'is_blocked')) {
+                $table->dropColumn('is_blocked');
+            }
+
+            if (Schema::hasColumn('users', 'shop_name')) {
+                $table->dropColumn('shop_name');
+            }
+
+            if (Schema::hasColumn('users', 'seller_name')) {
+                $table->dropColumn('seller_name');
+            }
+
+            if (Schema::hasColumn('users', 'contact_number')) {
+                $table->dropColumn('contact_number');
+            }
+
+            if (Schema::hasColumn('users', 'valid_id')) {
+                $table->dropColumn('valid_id');
+            }
+
         });
     }
 };
