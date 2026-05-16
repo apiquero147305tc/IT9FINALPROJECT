@@ -64,4 +64,14 @@ class Product extends Model
 {
     return $this->belongsToMany(User::class, 'favorites');
 }
+
+public function ratings()
+{
+    return $this->hasMany(ProductRating::class);
+}
+
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }

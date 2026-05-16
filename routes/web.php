@@ -81,8 +81,8 @@ Route::middleware(['auth'])->group(function () {
     | ⭐ REVIEWS
     |--------------------------------------------------------------------------
     */
-    Route::post('/products/{product}/review', [ReviewController::class, 'store'])
-        ->name('reviews.store');
+   Route::post('/products/{product}/review', [ReviewController::class, 'store'])
+    ->name('reviews.store');
 });
 
 /*
@@ -162,13 +162,7 @@ Route::middleware(['role:buyer'])->group(function () {
     Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ⭐ PRODUCT RATING
-    |--------------------------------------------------------------------------
-    */
-    Route::post('/product/{product}/rate', [ProductRatingController::class, 'rate'])
-        ->name('product.rate');
+  
 });
 
 /*

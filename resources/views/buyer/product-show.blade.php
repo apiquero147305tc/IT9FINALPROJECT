@@ -272,10 +272,9 @@
 <body>
 
 @php
-    $ratings = $product->ratings ?? collect();
     $reviews = $product->reviews ?? collect();
 
-    $avgRating = round($ratings->avg('rating') ?? 0, 1);
+    $avgRating = round($reviews->avg('rating') ?? 0, 1);
     $totalReviews = $reviews->count();
 @endphp
 
@@ -349,7 +348,7 @@
                         </div>
 
                         <div class="review-count">
-                            {{ $totalReviews }} Reviews • {{ $ratings->count() }} Ratings
+                           {{ $totalReviews }} Reviews • {{ $avgRating }}/5 Avg Rating
                         </div>
 
                     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class BuyerController extends Controller
 {
@@ -101,7 +102,7 @@ class BuyerController extends Controller
 
     public function profile()
     {
-        $user = auth()->user();
+      $user = Auth::user();
 
         $budget = $user->monthly_budget ?? 0;
 
@@ -130,13 +131,16 @@ class BuyerController extends Controller
 
     public function smartBudget()
     {
-        $user = auth()->user();
+        $user = Auth::user();
+        
+        $orders = $user->orders ?? collect();
 
         $budget = $user->monthly_budget ?? 0;
 
-        $orders = $user->orders ?? collect();
-
         $spent = $orders->sum('total_price');
+
+        $budget = (float) $budget;
+        $spent = (float) $spent;
 
         $remaining = $budget - $spent;
 

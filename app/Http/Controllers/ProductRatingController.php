@@ -11,32 +11,27 @@ class ProductRatingController extends Controller
 {
     // ⭐ CREATE OR UPDATE RATING
     public function rate(Request $request, Product $product)
-    {
-        $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-        ]);
+{
+    $request->validate([
+        'rating' => 'required|integer|min:1|max:5',
+    ]);
 
-        $userId = Auth::id();
+    $user = Auth::user();
 
-        // check if user already rated this product
-        $existing = ProductRating::where('user_id', $userId)
-            ->where('product_id', $product->id)
-            ->first();
-
-        if ($existing) {
-            // update existing rating
-            $existing->update([
-                'rating' => $request->rating,
-            ]);
-        } else {
-            // create new rating
-            ProductRating::create([
-                'user_id' => $userId,
-                'product_id' => $product->id,
-                'rating' => $request->rating,
-            ]);
-        }
-
-        return back()->with('success', 'Rating saved successfully!');
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please login first.');
     }
+
+    ProductRating::updateOrCreate(
+        [
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ],
+        [
+            'rating' => $request->rating,
+        ]
+    );
+
+    return back()->with('success', 'Rating saved successfully!');
+}
 }

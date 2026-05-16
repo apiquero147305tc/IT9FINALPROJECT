@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-   public function store(Request $request, $id)
+   public function store(Request $request, $productId)
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string'
+            'comment' => 'required|string|max:1000',
         ]);
 
         Review::create([
             'user_id' => Auth::id(),
-            'product_id' => $id,
+            'product_id' => $productId,
             'rating' => $request->rating,
             'comment' => $request->comment,
         ]);
