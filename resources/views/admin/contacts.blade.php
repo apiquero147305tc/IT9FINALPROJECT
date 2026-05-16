@@ -49,6 +49,17 @@
                         </p>
                     </div>
 
+                       {{-- TYPE BADGE (REPORT vs CONTACT) --}}
+                            @if($msg->type === 'report')
+                                <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
+                                    REPORT
+                                </span>
+                            @else
+                                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
+                                    CONTACT
+                                </span>
+                            @endif
+
                     {{-- STATUS --}}
                     @if(!$msg->is_read)
                         <span class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full">
