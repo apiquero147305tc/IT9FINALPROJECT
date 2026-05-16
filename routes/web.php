@@ -11,7 +11,6 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\ProductRatingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReportController;
 
