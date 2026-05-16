@@ -16,6 +16,7 @@ public function send(Request $request)
         'name' => $request->name,
         'email' => $request->email,
         'message' => $request->message,
+        'type' => 'report', 
         'is_read' => false,
     ]);
 
