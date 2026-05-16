@@ -130,8 +130,9 @@ class ProductController extends Controller
     // SHOW PRODUCT (for buyer view with ratings)
     public function show(Product $product)
     {
-        $product->load('ratings.user');
+           $product->load('reviews.user');
 
-        return view('buyer.product-show', compact('product'));
+    return view('buyer.product-show', compact('product'));
+
     }
 }

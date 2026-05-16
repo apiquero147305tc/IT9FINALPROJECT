@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Report;
+
 
 class AdminController extends Controller
 {
+    public function reports()
+    {
+        $reports = Report::latest()->get();
+    
+        return view('admin.reports', compact('reports'));
+    }
     /**
      * Display the Admin Dashboard with pending approval requests.
      */

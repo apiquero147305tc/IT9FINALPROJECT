@@ -3,14 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ProductReview extends Model
+class Report extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'product_id',
-        'comment',
-        'rating'
+        'seller_id',
+        'type',
+        'reason',
+        'is_resolved',
     ];
 
     public function user()
@@ -21,5 +26,10 @@ class ProductReview extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
     }
 }

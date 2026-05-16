@@ -54,15 +54,14 @@ class Product extends Model
         return $this->hasMany(Favorite::class, 'product_id');
     }
 
-    // ⭐ RATINGS (THIS FIXES YOUR ERROR)
-    public function ratings()
-    {
-        return $this->hasMany(ProductRating::class);
-    }
-
     // reviews
-    public function reviews()
-   {
-    return $this->hasMany(ProductReview::class);
-   }
+ public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
+   public function favoritedBy()
+{
+    return $this->belongsToMany(User::class, 'favorites');
+}
 }
