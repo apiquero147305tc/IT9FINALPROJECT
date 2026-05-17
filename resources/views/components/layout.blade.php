@@ -31,7 +31,7 @@
 </head>
 <body class="text-slate-900 antialiased overflow-x-hidden">
 
-<<nav class="sticky top-0 z-[100] border-b border-red-500/10 bg-red-600/90 nav-blur transition-all duration-500 shadow-2xl shadow-red-900/5">
+<nav class="sticky top-0 z-[100] border-b border-red-500/10 bg-red-600/90 nav-blur transition-all duration-500 shadow-2xl shadow-red-900/5">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
         
         <div class="flex items-center gap-10">
@@ -78,7 +78,7 @@
     </div>
 </nav>
 
-<<main class="min-h-[85vh]">
+<main class="min-h-[85vh]">
     {{ $slot }}
 </main>
 
