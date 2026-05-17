@@ -2,25 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\Order; 
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Product;
+use App\Models\Order;
+use App\Models\Notification;
 
 class SellerController extends Controller
 {
     /**
-     * Seller Dashboard Overview
+     * Check if seller account is pending approval
+     */
+    protected function checkPendingApproval()
+    {
+        $user = Auth::user();
+        
+        // Check if seller account status is 'pending'
+        if ($user->status === 'pending') {
+            return redirect()->route('seller.pending');
+        }
+        
+        return null; // Not pending, continue normally
+    }
+
+    /**
+     * Show the pending approval page
+     */
+    public function pending()
+    {
+        return view('seller.pending-approval');
+    }
+
+    /**
+     * Seller Dashboard View
      */
     public function dashboard()
     {
-        $sellerId = Auth::id();
+        // Check if pending approval FIRST
+        $pending = $this->checkPendingApproval();
+        if ($pending) {
+            return $pending;
+        }
 
-        // PRODUCTS: Fetch products owned by the seller
-        $products = Product::where('user_id', $sellerId)
-            ->with('images')
+        $seller = Auth::user();
+        $sellerId = $seller->id;
+
+        $products = Product::with('images')
+            ->where('user_id', $sellerId)
             ->get();
 
         // Initialize defaults for safety
@@ -86,6 +115,12 @@ class SellerController extends Controller
      */
     public function profile()
     {
+        // Check if pending approval
+        $pending = $this->checkPendingApproval();
+        if ($pending) {
+            return $pending;
+        }
+
         return view('seller.profile', [
             'user' => Auth::user()
         ]);
@@ -96,6 +131,12 @@ class SellerController extends Controller
      */
     public function updateProfile(Request $request)
     {
+        // Check if pending approval
+        $pending = $this->checkPendingApproval();
+        if ($pending) {
+            return $pending;
+        }
+
         $user = Auth::user();
 
         $request->validate([
@@ -117,6 +158,12 @@ class SellerController extends Controller
      */
     public function orders()
     {
+        // Check if pending approval
+        $pending = $this->checkPendingApproval();
+        if ($pending) {
+            return $pending;
+        }
+
         $seller = Auth::user();
 
         if (!Schema::hasTable('orders')) {
@@ -138,6 +185,12 @@ class SellerController extends Controller
      */
     public function updateOrderStatus(Request $request, $id)
     {
+        // Check if pending approval
+        $pending = $this->checkPendingApproval();
+        if ($pending) {
+            return $pending;
+        }
+
         $request->validate([
             'status' => 'required|in:pending,completed,cancelled,accepted,declined'
         ]);

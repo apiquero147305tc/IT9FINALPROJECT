@@ -153,6 +153,10 @@ Route::middleware(['auth'])->group(function () {
         
         Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
             ->name('orders.updateStatus');
+        // Pending approval page (accessible to pending sellers)
+        Route::get('/seller/pending', [SellerController::class, 'pending'])
+            ->name('seller.pending')
+            ->middleware(['auth', 'role:seller']);
     });
 
     // --- 🛍 PRODUCT (EDIT / UPDATE / DELETE) ---
