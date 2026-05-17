@@ -99,42 +99,12 @@ class AuthController extends Controller
     /**
      * Handle Login Attempts
      */
-<<<<<<< HEAD
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            // 1. Check if account is blocked
-            if (isset($user->is_blocked) && $user->is_blocked) {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Your account has been suspended.']);
-            }
-
-            // 2. Check for admin approval (all non-buyers)
-            if ($user->status !== 'approved') {
-                Auth::logout();
-                return redirect()->route('blocked')->withErrors([
-                    'email' => 'Your account is currently waiting for admin approval.'
-                ]);
-            }
-
-            $request->session()->regenerate();
-            return $this->redirectUserBasedOnRole($user);
-        }
-=======
    public function login(Request $request)
 {
     $credentials = $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
->>>>>>> c7d4a413a8aa017dea384b1cd4ab2f719ff254e1
 
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([
