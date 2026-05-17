@@ -247,15 +247,15 @@ class AdminController extends Controller
     public function contacts()
     {
         $contacts = ContactMessage::latest()->get();
-      return view('admin.contacts', compact('contacts'));
+        return view('admin.contacts', compact('contacts'));
     }
 
-   public function markAsRead($id)
-{
-    ContactMessage::findOrFail($id)->update([
-        'is_read' => true
-    ]);
+    public function markAsRead($id)
+    {
+        ContactMessage::findOrFail($id)->update([
+            'is_read' => true
+        ]);
 
-    return back();
-}
+        return back();
+    }
 }
