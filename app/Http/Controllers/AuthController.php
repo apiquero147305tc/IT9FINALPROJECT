@@ -99,38 +99,42 @@ class AuthController extends Controller
     /**
      * Handle Login Attempts
      */
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+   public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            // 1. Check if account is blocked
-            if (isset($user->is_blocked) && $user->is_blocked) {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Your account has been suspended.']);
-            }
-
-            // 2. Check for admin approval (all non-buyers)
-            if ($user->role === 'seller' && $user->status !== 'approved') {
-                Auth::logout();
-                return redirect()->route('blocked')->withErrors([
-                    'email' => 'Your account is currently waiting for admin approval.'
-                ]);
-            }
-
-            $request->session()->regenerate();
-            return $this->redirectUserBasedOnRole($user);
-        }
-
+    if (!Auth::attempt($credentials)) {
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
+
+    $user = Auth::user();
+
+    // Blocked users
+    if ($user->is_blocked) {
+        Auth::logout();
+        return back()->withErrors([
+            'email' => 'Your account has been suspended.'
+        ]);
+    }
+
+    // Pending sellers
+    if ($user->role === 'seller' && $user->status !== 'approved') {
+        Auth::logout();
+
+        return redirect()
+            ->route('auth.pending')
+            ->with('message', 'Your account is waiting for admin approval.');
+    }
+
+    $request->session()->regenerate();
+
+    return $this->redirectUserBasedOnRole($user);
+}
 
     /**
      * Helper to route users after successful login
