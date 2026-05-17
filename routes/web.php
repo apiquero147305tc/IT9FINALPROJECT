@@ -60,6 +60,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
+    Route::get('/pending', [AuthController::class, 'pending'])->name('auth.pending');
 
     // Registration Routes
 Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
@@ -69,7 +70,7 @@ Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->n
 Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
 });
 
-Route::get('/pending', fn () => view('auth.pending'))->name('pending');
+
 Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
 
 /*

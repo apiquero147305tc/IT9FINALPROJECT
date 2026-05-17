@@ -99,6 +99,7 @@ class AuthController extends Controller
     /**
      * Handle Login Attempts
      */
+<<<<<<< HEAD
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -126,11 +127,44 @@ class AuthController extends Controller
             $request->session()->regenerate();
             return $this->redirectUserBasedOnRole($user);
         }
+=======
+   public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+>>>>>>> c7d4a413a8aa017dea384b1cd4ab2f719ff254e1
 
+    if (!Auth::attempt($credentials)) {
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
+
+    $user = Auth::user();
+
+    // Blocked users
+    if ($user->is_blocked) {
+        Auth::logout();
+        return back()->withErrors([
+            'email' => 'Your account has been suspended.'
+        ]);
+    }
+
+    // Pending sellers
+    if ($user->role === 'seller' && $user->status !== 'approved') {
+        Auth::logout();
+
+        return redirect()
+            ->route('auth.pending')
+            ->with('message', 'Your account is waiting for admin approval.');
+    }
+
+    $request->session()->regenerate();
+
+    return $this->redirectUserBasedOnRole($user);
+}
 
     /**
      * Helper to route users after successful login
