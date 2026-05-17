@@ -2,7 +2,7 @@
 
 <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
 
-<<<<<<< HEAD
+
     <!-- HEADER SECTION -->
     <div style="background: linear-gradient(135deg, #dd0d22 0%, #b30b1b 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
         <h2 style="margin: 0 0 10px 0; font-size: 1.8rem;">🍱 CraveCart | Seller Studio</h2>
