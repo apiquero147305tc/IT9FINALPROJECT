@@ -10,6 +10,12 @@
                 <h2 class="text-5xl md:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">
                     Browse <span class="text-red-600">Essentials.</span>
                 </h2>
+                <a href="{{ route('lending.index') }}" class="nav-link">
+                📚 Lending Hub
+                </a>
+                <a href="{{ route('lending.my-requests') }}" class="nav-link">
+                📋 My Borrowings
+            </a>
             </header>
 
             {{-- SORTING & FILTER UI --}}
@@ -86,6 +92,10 @@
                                 </span>
                             </div>
                         </div>
+                        {{-- LENDABLE BADGE --}}
+                        @if($product->is_lendable && $product->stock > 0)
+                            <span class="badge-lendable">📚 Lendable</span>
+                        @endif
 
                         {{-- CONTENT --}}
                         <div class="p-6">
@@ -108,20 +118,23 @@
                             </div>
 
                             {{-- ACTIONS --}}
-                            <div class="flex gap-3">
-                                <a href="{{ route('products.show', $product->id) }}" class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest text-center hover:bg-red-600 transition-all no-underline">
-                                    View
-                                </a>
-                                @auth
-                                    @if(auth()->user()->role === 'buyer')
-                                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
-                                            @csrf
-                                            <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-900 transition-all">
-                                                Add to Cart
-                                            </button>
-                                        </form>
+                            <a href="{{ route('products.show', $product) }}" class="btn-view">View</a>
+                            @auth
+                                @if(auth()->user()->role === 'buyer')
+                                    {{-- ADD TO CART BUTTON (existing) --}}
+                                    <form action="{{ route('cart.add', $product) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="btn-cart">🛒 Add to Cart</button>
+                                    </form>
+
+                                    {{-- BORROW BUTTON (NEW) --}}
+                                    @if($product->is_lendable && $product->stock > 0)
+                                        <a href="{{ route('lending.create', $product) }}" class="btn-borrow">
+                                            📚 Borrow
+                                        </a>
                                     @endif
-                                @endauth
+                                @endif
+                            @endauth
                             </div>
                         </div>
                     </div>
