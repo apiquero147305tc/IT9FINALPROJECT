@@ -16,7 +16,6 @@ class ProductController extends Controller
         return view('seller.products.create');
     }
 
-<<<<<<< HEAD
     // ✅ STORE PRODUCT + MULTIPLE IMAGES
     public function store(Request $request)
     {
@@ -40,33 +39,6 @@ class ProductController extends Controller
             'status'      => ($request->stock > 0) ? 'available' : 'sold_out',
         ]);
 
-        // Handle Multiple Image Uploads
-=======
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'category' => 'required|string',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // CREATE PRODUCT
-        $product = Product::create([
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock ?? 0,
-            'category' => $request->category,
-            'image' => null,
-            'status' => 'available',
-        ]);
-
-        // MULTIPLE IMAGES
->>>>>>> origin/smart-budget-control
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
@@ -78,11 +50,7 @@ class ProductController extends Controller
         }
 
         return redirect()->route('seller.dash')
-<<<<<<< HEAD
-            ->with('success', 'Product added successfully to your studio!');
-=======
             ->with('success', 'Product added successfully!');
->>>>>>> origin/smart-budget-control
     }
 
     // Show edit form

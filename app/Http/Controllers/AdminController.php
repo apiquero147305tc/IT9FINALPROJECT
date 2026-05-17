@@ -9,7 +9,6 @@ use App\Models\Message;
 use App\Models\Notification;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
-<<<<<<< HEAD
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -19,22 +18,6 @@ class AdminController extends Controller
     //////////////////////////////////////////////////
     // 📊 DASHBOARD
     //////////////////////////////////////////////////
-=======
-use App\Models\Report;
-
-
-class AdminController extends Controller
-{
-    public function reports()
-    {
-        $reports = Report::latest()->get();
-    
-        return view('admin.reports', compact('reports'));
-    }
-    /**
-     * Display the Admin Dashboard with pending approval requests.
-     */
->>>>>>> origin/smart-budget-control
     public function dashboard()
     {
         $users = User::where('role', '!=', 'admin')->latest()->get();
