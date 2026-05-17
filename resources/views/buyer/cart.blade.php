@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <x-buyerDash>
 
 <div style="max-width: 900px; margin: 0 auto; padding: 20px;">
@@ -110,7 +109,6 @@
 </div>
 
 </x-buyerDash>
-=======
 <x-layout title="My Cart - CraveCart">
     <section class="min-h-screen bg-slate-50 py-12 px-6 lg:px-12">
         <div class="max-w-[1440px] mx-auto">
@@ -193,4 +191,3 @@
         </div>
     </section>
 </x-layout>
->>>>>>> origin/SellerStartup2.0

@@ -25,17 +25,17 @@ class AuthController extends Controller
      * Show the registration page specifically for Buyers
      */
     public function showBuyerRegister()
-{
-    return view('auth.buyer-register');
-}
+    {
+        return view('auth.register', ['role' => 'buyer']);
+    }
 
     /**
      * Show the registration page specifically for Sellers
      */
     public function showSellerRegister()
-{
-    return view('auth.seller-register');
-}
+    {
+        return view('auth.register', ['role' => 'seller']);
+    }
 
     /**
      * Unified Registration Logic for both Buyers and Sellers
@@ -116,7 +116,7 @@ class AuthController extends Controller
             }
 
             // 2. Check for admin approval (all non-buyers)
-            if ($user->role === 'seller' && $user->status !== 'approved') {
+            if ($user->status !== 'approved') {
                 Auth::logout();
                 return redirect()->route('blocked')->withErrors([
                     'email' => 'Your account is currently waiting for admin approval.'
