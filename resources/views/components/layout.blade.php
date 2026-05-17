@@ -19,8 +19,8 @@
             -webkit-backdrop-filter: blur(12px); 
         }
         
-        /* 🚀 FLOATING ANIMATIONS FOR IMAGES */
         @keyframes float {
+        /* 🚀 FLOATING ANIMATIONS FOR IMAGES */
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
@@ -51,7 +51,7 @@
 
             <ul class="hidden lg:flex items-center gap-8 list-none mb-0 p-0">
                 <li><a href="{{ route('shop') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">The Shop</a></li>
-                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">Our Products </a></li>
+                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">Our Pro </a></li>
                 <li><a href="{{ route('about') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">About</a></li>
                 <li><a href="{{ route('contact') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-50/80 hover:text-white transition-all no-underline">Contact</a></li>
             </ul>

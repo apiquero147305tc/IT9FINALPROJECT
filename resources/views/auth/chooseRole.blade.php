@@ -18,7 +18,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
-                <a href="{{ route('buyer.register', ['role' => 'buyer']) }}" 
+                {{-- BUYER — FIXED: removed ['role' => 'buyer'] --}}
+                <a href="{{ route('buyer.register') }}" 
                    class="group relative bg-white p-12 rounded-[45px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-slate-200 hover:-translate-y-4 transition-all duration-500 no-underline text-center overflow-hidden">
                     
                     <div class="absolute top-0 left-0 w-full h-1.5 bg-slate-900 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
@@ -38,7 +39,8 @@
                     </div>
                 </a>
 
-                <a href="{{ route('seller.register', ['role' => 'seller']) }}" 
+                {{-- SELLER — FIXED: removed ['role' => 'seller'] --}}
+                <a href="{{ route('seller.register') }}" 
                    class="group relative bg-white p-12 rounded-[45px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-red-100 hover:-translate-y-4 transition-all duration-500 no-underline text-center overflow-hidden">
                     
                     <div class="absolute top-0 left-0 w-full h-1.5 bg-red-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>

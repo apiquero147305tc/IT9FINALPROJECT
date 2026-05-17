@@ -63,11 +63,11 @@ Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
 // 🧾 REGISTRATION
 //////////////////////////////////////////////////
 
-Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
-Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
+Route::get('/register/buyer-register', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
+Route::post('/register/buyer-register', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
 
-Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
-Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
+Route::get('/register/seller-register', [AuthController::class, 'showSellerRegister'])->name('seller.register');
+Route::post('/register/seller-register', [AuthController::class, 'registerSeller'])->name('seller.register.post');
 
 //////////////////////////////////////////////////
 // 📨 CONTACT (PUBLIC)
