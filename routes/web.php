@@ -127,7 +127,8 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
 
     // --- 🟢 BUYER ROUTES ---
-    Route::middleware(['role:buyer'])->group(function () {
+   Route::middleware(['auth', 'role:buyer'])->group(function () {
+
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
         Route::get('/buyer/smartbudgetcontrol', [BuyerController::class, 'smartBudget'])->name('buyer.smartbudgetcontrol');
         Route::get('/buyer/profile', [BuyerController::class, 'profile'])->name('buyer.profile');
@@ -141,7 +142,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // --- 🔴 SELLER ROUTES ---
-    Route::middleware(['role:seller'])->group(function () {
+    Route::middleware(['auth', 'role:seller'])->group(function () {
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
         Route::get('/seller/profile', [SellerController::class, 'profile'])->name('seller.profile');
         Route::post('/seller/profile/update', [SellerController::class, 'updateProfile'])->name('seller.profile.update');

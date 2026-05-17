@@ -1,4 +1,5 @@
 <x-layout>
+    <x-buyerDash>
 @section('title', 'Order Receipt - CraveCart')
 
 @section('content')
@@ -262,4 +263,5 @@
 }
 </style>
 @endsection
+    </x-buyerDash>
 </x-layout>
