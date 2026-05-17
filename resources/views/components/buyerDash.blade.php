@@ -243,9 +243,6 @@
 
         </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
             <!-- FLOATING CART BUTTON -->
         <a href="{{ route('cart.index') }}" style="text-decoration: none; color: white;" id="floatingCartBtn">
             Cart
@@ -270,10 +267,9 @@
         
         <!-- LOGOUT -->
         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-=======
+
         <form action="{{ route('logout') }}" method="POST" style="margin:0;">
->>>>>>> origin/SellerStartup2.0
-=======
+
         {{-- NAV ICONS --}}
         <div class="nav-links">
 
@@ -300,7 +296,6 @@
         </div>
 
         <form action="{{ route('logout') }}" method="POST">
->>>>>>> origin/smart-budget-control
             @csrf
             <button class="logout-btn">Logout</button>
         </form>
@@ -312,8 +307,6 @@
     {{ $slot }}
 </div>
 
-<<<<<<< HEAD
-=======
 <script>
     lucide.createIcons();
 
@@ -342,6 +335,5 @@
     });
 </script>
 
->>>>>>> origin/smart-budget-control
 </body>
 </html>
