@@ -66,7 +66,10 @@ class MessageController extends Controller
             ];
         }
 
-        return view('seller.messages', compact('users'));
+      return view('messages.inbox', [
+    'users' => $users,
+    'role' => Auth::user()->role
+]);
     }
 
     public function fetchMessages($userId)
