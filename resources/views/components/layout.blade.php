@@ -82,7 +82,7 @@
     {{ $slot }}
 </main>
 
-<<footer class="bg-slate-950 pt-32 pb-12 text-white relative overflow-hidden">
+<footer class="bg-slate-950 pt-32 pb-12 text-white relative overflow-hidden">
     <div class="absolute top-0 right-0 opacity-10 pointer-events-none select-none">
         <h1 class="text-[22rem] font-black leading-none text-stroke translate-x-1/3 -translate-y-1/4 italic">CRAVE</h1>
     </div>
