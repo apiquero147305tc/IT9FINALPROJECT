@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -16,13 +17,13 @@ class User extends Authenticatable
         'password',
         'role',
         'status',
-        'is_blocked', // Added for the block/unblock system
+        'grade_level',
+        'monthly_budget',
         'shop_name',
         'contact_number',
         'age',
         'valid_id',
-        'grade_level',
-        'monthly_budget',
+        'is_blocked',
         'spent_amount',
     ];
 
@@ -34,7 +35,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'is_blocked' => 'boolean', // Cast to boolean for easier logic
+        'is_blocked' => 'boolean',
     ];
 
     /*
@@ -63,31 +64,39 @@ class User extends Authenticatable
     |-------------------------
     */
 
-<<<<<<< HEAD
-=======
     // Products owned by seller
->>>>>>> origin/smart-budget-control
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
     }
 
-<<<<<<< HEAD
-=======
     // Orders made by user
->>>>>>> origin/smart-budget-control
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
     }
 
-<<<<<<< HEAD
-=======
     // Cart items
->>>>>>> origin/smart-budget-control
     public function cartItems()
     {
         return $this->hasMany(Cart::class);
+    }
+
+    // Favorite products
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
+    }
+
+    public function favoriteProducts()
+    {
+        return $this->belongsToMany(Product::class, 'favorites');
+    }
+
+    // Reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 
     /*
@@ -101,19 +110,4 @@ class User extends Authenticatable
         $this->spent_amount += $amount;
         $this->save();
     }
-
-    public function favorites()
-    {
-    return $this->hasMany(Favorite::class, 'user_id');
-    }
-
-   public function favoriteProducts()
-   {
-    return $this->belongsToMany(Product::class, 'favorites');
-   }
-
-   public function reviews()
-{
-    return $this->hasMany(Review::class);
-}
 }

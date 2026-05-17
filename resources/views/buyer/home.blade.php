@@ -1,276 +1,138 @@
-<x-buyerDash>
+<x-layout>
+    <section class="min-h-[85vh] bg-[#FDFCFB] px-6 py-20">
+        <div class="max-w-[1440px] mx-auto">
+            
+            {{-- HEADER --}}
+            <header class="mb-16 text-center">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-red-200">
+                    Marketplace
+                </span>
+                <h2 class="text-5xl md:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">
+                    Browse <span class="text-red-600">Essentials.</span>
+                </h2>
+            </header>
 
-<script src="https://unpkg.com/lucide@latest"></script>
+            {{-- SORTING & FILTER UI --}}
+            <div class="flex flex-wrap gap-4 mb-10 justify-center">
+                <form method="GET" action="{{ route('buyer.home') }}" class="flex flex-wrap gap-4">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." 
+                        class="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-red-600 outline-none w-64">
+                    
+                    <select name="category" class="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-red-600 outline-none">
+                        <option value="All" {{ request('category') == 'All' ? 'selected' : '' }}>All Categories</option>
+                        <option value="Food" {{ request('category') == 'Food' ? 'selected' : '' }}>Food</option>
+                        <option value="School Supplies" {{ request('category') == 'School Supplies' ? 'selected' : '' }}>School Supplies</option>
+                        <option value="Electronics" {{ request('category') == 'Electronics' ? 'selected' : '' }}>Electronics</option>
+                        <option value="Others" {{ request('category') == 'Others' ? 'selected' : '' }}>Others</option>
+                    </select>
 
-<style>
-body {
-    background: #f8fafc;
-}
+                    <select name="sort" class="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-red-600 outline-none">
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
+                        <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Highest Rated</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                    </select>
 
-.page-wrapper {
-    padding: 30px;
-    min-height: 100vh;
-    background: radial-gradient(circle at top, #fff1f2 0%, #f8fafc 60%);
-}
-
-/* HEADER */
-.page-header {
-    margin-bottom: 18px;
-}
-
-.page-header h1 {
-    margin: 0;
-    font-size: 34px;
-    font-weight: 900;
-    background: linear-gradient(90deg,#e11d48,#f97316);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.page-header p {
-    margin-top: 6px;
-    color: #6b7280;
-}
-
-/* SORT BAR */
-.sort-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.sort-bar select {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    background: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* PRODUCT CARD */
-.product-card {
-    background: white;
-    border-radius: 18px;
-    overflow: hidden;
-    transition: 0.2s ease;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-    border: 1px solid #f1f5f9;
-    position: relative;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 30px rgba(0,0,0,0.10);
-}
-
-.product-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.icon-btn {
-    background: rgba(255,255,255,0.95);
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* CART */
-.cart-btn {
-    width: 100%;
-    border: none;
-    padding: 11px;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #e11d48, #f97316);
-    color: white;
-    font-weight: 700;
-}
-
-/* CATEGORY */
-.category-tag {
-    display: inline-block;
-    background: #fff1f2;
-    color: #e11d48;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-/* RATING */
-.rating-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 6px 0 10px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.stars {
-    display: flex;
-    gap: 2px;
-}
-
-.star {
-    font-size: 14px;
-    color: #d1d5db;
-}
-
-.star.filled {
-    color: #f59e0b;
-}
-
-/* GRID */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 22px;
-}
-
-.empty-state {
-    grid-column: 1/-1;
-    text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 16px;
-    border: 1px solid #eee;
-}
-</style>
-
-<div class="page-wrapper">
-
-    <div class="page-header">
-        <h1>Buyer Marketplace</h1>
-        <p>Browse products and discover affordable essentials.</p>
-    </div>
-
-    {{-- SORTING UI --}}
-    <form method="GET" class="sort-bar">
-        <div></div>
-
-        <select name="sort" onchange="this.form.submit()">
-            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
-            <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-            <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-            <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Highest Rated</option>
-        </select>
-    </form>
-
-    @php
-        $user = auth()->user();
-        $favorites = $user ? ($user->favoriteProducts ?? collect()) : collect();
-    @endphp
-
-    <div class="product-grid">
-
-        @forelse($products as $product)
+                    <button type="submit" class="bg-red-600 text-white px-8 py-3 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-900 transition-all">
+                        Filter
+                    </button>
+                </form>
+            </div>
 
             @php
-                $ratings = $product->ratings ?? collect();
-                $avgRating = $ratings->avg('rating') ?? 0;
-                $ratingCount = $ratings->count() ?? 0;
-
-                $fullStars = floor($avgRating);
+                $user = auth()->user();
+                $favorites = $user ? ($user->favoriteProducts ?? collect()) : collect();
             @endphp
 
-            <div class="product-card">
+            {{-- PRODUCT GRID --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                @forelse($products as $product)
+                    @php
+                        $ratings = $product->ratings ?? collect();
+                        $avgRating = $ratings->avg('rating') ?? 0;
+                        $ratingCount = $ratings->count() ?? 0;
+                        $fullStars = floor($avgRating);
+                        $isFavorited = $favorites->contains($product->id);
+                    @endphp
 
-                {{-- FAVORITE --}}
-                <div class="product-actions">
-                    <form action="{{ route('favorite.toggle', $product->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="icon-btn">
-                            @if($favorites->contains($product->id))
-                                <i data-lucide="heart" style="color:#e11d48; fill:#e11d48;"></i>
+                    <div class="group bg-white rounded-[30px] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-red-100/50 hover:-translate-y-2 transition-all duration-500">
+                        
+                        {{-- IMAGE --}}
+                        <div class="relative h-56 overflow-hidden bg-slate-100">
+                            @if($product->images && $product->images->count() > 0)
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
+                                    alt="{{ $product->name }}" 
+                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                             @else
-                                <i data-lucide="heart" style="color:#9ca3af;"></i>
+                                <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                    <i class="fa-solid fa-image text-4xl"></i>
+                                </div>
                             @endif
-                        </button>
-                    </form>
-                </div>
 
-                <div style="height:220px; overflow:hidden;">
-                    <img src="{{ $product->image ? asset('storage/'.$product->image) : 'https://via.placeholder.com/300x220' }}"
-                         style="width:100%; height:100%; object-fit:cover;">
-                </div>
+                            {{-- FAVORITE BUTTON --}}
+                            @auth
+                                <form action="{{ route('favorite.toggle', $product->id) }}" method="POST" class="absolute top-4 right-4">
+                                    @csrf
+                                    <button type="submit" class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+                                        <i class="fa-{{ $isFavorited ? 'solid' : 'regular' }} fa-heart text-{{ $isFavorited ? 'red-500' : 'slate-400' }}"></i>
+                                    </button>
+                                </form>
+                            @endauth
 
-                <div style="padding:18px;">
-
-                    <div class="category-tag">
-                        {{ $product->category }}
-                    </div>
-
-                    <h3 style="margin:0;">
-                        {{ $product->name }}
-                    </h3>
-
-                    <p style="margin-top:10px; font-size:22px; font-weight:800; color:#e11d48;">
-                        ₱{{ number_format($product->price, 2) }}
-                    </p>
-
-                    {{-- RATING (UPGRADED) --}}
-                    <div class="rating-row">
-                        <div class="stars">
-                            @for($i = 1; $i <= 5; $i++)
-                                <span class="star {{ $i <= $fullStars ? 'filled' : '' }}">★</span>
-                            @endfor
+                            {{-- CATEGORY BADGE --}}
+                            <div class="absolute bottom-4 left-4">
+                                <span class="px-3 py-1 bg-white/90 backdrop-blur rounded-full text-[10px] font-black uppercase tracking-widest text-slate-600">
+                                    {{ $product->category }}
+                                </span>
+                            </div>
                         </div>
 
-                        <span>
-                            {{ number_format($avgRating, 1) }} ({{ $ratingCount }})
-                        </span>
+                        {{-- CONTENT --}}
+                        <div class="p-6">
+                            <h3 class="font-black text-lg text-slate-900 mb-2 group-hover:text-red-600 transition-colors">{{ $product->name }}</h3>
+                            
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-red-600 font-black text-xl">₱{{ number_format($product->price, 2) }}</span>
+                                
+                                {{-- RATING --}}
+                                <div class="flex items-center gap-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $fullStars)
+                                            <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                        @else
+                                            <i class="fa-regular fa-star text-slate-300 text-xs"></i>
+                                        @endif
+                                    @endfor
+                                    <span class="text-[10px] font-bold text-slate-400 ml-1">{{ number_format($avgRating, 1) }} ({{ $ratingCount }})</span>
+                                </div>
+                            </div>
+
+                            {{-- ACTIONS --}}
+                            <div class="flex gap-3">
+                                <a href="{{ route('products.show', $product->id) }}" class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest text-center hover:bg-red-600 transition-all no-underline">
+                                    View
+                                </a>
+                                @auth
+                                    @if(auth()->user()->role === 'buyer')
+                                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
+                                            @csrf
+                                            <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-900 transition-all">
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                    @endif
+                                @endauth
+                            </div>
+                        </div>
                     </div>
-
-                    <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                        @csrf
-                        <button class="cart-btn">Add to Cart</button>
-                    </form>
-
-                </div>
+                @empty
+                    <div class="col-span-full text-center py-20">
+                        <i class="fa-solid fa-box-open text-6xl text-slate-200 mb-4"></i>
+                        <h3 class="text-2xl font-black text-slate-400 mb-2">No products found</h3>
+                        <p class="text-slate-400 font-medium">Try adjusting your search or category filter.</p>
+                    </div>
+                @endforelse
             </div>
-
-        @empty
-
-            <div class="empty-state">
-                <h2>No products found</h2>
-                <p style="color:#6b7280;">Try adjusting search or category.</p>
-            </div>
-
-        @endforelse
-
-    </div>
-</div>
-
-<script>
-    lucide.createIcons();
-</script>
-
-<!-- <div class="bg-white p-4 rounded-xl shadow mb-6">
-    <h2 class="text-lg font-bold mb-2">Notifications</h2>
-
-    @forelse($notifications as $note)
-
-        <div class="border-b py-2">
-            <h3 class="font-semibold">{{ $note->subject }}</h3>
-            <p class="text-gray-600">{{ $note->message }}</p>
         </div>
-
-    @empty
-        <p class="text-gray-400">No notifications yet.</p>
-    @endforelse
-</div> -->
-
-</x-buyerDash>
+    </section>
+</x-layout>

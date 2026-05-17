@@ -1,27 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* Updated Sophisticated Color Palette */
+    /* Unified Red-Orange Color Palette */
     --brand-red: #d10a1c;
-    --brand-orange: #f25b1a; /* Deeper orange from your reference */
-    --brand-orange-light: #ff8c05; /* Light orange for gradients */
-    --brand-cream: #fff4e9; 
+    --brand-orange: #f25b1a;
+    --brand-orange-light: #ff8c05;
+    --brand-cream: #fff4e9;
     --brand-white: #ffffff;
     
     /* Text Colors */
-    --text-main: #111827; 
-    --text-muted: #6b7280; 
+    --text-main: #111827;
+    --text-muted: #6b7280;
     
     /* Geometry */
     --radius-pill: 100px;
-    --radius-card: 20px; 
+    --radius-card: 20px;
     
     /* Depth */
     --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
 
 body { 
     font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -31,57 +35,66 @@ body {
     overflow-x: hidden;
 }
 
-.container { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
-
-/* --- VIBRANT ORANGE NAVBAR --- */
-<<<<<<< HEAD
-h2 { color: var(--cc-red); text-align: center; margin-bottom: 1.5rem; }
-
-.h22{
-    color: var(--cc-white);
+.container { 
+    max-width: 1240px; 
+    margin: 0 auto; 
+    padding: 0 40px; 
 }
 
+/* --- HEADINGS --- */
+h2 { 
+    color: var(--brand-red); 
+    text-align: center; 
+    margin-bottom: 1.5rem; 
+}
+
+.h22 {
+    color: var(--brand-white);
+}
+
+/* --- INPUTS & SELECTS --- */
 input, select {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid var(--cc-pink);
+    border: 1px solid var(--brand-cream);
     border-radius: 5px;
     box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+input:focus, select:focus {
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 3px rgba(209, 10, 28, 0.15);
+    outline: none;
+}
+
+/* --- BUTTONS --- */
 button {
     width: 100%;
-    background-color: var(--cc-orange);
+    background-color: var(--brand-orange);
     color: white;
     border: none;
     padding: 12px;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     transition: 0.3s;
 }
 
-button:hover { background-color: var(--cc-red); }
-
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: var(--bg-cream);
-    min-height: 100vh;
+button:hover { 
+    background-color: var(--brand-red); 
 }
 
-/* NAVBAR */
-=======
->>>>>>> origin/SellerStartup2.0
+/* --- NAVBAR --- */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 60px;
     height: 85px;
-    /* Gradient matching the Studio reference */
-    background: linear-gradient(90deg, var(--brand-orange) 0%, var(--brand-orange-light) 100%); 
+    background: linear-gradient(90deg, var(--brand-orange) 0%, var(--brand-orange-light) 100%);
     color: white;
     position: sticky;
     top: 0;
@@ -89,10 +102,23 @@ body {
     box-shadow: 0 4px 20px rgba(242, 91, 26, 0.15);
 }
 
-.logo a { text-decoration: none; color: white; }
-.logo h2 { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; }
+.logo a { 
+    text-decoration: none; 
+    color: white; 
+}
 
-.nav-links { display: flex; list-style: none; gap: 30px; }
+.logo h2 { 
+    font-weight: 800; 
+    font-size: 1.5rem; 
+    letter-spacing: -0.5px; 
+}
+
+.nav-links { 
+    display: flex; 
+    list-style: none; 
+    gap: 30px; 
+}
+
 .nav-links a { 
     text-decoration: none; 
     color: rgba(255, 255, 255, 0.9); 
@@ -100,9 +126,18 @@ body {
     font-size: 0.95rem;
     transition: all 0.3s ease;
 }
-.nav-links a:hover { color: white; opacity: 1; transform: translateY(-1px); }
 
-.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-links a:hover { 
+    color: white; 
+    opacity: 1; 
+    transform: translateY(-1px); 
+}
+
+.nav-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+}
 
 /* Glassmorphism Search Bar */
 .search-container input {
@@ -114,8 +149,13 @@ body {
     width: 200px;
     outline: none;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
-.search-container input::placeholder { color: rgba(255, 255, 255, 0.7); }
+
+.search-container input::placeholder { 
+    color: rgba(255, 255, 255, 0.7); 
+}
+
 .search-container input:focus { 
     width: 260px; 
     background: rgba(255, 255, 255, 0.3); 
@@ -141,6 +181,7 @@ body {
     transition: 0.3s;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 .signup-pill:hover { 
     transform: translateY(-2px); 
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
@@ -148,7 +189,12 @@ body {
 }
 
 /* --- HERO SECTION --- */
-.hero { display: flex; align-items: center; padding: 100px 0; gap: 60px; }
+.hero { 
+    display: flex; 
+    align-items: center; 
+    padding: 100px 0; 
+    gap: 60px; 
+}
 
 .hero-text h1 { 
     font-size: 3.2rem; 
@@ -157,8 +203,17 @@ body {
     color: var(--text-main);
     margin-bottom: 20px;
 }
-.hero-text h1 span { color: var(--brand-orange); } /* Changed to Orange for consistency */
-.hero-text p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 35px; max-width: 450px; }
+
+.hero-text h1 span { 
+    color: var(--brand-orange); 
+}
+
+.hero-text p { 
+    font-size: 1.15rem; 
+    color: var(--text-muted); 
+    margin-bottom: 35px; 
+    max-width: 450px; 
+}
 
 .hero-img img { 
     width: 100%; 
@@ -167,7 +222,11 @@ body {
 }
 
 /* --- CATEGORIES SECTION --- */
-.categories-section { background-color: var(--brand-cream); padding: 80px 0; }
+.categories-section { 
+    background-color: var(--brand-cream); 
+    padding: 80px 0; 
+}
+
 .categories-section h2 { 
     font-size: 2rem; 
     font-weight: 800; 
@@ -175,7 +234,11 @@ body {
     text-align: center;
 }
 
-.category-grid { display: flex; justify-content: center; gap: 20px; }
+.category-grid { 
+    display: flex; 
+    justify-content: center; 
+    gap: 20px; 
+}
 
 .cat-card {
     background: var(--brand-white);
@@ -194,10 +257,17 @@ body {
     justify-content: center;
 }
 
-.cat-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-card); border-color: var(--brand-orange-light); }
+.cat-card:hover { 
+    transform: translateY(-8px); 
+    box-shadow: var(--shadow-card); 
+    border-color: var(--brand-orange-light); 
+}
 
 /* --- PRODUCT GRID --- */
-.products-section { padding: 80px 0; }
+.products-section { 
+    padding: 80px 0; 
+}
+
 .product-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -214,43 +284,64 @@ body {
     transition: 0.3s;
 }
 
-.card:hover { box-shadow: var(--shadow-soft); transform: translateY(-3px); }
+.card:hover { 
+    box-shadow: var(--shadow-soft); 
+    transform: translateY(-3px); 
+}
 
-.card img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; }
+.card img { 
+    width: 100%; 
+    height: 200px; 
+    object-fit: contain; 
+    margin-bottom: 15px; 
+}
 
-.card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
-.price { font-size: 1.3rem; font-weight: 700; color: var(--brand-orange); margin-bottom: 15px; }
+.card h3 { 
+    font-size: 1.15rem; 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+    color: var(--text-main); 
+}
 
+.price { 
+    font-size: 1.3rem; 
+    font-weight: 700; 
+    color: var(--brand-orange); 
+    margin-bottom: 15px; 
+}
+
+/* --- CART BUTTON --- */
 .cart-btn {
     width: 100%;
     background-color: var(--brand-orange); 
     color: var(--brand-white);
     border: none;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 25px;
     font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
-<<<<<<< HEAD
-    border-radius: 25px;
     text-align: center;
-    font-weight: bold;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* BUYER BUTTON */
+.cart-btn:hover { 
+    background-color: var(--brand-red); 
+}
+
+/* --- ROLE BUTTONS --- */
 .role-btn.buyer {
-    background: var(--orange);
+    background: var(--brand-orange);
     color: white;
 }
 
-/* SELLER BUTTON */
 .role-btn.seller {
-    background: var(--cream);
-    color: var(--red);
-    border: 2px solid var(--red);
+    background: var(--brand-cream);
+    color: var(--brand-red);
+    border: 2px solid var(--brand-red);
 }
 
-/* AUTH PAGES */
+/* --- AUTH PAGES --- */
 .auth-section {
     min-height: 100vh;
     display: flex;
@@ -259,16 +350,15 @@ body {
     padding: 20px;
 }
 
-/* BUYER STYLE */
 .auth-section.buyer {
-    background: linear-gradient(135deg, var(--red), var(--orange));
+    background: linear-gradient(135deg, var(--brand-red), var(--brand-orange));
 }
 
 .auth-section.seller {
     background: linear-gradient(135deg, #f3e3cb, #fff);
 }
 
-/* FORM BOX */
+/* --- FORM BOX --- */
 .form-box {
     background: white;
     padding: 35px;
@@ -276,10 +366,8 @@ body {
     width: 100%;
     max-width: 380px;
     text-align: center;
-
     box-shadow: 0 12px 30px rgba(0,0,0,0.12);
     border: 1px solid rgba(0,0,0,0.05);
-
     transition: 0.3s ease;
 }
 
@@ -292,44 +380,34 @@ body {
     width: 100%;
     margin: 10px 0;
     padding: 12px 14px;
-
     border-radius: 10px;
     border: 1px solid #ddd;
-
     font-size: 14px;
     outline: none;
-
     transition: 0.2s ease;
     background: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .form-box input:focus,
 .form-box select:focus {
-    border-color: var(--red);
-    box-shadow: 0 0 0 3px rgba(221, 13, 34, 0.15);
-=======
->>>>>>> origin/SellerStartup2.0
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 3px rgba(209, 10, 28, 0.15);
 }
-.cart-btn:hover { background-color: var(--brand-red); }
 
-.btn-main {
-    background: var(--brand-orange);
-<<<<<<< HEAD
-/* BUTTON */
+/* --- FORM BUTTON --- */
 .form-box .btn {
     width: 100%;
     margin-top: 15px;
-
     padding: 12px;
     border-radius: 10px;
     border: none;
-
-    background: var(--red);
+    background: var(--brand-red);
     color: white;
     font-weight: bold;
-
     cursor: pointer;
     transition: 0.25s ease;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .form-box .btn:hover {
@@ -342,6 +420,7 @@ body {
     transform: scale(0.98);
 }
 
+/* --- LINKS --- */
 a {
     text-decoration: none;
     color: darkred;
@@ -352,39 +431,37 @@ a:hover {
     color: #ff4a00;
 }
 
-.cravecartlogo{
+/* --- LOGO LINK --- */
+.cravecartlogo {
     text-decoration: none;
-=======
->>>>>>> origin/SellerStartup2.0
     color: white;
     padding: 14px 35px;
-    border-radius: 10px; 
-    text-decoration: none;
+    border-radius: 10px;
     font-weight: 700;
     display: inline-block;
     font-size: 0.95rem;
 }
 
-/* --- FOOTER --- */
-<<<<<<< HEAD
+/* --- LOGIN TEXT --- */
 .logins {
-    color: var(--red);
+    color: var(--brand-red);
     margin-top: 15px;
     font-size: 14px;
 }
 
-.indicenter{
+/* --- CENTERING --- */
+.indicenter {
     place-items: center;
 }
 
-.forlinks{
+/* --- FOR LINKS --- */
+.forlinks {
     color: blue;
 }
 
-=======
->>>>>>> origin/SellerStartup2.0
+/* --- FOOTER --- */
 .footer {
-    background-color: #0f172a; /* Sophisticated Dark Blue-Black */
+    background-color: #0f172a;
     color: #94a3b8;
     padding: 80px 0 30px;
 }
@@ -395,11 +472,38 @@ a:hover {
     margin-bottom: 40px;
 }
 
-.footer-section h3 { color: white; margin-bottom: 20px; font-weight: 800; }
-.footer-section p { font-size: 0.9rem; max-width: 300px; line-height: 1.8; }
-.footer-section h4 { color: white; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; }
-.footer-section a { text-decoration: none; color: #94a3b8; font-size: 0.9rem; display: block; margin-bottom: 12px; transition: 0.2s; }
-.footer-section a:hover { color: var(--brand-orange-light); }
+.footer-section h3 { 
+    color: white; 
+    margin-bottom: 20px; 
+    font-weight: 800; 
+}
+
+.footer-section p { 
+    font-size: 0.9rem; 
+    max-width: 300px; 
+    line-height: 1.8; 
+}
+
+.footer-section h4 { 
+    color: white; 
+    margin-bottom: 20px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-size: 0.8rem; 
+}
+
+.footer-section a { 
+    text-decoration: none; 
+    color: #94a3b8; 
+    font-size: 0.9rem; 
+    display: block; 
+    margin-bottom: 12px; 
+    transition: 0.2s; 
+}
+
+.footer-section a:hover { 
+    color: var(--brand-orange-light); 
+}
 
 .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.05);

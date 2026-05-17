@@ -1,292 +1,106 @@
-<script src="https://unpkg.com/lucide@latest"></script>
+<x-layout>
+    <section class="min-h-[85vh] bg-[#FDFCFB] px-6 py-20">
+        <div class="max-w-[1440px] mx-auto">
+            
+            {{-- HEADER --}}
+            <header class="mb-16 text-center">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-red-200">
+                    Financial Control
+                </span>
+                <h2 class="text-5xl md:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">
+                    Smart <span class="text-red-600">Budget.</span>
+                </h2>
+                <p class="mt-4 text-slate-400 font-bold uppercase text-[11px] tracking-[0.3em]">Financial overview of your spending behavior in real time!</p>
+            </header>
 
-<style>
-    .glass {
-        background: rgba(255,255,255,0.78);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-        border-radius: 18px;
-    }
+            {{-- SUMMARY CARDS --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Monthly Budget</p>
+                    <h3 class="text-3xl font-black text-slate-900">₱{{ number_format($budget, 2) }}</h3>
+                </div>
 
-    .card-title {
-        font-size: 13px;
-        color: #78716c;
-        margin-top: 6px;
-    }
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Total Spent</p>
+                    <h3 class="text-3xl font-black text-red-600">₱{{ number_format($spent, 2) }}</h3>
+                </div>
 
-    .fade-in {
-        animation: fadeIn 0.5s ease-in-out;
-    }
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Remaining</p>
+                    <h3 class="text-3xl font-black {{ $remaining >= 0 ? 'text-green-600' : 'text-red-600' }}">₱{{ number_format($remaining, 2) }}</h3>
+                </div>
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .alert-box {
-        margin-top: 15px;
-        padding: 14px 16px;
-        border-radius: 14px;
-        font-weight: 600;
-    }
-
-    .section-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #292524;
-    }
-
-    .value-text {
-        margin-top: 8px;
-        color: #1c1917;
-    }
-
-    /* FIXED WRAPPER FOR PROFILE EMBED */
-    .smart-budget-wrapper {
-        background: radial-gradient(circle at top, #fff7e6, #f8fafc);
-        border-radius: 18px;
-        padding: 25px;
-        margin-top: 15px;
-    }
-
-    @media (max-width: 900px) {
-        .budget-grid {
-            grid-template-columns: 1fr !important;
-        }
-    }
-</style>
-
-<div class="smart-budget-wrapper">
-
-    {{-- HEADER --}}
-    <div class="fade-in" style="margin-bottom:25px;">
-
-        <h1 style="
-            margin:0;
-            font-size:36px;
-            font-weight:900;
-            display:flex;
-            align-items:center;
-            gap:12px;
-        ">
-            <span data-lucide="wallet" style="color:#d97706;width:34px;height:34px;"></span>
-
-            <span style="
-                background: linear-gradient(90deg,#fbbf24,#f59e0b,#d97706);
-                -webkit-background-clip:text;
-                -webkit-text-fill-color:transparent;
-                letter-spacing:0.5px;
-            ">
-                Smart Budget Control
-            </span>
-        </h1>
-
-        <p style="color:#78716c;margin-top:8px;font-size:15px;">
-            Financial overview of your spending behavior in real time!
-        </p>
-
-    </div>
-
-    {{-- SUMMARY CARDS --}}
-    <div class="fade-in" style="
-        display:grid;
-        grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-        gap:16px;
-        margin-bottom:25px;
-    ">
-
-        <div class="glass" style="padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span data-lucide="banknote" style="color:#d97706;"></span>
-                <div class="card-title">Total Budget</div>
-            </div>
-            <h2 class="value-text">₱{{ number_format($budget,2) }}</h2>
-        </div>
-
-        <div class="glass" style="padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span data-lucide="trending-down" style="color:#dc2626;"></span>
-                <div class="card-title">Total Spent</div>
-            </div>
-            <h2 class="value-text" style="color:#dc2626;">
-                ₱{{ number_format($spent,2) }}
-            </h2>
-        </div>
-
-        <div class="glass" style="padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span data-lucide="piggy-bank" style="color:#059669;"></span>
-                <div class="card-title">Remaining</div>
-            </div>
-            <h2 class="value-text" style="color:#059669;">
-                ₱{{ number_format($remaining,2) }}
-            </h2>
-        </div>
-
-        <div class="glass" style="padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span data-lucide="percent" style="color:#f59e0b;"></span>
-                <div class="card-title">Usage</div>
-            </div>
-            <h2 class="value-text">
-                {{ round($percent,1) }}%
-            </h2>
-        </div>
-
-    </div>
-
-    {{-- ALERT --}}
-    <div class="glass fade-in alert-box"
-        style="
-            background: {{ $percent >= 90 ? '#fee2e2' : ($percent >= 70 ? '#fef3c7' : '#dcfce7') }};
-            color: {{ $percent >= 90 ? '#b91c1c' : ($percent >= 70 ? '#92400e' : '#166534') }};
-        ">
-
-        @if($percent >= 90)
-            🚨 Critical: You exceeded your budget!
-        @elseif($percent >= 70)
-            ⚠ Warning: You're nearing your limit.
-        @else
-            ✔ Spending is under control.
-        @endif
-
-    </div>
-
-    {{-- MAIN GRID --}}
-    <div class="budget-grid" style="
-        display:grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap:20px;
-        margin-top:20px;
-    ">
-
-        <div class="glass fade-in" style="padding:22px;">
-            <h3 class="section-title" style="display:flex;align-items:center;gap:10px;">
-                <span data-lucide="bar-chart-3" style="color:#d97706;"></span>
-                Budget Flow
-            </h3>
-
-            <div style="
-                margin-top:16px;
-                height:14px;
-                background:#e7e5e4;
-                border-radius:999px;
-                overflow:hidden;
-            ">
-                <div style="
-                    width: {{ min($percent,100) }}%;
-                    height:100%;
-                    background: linear-gradient(90deg,#fbbf24,#f59e0b,#d97706);
-                    border-radius:999px;
-                "></div>
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Usage</p>
+                    <h3 class="text-3xl font-black {{ $percent >= 90 ? 'text-red-600' : ($percent >= 70 ? 'text-yellow-500' : 'text-green-600') }}">{{ round($percent, 1) }}%</h3>
+                </div>
             </div>
 
-            <p style="margin-top:12px;color:#78716c;font-size:14px;">
-                Your monthly spending progress based on your budget.
-            </p>
-        </div>
-
-        <div class="glass fade-in" style="padding:22px;">
-            <h3 class="section-title" style="display:flex;align-items:center;gap:10px;">
-                <span data-lucide="lightbulb" style="color:#f59e0b;"></span>
-                Insight
-            </h3>
-
-            <p style="color:#78716c;margin-top:12px;line-height:1.6;">
-                @if($spent > 0 && $spending->count())
-                    You spent the most on
-                    <b style="color:#92400e;">
-                        {{ $spending->sortDesc()->keys()->first() }}
-                    </b>.
+            {{-- ALERT --}}
+            <div class="mb-12 p-6 rounded-2xl {{ $percent >= 90 ? 'bg-red-50 border-red-200 text-red-700' : ($percent >= 70 ? 'bg-yellow-50 border-yellow-200 text-yellow-700' : 'bg-green-50 border-green-200 text-green-700') }} border text-center font-bold uppercase text-[11px] tracking-widest">
+                @if($percent >= 90)
+                    🚨 Critical: You exceeded your budget!
+                @elseif($percent >= 70)
+                    ⚠️ Warning: You're nearing your limit.
                 @else
-                    No spending data available yet.
+                    ✔️ Spending is under control.
                 @endif
-            </p>
-        </div>
+            </div>
 
-    </div>
-
-    {{-- PIE CHART --}}
-    <div class="glass fade-in" style="margin-top:20px;padding:22px;">
-        <h3 class="section-title" style="display:flex;align-items:center;gap:10px;">
-            <span data-lucide="pie-chart" style="color:#d97706;"></span>
-            Spending Distribution
-        </h3>
-
-        <div style="display:flex;justify-content:center;margin-top:20px;">
-            <canvas id="spendingChart" style="max-width:420px;"></canvas>
-        </div>
-    </div>
-
-    {{-- CATEGORY BREAKDOWN --}}
-    <div class="glass fade-in" style="margin-top:20px;padding:22px;">
-        <h3 class="section-title" style="display:flex;align-items:center;gap:10px;">
-            <span data-lucide="layers" style="color:#d97706;"></span>
-            Category Breakdown
-        </h3>
-
-        <div style="margin-top:18px;">
-            @foreach($spending as $category => $amount)
-                <div style="margin-bottom:18px;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                        <b style="color:#292524;">{{ ucfirst($category) }}</b>
-                        <span style="color:#57534e;">₱{{ number_format($amount,2) }}</span>
+            {{-- MAIN GRID --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                {{-- PROGRESS BAR --}}
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+                    <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Budget Flow</h3>
+                    <p class="text-slate-500 text-sm font-medium mb-6">Your monthly spending progress based on your budget.</p>
+                    
+                    <div class="w-full h-6 bg-slate-100 rounded-full overflow-hidden mb-4">
+                        <div class="h-full rounded-full transition-all duration-1000 {{ $percent >= 90 ? 'bg-red-600' : ($percent >= 70 ? 'bg-yellow-500' : 'bg-green-600') }}" 
+                            style="width: {{ min($percent, 100) }}%"></div>
                     </div>
-
-                    <div style="height:9px;background:#e7e5e4;border-radius:999px;overflow:hidden;">
-                        <div style="
-                            width: {{ $spent > 0 ? ($amount / $spent) * 100 : 0 }}%;
-                            height:100%;
-                            background: linear-gradient(90deg,#fbbf24,#f59e0b,#d97706);
-                            border-radius:999px;
-                        "></div>
+                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
                     </div>
                 </div>
-            @endforeach
+
+                {{-- INSIGHT --}}
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+                    <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Insight</h3>
+                    
+                    @if($spent > 0 && $spending->count())
+                        <p class="text-slate-600 font-medium leading-relaxed">
+                            You spent the most on <span class="font-black text-red-600">{{ $spending->sortDesc()->keys()->first() }}</span>.
+                        </p>
+                    @else
+                        <p class="text-slate-400 font-medium">No spending data available yet.</p>
+                    @endif
+                </div>
+
+                {{-- CATEGORY BREAKDOWN --}}
+                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm lg:col-span-2">
+                    <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Category Breakdown</h3>
+                    
+                    <div class="space-y-4">
+                        @forelse($spending as $category => $amount)
+                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600">
+                                        <i class="fa-solid fa-tag"></i>
+                                    </div>
+                                    <span class="font-black text-slate-900 uppercase text-sm tracking-tight">{{ ucfirst($category) }}</span>
+                                </div>
+                                <span class="font-black text-red-600">₱{{ number_format($amount, 2) }}</span>
+                            </div>
+                        @empty
+                            <p class="text-slate-400 font-medium text-center py-8">No spending by category yet.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-const ctx = document.getElementById('spendingChart');
-
-if (ctx) {
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: {!! json_encode($spending->keys()) !!},
-            datasets: [{
-                data: {!! json_encode($spending->values()) !!},
-                backgroundColor: [
-                    '#fbbf24',
-                    '#f59e0b',
-                    '#d97706',
-                    '#10b981',
-                    '#ef4444',
-                    '#92400e'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
-}
-</script>
-
-<script>
-    lucide.createIcons();
-</script>
+    </section>
+</x-layout>

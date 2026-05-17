@@ -10,39 +10,54 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    // Show the create form
+    /**
+     * Display a listing of products.
+     */
+    public function index()
+    {
+        $products = Product::where('user_id', Auth::id())
+            ->with('images')
+            ->latest()
+            ->get();
+
+        return view('seller.products.index', compact('products'));
+    }
+
+    /**
+     * Show the form for creating a new product.
+     */
     public function create()
     {
         return view('seller.products.create');
     }
 
-    // ✅ STORE PRODUCT + MULTIPLE IMAGES
+    /**
+     * Store a newly created product.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
-            'category'    => 'required|string',
-            'images.*'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'category' => 'required|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Create the product
         $product = Product::create([
-            'user_id'     => Auth::id(),
-            'name'        => $request->name,
+            'user_id' => Auth::id(),
+            'name' => $request->name,
             'description' => $request->description,
-            'price'       => $request->price,
-            'stock'       => $request->stock ?? 0,
-            'category'    => $request->category,
-            'status'      => ($request->stock > 0) ? 'available' : 'sold_out',
+            'price' => $request->price,
+            'stock' => $request->stock ?? 0,
+            'category' => $request->category,
+            'status' => ($request->stock > 0) ? 'available' : 'sold_out',
         ]);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
-
                 $product->images()->create([
                     'image_path' => $path
                 ]);
@@ -53,10 +68,11 @@ class ProductController extends Controller
             ->with('success', 'Product added successfully!');
     }
 
-    // Show edit form
+    /**
+     * Show edit form.
+     */
     public function edit(Product $product)
     {
-        // Security check
         if ($product->user_id !== Auth::id()) {
             abort(403);
         }
@@ -64,11 +80,9 @@ class ProductController extends Controller
         return view('seller.products.edit', compact('product'));
     }
 
-<<<<<<< HEAD
-    // ✅ UPDATE PRODUCT + ADD NEW IMAGES
-=======
-    // UPDATE PRODUCT
->>>>>>> origin/smart-budget-control
+    /**
+     * Update product.
+     */
     public function update(Request $request, Product $product)
     {
         if ($product->user_id !== Auth::id()) {
@@ -76,33 +90,9 @@ class ProductController extends Controller
         }
 
         $request->validate([
-<<<<<<< HEAD
-            'name'        => 'required|string|max:255',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
-            'category'    => 'required|string',
-            'description' => 'nullable|string',
-            'images.*'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Update product basic info
-        $product->update([
-            'name'        => $request->name,
-            'price'       => $request->price,
-            'stock'       => $request->stock,
-            'category'    => $request->category,
-            'description' => $request->description,
-            'status'      => ($request->stock <= 0) ? 'sold_out' : 'available',
-        ]);
-
-        // Add more images if uploaded
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-=======
-            'name' => 'required|string',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'category' => 'required|string',
             'description' => 'nullable|string',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -114,15 +104,12 @@ class ProductController extends Controller
             'stock' => $request->stock,
             'category' => $request->category,
             'description' => $request->description ?? $product->description,
-            'status' => $request->stock <= 0 ? 'sold_out' : 'available',
+            'status' => ($request->stock <= 0) ? 'sold_out' : 'available',
         ]);
 
-        // NEW IMAGES (optional)
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
-
->>>>>>> origin/smart-budget-control
                 $product->images()->create([
                     'image_path' => $path
                 ]);
@@ -130,65 +117,43 @@ class ProductController extends Controller
         }
 
         return redirect()->route('seller.dash')
-<<<<<<< HEAD
             ->with('success', 'Product updated successfully!');
     }
 
-    // ✅ DELETE PRODUCT & CLEAN STORAGE
-=======
-            ->with('success', 'Product updated!');
-    }
-
-    // DELETE PRODUCT
->>>>>>> origin/smart-budget-control
+    /**
+     * Delete product.
+     */
     public function destroy(Product $product)
     {
         if ($product->user_id !== Auth::id()) {
             abort(403);
         }
 
-<<<<<<< HEAD
-        // Delete physical files from storage
-=======
->>>>>>> origin/smart-budget-control
         foreach ($product->images as $image) {
             Storage::disk('public')->delete($image->image_path);
         }
 
-<<<<<<< HEAD
-        // Delete database records
         $product->images()->delete();
         $product->delete();
 
         return redirect()->route('seller.dash')
             ->with('success', 'Product and its images removed.');
     }
-=======
-        $product->images()->delete();
-        $product->delete();
 
-        return redirect()->route('seller.dash');
-    }
-
-    /*
-    -------------------------------------------------
-    ⭐ ADDED FOR RATING SYSTEM (SAFE ADDITION ONLY)
-    -------------------------------------------------
-    */
-
-    // SHOW PRODUCT (for buyer view with ratings)
+    /**
+     * Show product for buyer view with ratings.
+     */
     public function show(Product $product)
-{
-    $product->load('reviews.user', 'seller', 'images');
+    {
+        $product->load('reviews.user', 'seller', 'images');
 
-    $avgRating = $product->reviews->avg('rating');
-    $totalReviews = $product->reviews->count();
+        $avgRating = $product->reviews->avg('rating');
+        $totalReviews = $product->reviews->count();
 
-    return view('buyer.product-show', compact(
-        'product',
-        'avgRating',
-        'totalReviews'
-    ));
-}
->>>>>>> origin/smart-budget-control
+        return view('buyer.product-show', compact(
+            'product',
+            'avgRating',
+            'totalReviews'
+        ));
+    }
 }
