@@ -23,7 +23,7 @@ Route::post('/report/store', [ReportController::class, 'store'])
 
 /*
 |--------------------------------------------------------------------------
-| 🌍 PUBLIC ROUTES
+| PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
 
@@ -52,14 +52,13 @@ Route::get('/best-sellers', function () {
 })->name('bestSeller');
 
 // Public Product/Seller Views
-
 Route::get('/products/{id}', [BuyerController::class, 'show'])
     ->name('products.show');
 Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])->name('seller.shop');
 
 /*
 |--------------------------------------------------------------------------
-| 🔐 AUTHENTICATION
+| AUTHENTICATION
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
@@ -69,19 +68,18 @@ Route::middleware('guest')->group(function () {
     Route::get('/pending', [AuthController::class, 'pending'])->name('auth.pending');
 
     // Registration Routes
-Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
-Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
+    Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
+    Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
 
-Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
-Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
+    Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
+    Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
 });
-
 
 Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
 
 /*
 |--------------------------------------------------------------------------
-| 🛡️ PROTECTED ROUTES (Requires Login)
+| PROTECTED ROUTES (Requires Login)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
@@ -97,7 +95,7 @@ Route::middleware(['auth'])->group(function () {
         };
     })->name('dashboard.redirect');
 
-    // --- 💬 UNIFIED MESSAGING SYSTEM ---
+    // --- UNIFIED MESSAGING SYSTEM ---
     Route::controller(MessageController::class)->group(function () {
         Route::get('/messages', 'inbox')->name('messages.inbox');
         Route::get('/messages/{userId}', 'chat')->name('messages.chat');
@@ -105,24 +103,24 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/messages/{userId}/fetch', 'fetchMessages');
     });
 
-    // --- ⭐ REVIEWS ---
+    // --- REVIEWS ---
     Route::post('/products/{product}/review', [ReviewController::class, 'store'])->name('reviews.store');
 
-    // --- 🛒 ORDERS ---
+    // --- ORDERS ---
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
-    // --- 🛒 CART SYSTEM ---
+    // --- CART SYSTEM ---
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
     Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
-    // --- 🧾 RECEIPT SYSTEM ---
+    // --- RECEIPT SYSTEM ---
     Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
     Route::get('/receipt/{order}/download', [ReceiptController::class, 'download'])->name('receipt.download');
 
-    // --- 📚 LENDING SYSTEM ---
+    // --- LENDING SYSTEM ---
     Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
     Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
     Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
@@ -132,9 +130,8 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/lending/{id}/status', [LendingController::class, 'updateStatus'])->name('lending.update-status');
     Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
 
-    // --- 🟢 BUYER ROUTES ---
-   Route::middleware(['auth', 'role:buyer'])->group(function () {
-
+    // --- BUYER ROUTES ---
+    Route::middleware(['auth', 'role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
         Route::get('/buyer/smartbudgetcontrol', [BuyerController::class, 'smartBudget'])->name('buyer.smartbudgetcontrol');
         Route::get('/buyer/profile', [BuyerController::class, 'profile'])->name('buyer.profile');
@@ -147,8 +144,36 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
-    // --- 🔴 SELLER ROUTES ---
+    /*
+    |--------------------------------------------------------------------------
+    | SELLER ROUTES (All sellers - pending, approved, active)
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['auth', 'role:seller'])->group(function () {
+
+        // Pending approval page (accessible to all sellers including pending)
+        Route::get('/seller/pending', [SellerController::class, 'pending'])
+            ->name('seller.pending');
+
+        // Confirmation page (after admin approval)
+        Route::get('/seller/confirm', [SellerController::class, 'confirm'])
+            ->name('seller.confirm');
+
+        // Confirm YES - activate seller account
+        Route::patch('/seller/confirm-yes', [SellerController::class, 'confirmYes'])
+            ->name('seller.confirm.yes');
+
+        // Confirm NO - delete account
+        Route::delete('/seller/confirm-no', [SellerController::class, 'confirmNo'])
+            ->name('seller.confirm.no');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACTIVE SELLER ROUTES ONLY (status = 'active')
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth', 'role:seller', 'seller.active'])->group(function () {
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
         Route::get('/seller/profile', [SellerController::class, 'profile'])->name('seller.profile');
         Route::post('/seller/profile/update', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
@@ -157,30 +182,28 @@ Route::middleware(['auth'])->group(function () {
 
         // Product Management
         Route::resource('products', ProductController::class)->except(['show']);
-        
+
         Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
             ->name('orders.updateStatus');
-        // Pending approval page (accessible to pending sellers)
-        Route::get('/seller/pending', [SellerController::class, 'pending'])
-            ->name('seller.pending')
-            ->middleware(['auth', 'role:seller']);
+
+        // Product Edit/Update/Delete
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+            ->name('products.edit');
+        Route::put('/products/{product}', [ProductController::class, 'update'])
+            ->name('products.update');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+            ->name('products.destroy');
     });
 
-    // --- 🛍 PRODUCT (EDIT / UPDATE / DELETE) ---
-    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
-        ->name('products.edit');
-
-    Route::put('/products/{product}', [ProductController::class, 'update'])
-        ->name('products.update');
-
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
-        ->name('products.destroy');
-
-    // --- 🟣 ADMIN ROUTES ---
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-        // 📩 CONTACT MESSAGES
+        // CONTACT MESSAGES
         Route::get('/admin/contacts', [AdminController::class, 'contacts'])->name('admin.contacts');
         Route::post('/admin/contacts/{id}/read', [AdminController::class, 'markAsRead'])->name('admin.contacts.read');
 
@@ -212,6 +235,6 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-// --- ❤️ FAVORITES (Outside auth for toggle) ---
+// --- FAVORITES (Outside auth for toggle) ---
 Route::post('/favorite/{productId}', [FavoriteController::class, 'toggle'])
     ->name('favorite.toggle');

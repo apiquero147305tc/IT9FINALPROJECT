@@ -87,29 +87,6 @@
             50% { opacity: 0.3; }
         }
 
-        .info-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
-            text-align: left;
-        }
-
-        .info-box h3 {
-            color: #333;
-            font-size: 1rem;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-box p {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
         .timeline {
             display: flex;
             justify-content: space-between;
@@ -163,28 +140,94 @@
             font-weight: 500;
         }
 
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Action Section */
+        .action-section {
+            margin: 35px 0 20px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .action-section h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .action-section p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .btn {
-            display: inline-block;
-            padding: 12px 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 30px;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
             border: none;
             font-family: 'Poppins', sans-serif;
-            margin: 5px;
         }
 
-        .btn-primary {
-            background: #dd0d22;
+        .btn-success {
+            background: #28a745;
             color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
-        .btn-primary:hover {
-            background: #b30b1b;
+        .btn-success:hover {
+            background: #218838;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
         }
 
         .btn-secondary {
@@ -204,6 +247,54 @@
             font-size: 0.8rem;
         }
 
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
         @media (max-width: 480px) {
             .card {
                 padding: 30px 20px;
@@ -211,8 +302,12 @@
             h1 {
                 font-size: 1.4rem;
             }
-            .timeline-label {
-                font-size: 0.65rem;
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -223,7 +318,7 @@
         <div class="card">
 
             <!-- Status Icon -->
-            <div class="status-icon">⏳</div>
+            <div class="status-icon">&#9203;</div>
 
             <!-- Heading -->
             <h1>Account Pending Approval</h1>
@@ -238,22 +333,22 @@
             <!-- Timeline -->
             <div class="timeline">
                 <div class="timeline-step">
-                    <div class="timeline-dot">✓</div>
+                    <div class="timeline-dot">&#10003;</div>
                     <span class="timeline-label">Applied</span>
                 </div>
                 <div class="timeline-step">
-                    <div class="timeline-dot active">⏳</div>
+                    <div class="timeline-dot active">&#9203;</div>
                     <span class="timeline-label">Reviewing</span>
                 </div>
                 <div class="timeline-step">
-                    <div class="timeline-dot pending">🎉</div>
+                    <div class="timeline-dot pending">&#127881;</div>
                     <span class="timeline-label">Approved</span>
                 </div>
             </div>
 
             <!-- Info Box -->
             <div class="info-box">
-                <h3>📋 What happens next?</h3>
+                <h3>&#128203; What happens next?</h3>
                 <p>
                     Our team is carefully reviewing your application to ensure quality standards. 
                     This usually takes <strong>24-48 hours</strong>. You'll receive an email at 
@@ -261,20 +356,31 @@
                 </p>
             </div>
 
-            <!-- Info Box 2 -->
-            <div class="info-box">
-                <h3>💡 While you wait...</h3>
-                <p>
-                    • Prepare your product photos and descriptions<br>
-                    • Set up your payment details in your profile<br>
-                    • Read our seller guidelines for best practices
-                </p>
+            <!-- SELF-APPROVAL SECTION -->
+            <div class="action-section">
+                <h3>&#129300; Can't wait?</h3>
+                <p>You can approve yourself now and start selling immediately, or delete your seller account if you changed your mind.</p>
+
+                <div class="btn-group">
+                    <!-- Self-approve button -->
+                    <form action="{{ route('seller.self-approve') }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-success">
+                            &#9989; Yes, I want to be a Seller
+                        </button>
+                    </form>
+
+                    <!-- Delete account button -->
+                    <button type="button" class="btn btn-danger" onclick="showDeleteModal()">
+                        &#10060; No, Delete My Account
+                    </button>
+                </div>
             </div>
 
-            <!-- Buttons -->
-            <div style="margin-top: 25px;">
-                <a href="{{ route('home') }}" class="btn btn-secondary">🏠 Back to Home</a>
-                <a href="{{ route('seller.profile') }}" class="btn btn-primary">👤 Edit Profile</a>
+            <!-- Back to Home -->
+            <div style="margin-top: 20px;">
+                <a href="{{ route('home') }}" class="btn btn-secondary">&#127968; Back to Home</a>
             </div>
 
             <!-- Footer -->
@@ -284,6 +390,39 @@
 
         </div>
     </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <h3>&#128683; Delete Account?</h3>
+            <p>Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="hideDeleteModal()">Cancel</button>
+                <form action="{{ route('seller.delete-account') }}" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDeleteModal() {
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDeleteModal();
+            }
+        });
+    </script>
 
 </body>
 </html>

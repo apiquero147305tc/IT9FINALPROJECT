@@ -12,39 +12,95 @@ use App\Models\Notification;
 class SellerController extends Controller
 {
     /**
-     * Check if seller account is pending approval
-     */
-    protected function checkPendingApproval()
-    {
-        $user = Auth::user();
-        
-        // Check if seller account status is 'pending'
-        if ($user->status === 'pending') {
-            return redirect()->route('seller.pending');
-        }
-        
-        return null; // Not pending, continue normally
-    }
-
-    /**
-     * Show the pending approval page
+     * Show the pending approval page (while waiting for admin)
      */
     public function pending()
     {
+        $user = Auth::user();
+
+        // Redirect if already approved or active
+        if ($user->status === 'approved') {
+            return redirect()->route('seller.confirm');
+        }
+
+        if ($user->status === 'active') {
+            return redirect()->route('seller.dash');
+        }
+
         return view('seller.pending-approval');
     }
 
     /**
-     * Seller Dashboard View
+     * Show the confirmation page (after admin approval)
+     */
+    public function confirm()
+    {
+        $user = Auth::user();
+
+        // Only show if status is 'approved'
+        if ($user->status === 'pending') {
+            return redirect()->route('seller.pending')
+                ->with('info', 'Your account is still pending admin approval.');
+        }
+
+        if ($user->status === 'active') {
+            return redirect()->route('seller.dash');
+        }
+
+        return view('seller.confirm');
+    }
+
+    /**
+     * User confirms YES - activate seller account
+     */
+    public function confirmYes()
+    {
+        $user = Auth::user();
+
+        // Only allow if currently approved
+        if ($user->status !== 'approved') {
+            if ($user->status === 'pending') {
+                return redirect()->route('seller.pending')
+                    ->with('error', 'Your account is still pending admin approval.');
+            }
+            return redirect()->route('seller.dash')
+                ->with('info', 'Your account is already active!');
+        }
+
+        // Activate the seller account
+        $user->status = 'active';
+        $user->save();
+
+        return redirect()->route('seller.dash')
+            ->with('success', '🎉 Welcome to CraveCart Seller! Your account is now active.');
+    }
+
+    /**
+     * User confirms NO - delete account
+     */
+    public function confirmNo()
+    {
+        $user = Auth::user();
+
+        // Logout first
+        Auth::logout();
+
+        // Delete the user account
+        $user->delete();
+
+        // Invalidate session
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('home')
+            ->with('info', 'Your account has been deleted. We hope to see you again!');
+    }
+
+    /**
+     * Seller Dashboard View (ACTIVE sellers only)
      */
     public function dashboard()
     {
-        // Check if pending approval FIRST
-        $pending = $this->checkPendingApproval();
-        if ($pending) {
-            return $pending;
-        }
-
         $seller = Auth::user();
         $sellerId = $seller->id;
 
@@ -115,12 +171,6 @@ class SellerController extends Controller
      */
     public function profile()
     {
-        // Check if pending approval
-        $pending = $this->checkPendingApproval();
-        if ($pending) {
-            return $pending;
-        }
-
         return view('seller.profile', [
             'user' => Auth::user()
         ]);
@@ -131,12 +181,6 @@ class SellerController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        // Check if pending approval
-        $pending = $this->checkPendingApproval();
-        if ($pending) {
-            return $pending;
-        }
-
         $user = Auth::user();
 
         $request->validate([
@@ -158,12 +202,6 @@ class SellerController extends Controller
      */
     public function orders()
     {
-        // Check if pending approval
-        $pending = $this->checkPendingApproval();
-        if ($pending) {
-            return $pending;
-        }
-
         $seller = Auth::user();
 
         if (!Schema::hasTable('orders')) {
@@ -185,12 +223,6 @@ class SellerController extends Controller
      */
     public function updateOrderStatus(Request $request, $id)
     {
-        // Check if pending approval
-        $pending = $this->checkPendingApproval();
-        if ($pending) {
-            return $pending;
-        }
-
         $request->validate([
             'status' => 'required|in:pending,completed,cancelled,accepted,declined'
         ]);
