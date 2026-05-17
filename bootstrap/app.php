@@ -11,10 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // This connects the name 'role' or 'checkRole' used in your routes 
-        // to the actual RoleMiddleware file.
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'approved' => \App\Http\Middleware\CheckApproval::class, // ← optional backup
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

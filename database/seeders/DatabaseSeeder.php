@@ -13,40 +13,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create the PRE-SET ADMIN (won't duplicate if exists)
-        User::firstOrCreate(
-            ['email' => 'admin@cravecart.com'],
-            [
-                'name' => 'CraveCart Admin',
-                'password' => Hash::make('admin123'),
-                'role' => 'admin',
-                'is_approved' => true,
-                'is_blocked' => false,
-            ]
-        );
+        // 1. Create the PRE-SET ADMIN
+            User::create([
+            'name' => 'CraveCart Admin',
+            'email' => 'admin@cravecart.com',
+            'password' => Hash::make('admin123'),
+            'role' => 'admin',
+            'is_approved' => true,
+            'is_blocked' => false,
+]);
 
         // 2. Create a Sample Seller (For Testing)
-        User::firstOrCreate(
-            ['email' => 'seller@cravecart.com'],
-            [
-                'name' => 'Espiflor Shop',
-                'password' => Hash::make('password'),
-                'role' => 'seller',
-                'is_approved' => true,
-                'is_blocked' => false,
-            ]
-        );
+            User::create([
+            'name' => 'Espiflor Shop',
+            'email' => 'seller@cravecart.com',
+            'password' => Hash::make('password'),
+            'role' => 'seller',
+            'is_approved' => true,
+            'is_blocked' => false,
+        ]);
 
         // 3. Create a Sample Buyer (For Testing)
-        User::firstOrCreate(
-            ['email' => 'buyer@cravecart.com'],
-            [
-                'name' => 'Juan Dela Cruz',
-                'password' => Hash::make('password'),
-                'role' => 'buyer',
-                'is_approved' => true,
-                'is_blocked' => false,
-            ]
-        );
+        User::create([
+            'name' => 'Juan Dela Cruz',
+            'email' => 'buyer@cravecart.com',
+            'password' => Hash::make('password'),
+            'role' => 'buyer',
+            'is_approved' => true,
+            'is_blocked' => false,
+
+        ]);
     }
 }

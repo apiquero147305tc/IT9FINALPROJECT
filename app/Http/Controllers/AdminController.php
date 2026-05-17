@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -25,7 +26,14 @@ class AdminController extends Controller
         $totalSellers = User::where('role', 'seller')->count();
         $totalBuyers  = User::where('role', 'buyer')->count();
 
+        // Pending sellers
         $pendingSellers = User::where('role', 'seller')
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        // Pending buyers — ADDED
+        $pendingBuyers = User::where('role', 'buyer')
             ->where('status', 'pending')
             ->latest()
             ->get();
@@ -39,6 +47,7 @@ class AdminController extends Controller
             'totalSellers',
             'totalBuyers',
             'pendingSellers',
+            'pendingBuyers',  // ← ADDED
             'complaints',
             'contacts',
             'unreadContacts'
@@ -197,8 +206,10 @@ class AdminController extends Controller
 
         Notification::create([
             'user_id' => $user->id,
+            'type' => 'admin_email',
             'subject' => $request->subject,
-            'message' => $request->message,
+            'message' => Str::limit(strip_tags($request->message), 150),
+            'link' => '/messages/chat/' . Auth::id(),
         ]);
 
         Mail::raw($request->message, function ($mail) use ($user, $request) {
@@ -247,15 +258,15 @@ class AdminController extends Controller
     public function contacts()
     {
         $contacts = ContactMessage::latest()->get();
-      return view('admin.contacts', compact('contacts'));
+        return view('admin.contacts', compact('contacts'));
     }
 
-   public function markAsRead($id)
-{
-    ContactMessage::findOrFail($id)->update([
-        'is_read' => true
-    ]);
+    public function markAsRead($id)
+    {
+        ContactMessage::findOrFail($id)->update([
+            'is_read' => true
+        ]);
 
-    return back();
-}
+        return back();
+    }
 }

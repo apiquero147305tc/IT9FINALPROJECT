@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>CraveCart | Seller Studio</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,6 +42,10 @@
 
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+
+        /* Notification dropdown scrollbar */
+        #notif-list::-webkit-scrollbar { width: 6px; }
+        #notif-list::-webkit-scrollbar-thumb { background: #fecaca; border-radius: 10px; }
     </style>
 </head>
 
@@ -65,12 +70,28 @@
 
         <div class="flex items-center gap-8">
             <div class="hidden md:flex items-center gap-8 text-xs font-black uppercase tracking-widest text-rose-50">
-                <a href="{{ route('seller.orders') }}" class="relative hover:text-white transition flex items-center gap-2">
-                    Notifications
-                    @if($notifCount > 0)
-                        <span class="flex h-2 w-2 rounded-full bg-white animate-notif"></span>
-                    @endif
-                </a>
+
+                <!-- 🔔 NOTIFICATION DROPDOWN -->
+                <div class="relative" id="notif-box">
+                    <button onclick="toggleNotif()" class="relative hover:text-white transition flex items-center gap-2 outline-none">
+                        Notifications
+                        <span id="notif-badge" class="hidden flex h-2.5 w-2.5 rounded-full bg-white animate-notif"></span>
+                    </button>
+
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden border border-gray-100">
+                        <div class="bg-red-600 px-4 py-3 flex justify-between items-center">
+                            <span class="text-white font-bold text-[10px] uppercase tracking-widest">Notifications</span>
+                            <button onclick="markAllRead()" class="text-white text-[10px] hover:underline font-bold">Mark all read</button>
+                        </div>
+                        <div id="notif-list" class="max-h-80 overflow-y-auto">
+                            <div class="px-4 py-8 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest">Loading...</div>
+                        </div>
+                        <a href="{{ route('seller.notifications') }}" class="block text-center py-3 text-red-600 text-[10px] font-black hover:bg-gray-50 uppercase tracking-widest transition">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
                 <a href="{{ route('seller.messages') }}" class="hover:text-white transition">Lending</a>
             </div>
             
@@ -177,9 +198,117 @@
         </div>
     </main>
 
-    <a href="{{ route('seller.messages') }}" class="fixed bottom-8 right-8 bg-red-600 text-white flex items-center gap-3 px-8 py-5 rounded-full shadow-2xl hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest z-50">
+    <a href="{{ route('seller.messages') }}" class="fixed bottom-8 right-8 bg-red-600 text-white flex items-center gap-3 px-8 py-5 rounded-full shadow-2xl hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest z-40">
         <span class="text-lg">💬</span> Messages
     </a>
+
+    <script>
+    let notifs = [];
+
+    function toggleNotif() {
+        const dropdown = document.getElementById('notif-dropdown');
+        dropdown.classList.toggle('hidden');
+        if (!dropdown.classList.contains('hidden')) {
+            loadNotifs();
+        }
+    }
+
+    async function loadNotifs() {
+        try {
+            const res = await fetch('/notifications/unread');
+            const data = await res.json();
+            notifs = data.notifications;
+
+            // Update badge
+            const badge = document.getElementById('notif-badge');
+            if (data.count > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // Build list
+            const list = document.getElementById('notif-list');
+            if (notifs.length === 0) {
+                list.innerHTML = '<div class="px-4 py-8 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest">No new notifications</div>';
+                return;
+            }
+
+            list.innerHTML = notifs.map(n => `
+                <a href="${n.link || '#'}" onclick="handleClick(${n.id}, '${n.link || '#'}', event)" 
+                   class="block px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition ${n.is_read ? '' : 'bg-red-50'}">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0
+                            ${n.type === 'new_order' ? 'bg-green-100' : n.type === 'buyer_message' ? 'bg-blue-100' : 'bg-purple-100'}">
+                            ${n.type === 'new_order' ? '🛒' : n.type === 'buyer_message' ? '💬' : '📧'}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold text-gray-900 truncate">${escapeHtml(n.subject)}</p>
+                            <p class="text-xs text-gray-600 truncate">${escapeHtml(n.message)}</p>
+                            <p class="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-wider">${timeAgo(n.created_at)}</p>
+                        </div>
+                        ${!n.is_read ? '<span class="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-2"></span>' : ''}
+                    </div>
+                </a>
+            `).join('');
+        } catch (e) {
+            document.getElementById('notif-list').innerHTML = '<div class="px-4 py-8 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest">Failed to load</div>';
+        }
+    }
+
+    async function handleClick(id, link, event) {
+        event.preventDefault();
+        await fetch(`/notifications/${id}/read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+        window.location.href = link;
+    }
+
+    async function markAllRead() {
+        await fetch('/notifications/read-all', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+        loadNotifs();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function timeAgo(dateString) {
+        const date = new Date(dateString);
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 60) return 'Just now';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return minutes + 'm ago';
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return hours + 'h ago';
+        const days = Math.floor(hours / 24);
+        return days + 'd ago';
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const box = document.getElementById('notif-box');
+        if (box && !box.contains(e.target)) {
+            document.getElementById('notif-dropdown').classList.add('hidden');
+        }
+    });
+
+    // Load on page start + refresh every 30 seconds
+    loadNotifs();
+    setInterval(loadNotifs, 30000);
+    </script>
 
 </body>
 </html>

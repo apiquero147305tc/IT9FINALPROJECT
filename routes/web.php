@@ -80,6 +80,47 @@ Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.
 Route::middleware(['auth'])->group(function () {
 
     //////////////////////////////////////////////////
+    // 🔔 NOTIFICATIONS
+    //////////////////////////////////////////////////
+
+    Route::get('/notifications/unread', function () {
+        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'count' => $notifications->count(),
+            'notifications' => $notifications,
+        ]);
+    });
+
+    Route::post('/notifications/{id}/read', function ($id) {
+        \App\Models\Notification::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->update(['is_read' => true]);
+
+        return response()->json(['ok' => true]);
+    });
+
+    Route::post('/notifications/read-all', function () {
+        \App\Models\Notification::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['ok' => true]);
+    });
+
+    Route::get('/seller/notifications', function () {
+        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+            ->latest()
+            ->paginate(20);
+
+        return view('seller.notifications', compact('notifications'));
+    })->name('seller.notifications');
+
+    //////////////////////////////////////////////////
     // 💬 SHARED MESSAGES SYSTEM
     //////////////////////////////////////////////////
 
