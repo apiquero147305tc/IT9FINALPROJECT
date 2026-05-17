@@ -153,7 +153,10 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:seller'])->group(function () {
 
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
-        Route::resource('products', ProductController::class)->except(['show']);
+        
+        // FIXED: Added show route back
+        Route::resource('products', ProductController::class);
+        
         Route::get('/seller/orders', [SellerController::class, 'orders'])->name('seller.orders');
         Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
         
