@@ -16,6 +16,8 @@ class Order extends Model
         'total_price',
         'status',
         'order_notes',
+        'seller_status',        // ← ADDED
+        'rejection_reason',     // ← ADDED
     ];
 
     /**

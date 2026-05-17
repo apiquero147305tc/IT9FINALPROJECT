@@ -41,7 +41,10 @@
             <a href="#" class="text-xs font-black tracking-wider uppercase text-white/90 hover:text-white">Notifications</a>
             <a href="#" class="text-xs font-black tracking-wider uppercase text-white/90 hover:text-white">Lending</a>
             <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold">ES</div>
-            <a href="{{ route('logout') }}" class="bg-[#0f172a] hover:bg-black text-white px-5 py-2 rounded-full text-xs font-black tracking-wider uppercase transition">Logout</a>
+            <form action="{{ route('logout') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="bg-[#0f172a] hover:bg-black text-white px-5 py-2 rounded-full text-xs font-black tracking-wider uppercase transition">Logout</button>
+            </form>
         </div>
     </div>
 
@@ -74,7 +77,7 @@
                 </div>
                 <div>
                     <p class="text-xs font-black text-slate-400 tracking-wider uppercase">Pending</p>
-                    <p class="text-lg font-black text-yellow-600 leading-none">{{ $orders->where('status', 'pending')->count() }}</p>
+                    <p class="text-lg font-black text-yellow-600 leading-none">{{ $orders->where('seller_status', 'pending')->count() }}</p>
                 </div>
             </div>
             <div class="bg-white border border-slate-100 rounded-2xl px-6 py-3 flex items-center gap-3 shadow-sm">
@@ -83,7 +86,7 @@
                 </div>
                 <div>
                     <p class="text-xs font-black text-slate-400 tracking-wider uppercase">Completed</p>
-                    <p class="text-lg font-black text-green-600 leading-none">{{ $orders->where('status', 'completed')->count() }}</p>
+                    <p class="text-lg font-black text-green-600 leading-none">{{ $orders->where('seller_status', 'accepted')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -104,11 +107,13 @@
 
             <div class="order-card bg-white rounded-[30px] shadow-sm border border-slate-100 p-8 relative overflow-hidden group">
 
-                {{-- Top accent line for pending --}}
-                @if($order->status === 'pending')
+                {{-- Top accent line based on seller_status --}}
+                @if($order->seller_status === 'pending')
                     <div class="absolute top-0 left-0 w-full h-1 bg-yellow-500"></div>
-                @elseif($order->status === 'completed')
+                @elseif($order->seller_status === 'accepted')
                     <div class="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
+                @elseif($order->seller_status === 'rejected')
+                    <div class="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
                 @else
                     <div class="absolute top-0 left-0 w-full h-1 bg-slate-300"></div>
                 @endif
@@ -128,23 +133,25 @@
                     <div class="text-right">
                         <p class="text-2xl font-black text-[#0f172a]">₱{{ number_format($order->total_price, 2) }}</p>
                         <span class="inline-flex items-center gap-1.5 mt-1 
-                            {{ $order->status === 'pending' ? 'bg-yellow-50 border-yellow-200 text-yellow-600' : 
-                               ($order->status === 'completed' ? 'bg-green-50 border-green-200 text-green-600' : 
-                                'bg-slate-50 border-slate-200 text-slate-600') }} 
+                            {{ $order->seller_status === 'pending' ? 'bg-yellow-50 border-yellow-200 text-yellow-600' : 
+                               ($order->seller_status === 'accepted' ? 'bg-green-50 border-green-200 text-green-600' : 
+                               ($order->seller_status === 'rejected' ? 'bg-red-50 border-red-200 text-red-600' :
+                                'bg-slate-50 border-slate-200 text-slate-600')) }} 
                             px-3 py-1.5 rounded-full text-[10px] font-black tracking-wider uppercase border">
                             <span class="w-1.5 h-1.5 rounded-full 
-                                {{ $order->status === 'pending' ? 'bg-yellow-500' : 
-                                   ($order->status === 'completed' ? 'bg-green-500' : 'bg-slate-400') }}"></span>
-                            {{ ucfirst($order->status) }}
+                                {{ $order->seller_status === 'pending' ? 'bg-yellow-500 animate-pulse' : 
+                                   ($order->seller_status === 'accepted' ? 'bg-green-500' : 
+                                   ($order->seller_status === 'rejected' ? 'bg-red-500' : 'bg-slate-400')) }}"></span>
+                            {{ ucfirst($order->seller_status ?? 'pending') }}
                         </span>
                     </div>
 
                 </div>
 
                 {{-- Product Info --}}
-                <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex items-center gap-4">
+                <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex items-center gap-4 mb-5">
 
-                    @if($order->product && $order->product->images->first())
+                    @if($order->product && $order->product->images && $order->product->images->first())
                         <div class="w-16 h-16 bg-white rounded-xl overflow-hidden shadow-sm flex-shrink-0">
                             <img src="{{ asset('storage/' . $order->product->images->first()->image_path) }}" 
                                  alt="{{ $order->product->name }}"
@@ -160,11 +167,41 @@
                         <p class="text-[10px] font-black text-slate-400 tracking-wider uppercase mb-1">Product</p>
                         <p class="font-bold text-slate-800">{{ $order->product->name ?? 'Deleted Product' }}</p>
                         @if($order->product)
-                            <p class="text-xs text-slate-400 mt-0.5">{{ $order->product->category }}</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Qty: {{ $order->quantity }}</p>
                         @endif
                     </div>
 
                 </div>
+
+                {{-- ACCEPT / REJECT BUTTONS — ADDED --}}
+                @if($order->seller_status === 'pending')
+                <div class="flex gap-3 mb-4">
+                    <form action="{{ route('seller.orders.accept', $order->id) }}" method="POST" class="flex-1">
+                        @csrf
+                        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-2xl font-black uppercase text-[11px] tracking-widest transition shadow-lg shadow-green-500/20">
+                            <i class="fa-solid fa-check mr-2"></i> Accept Order
+                        </button>
+                    </form>
+                    <button onclick="showRejectModal({{ $order->id }})" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-2xl font-black uppercase text-[11px] tracking-widest transition shadow-lg shadow-red-500/20">
+                        <i class="fa-solid fa-xmark mr-2"></i> Reject Order
+                    </button>
+                </div>
+                @elseif($order->seller_status === 'rejected')
+                <div class="bg-red-50 rounded-2xl p-4 border border-red-100 mb-4">
+                    <p class="text-[10px] font-black text-red-600 uppercase tracking-wider mb-1">Rejection Reason</p>
+                    <p class="text-sm text-red-800 font-medium">{{ $order->rejection_reason ?? 'No reason provided' }}</p>
+                </div>
+                @elseif($order->seller_status === 'accepted')
+                <div class="bg-green-50 rounded-2xl p-4 border border-green-100 mb-4 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
+                        <i class="fa-solid fa-check text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black text-green-600 uppercase tracking-wider">Order Accepted</p>
+                        <p class="text-sm text-green-800 font-medium">Processing for delivery</p>
+                    </div>
+                </div>
+                @endif
 
                 {{-- Footer --}}
                 <div class="mt-5 pt-4 border-t border-slate-100 flex justify-between items-center">
@@ -198,6 +235,48 @@
         </div>
 
     </div>
+
+    {{-- Reject Modal --}}
+    <div id="rejectModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-[30px] p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-red-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900">Reject Order</h3>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Please provide a reason</p>
+                </div>
+            </div>
+            <form id="rejectForm" method="POST">
+                @csrf
+                <textarea name="reason" required placeholder="Out of stock, item damaged, etc..." 
+                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-medium outline-none focus:border-red-300 focus:ring-2 focus:ring-red-100 resize-none h-28 mb-6 transition"></textarea>
+                <div class="flex gap-3">
+                    <button type="button" onclick="hideRejectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-lg">
+                        Confirm Reject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showRejectModal(orderId) {
+            document.getElementById('rejectForm').action = '/seller/orders/' + orderId + '/reject';
+            document.getElementById('rejectModal').classList.remove('hidden');
+        }
+        function hideRejectModal() {
+            document.getElementById('rejectModal').classList.add('hidden');
+        }
+        // Close on backdrop click
+        document.getElementById('rejectModal').addEventListener('click', function(e) {
+            if (e.target === this) hideRejectModal();
+        });
+    </script>
 
 </body>
 </html>

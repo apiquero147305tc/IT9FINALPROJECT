@@ -154,10 +154,13 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
         
-        // FIXED: Added show route back
         Route::resource('products', ProductController::class);
         
+        // ORDERS — ADDED accept/reject routes
         Route::get('/seller/orders', [SellerController::class, 'orders'])->name('seller.orders');
+        Route::post('/seller/orders/{id}/accept', [SellerController::class, 'acceptOrder'])->name('seller.orders.accept');
+        Route::post('/seller/orders/{id}/reject', [SellerController::class, 'rejectOrder'])->name('seller.orders.reject');
+        
         Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
         
         // Image delete route
