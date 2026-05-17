@@ -131,7 +131,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
 
     // --- BUYER ROUTES ---
-    Route::middleware(['auth', 'role:buyer'])->group(function () {
+    Route::middleware(['role:buyer'])->group(function () {
         Route::get('/buyer/home', [BuyerController::class, 'index'])->name('buyer.home');
         Route::get('/buyer/smartbudgetcontrol', [BuyerController::class, 'smartBudget'])->name('buyer.smartbudgetcontrol');
         Route::get('/buyer/profile', [BuyerController::class, 'profile'])->name('buyer.profile');
@@ -144,36 +144,22 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | SELLER ROUTES (All sellers - pending, approved, active)
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware(['auth', 'role:seller'])->group(function () {
+    // --- SELLER ROUTES (ALL - pending, approved, active) ---
+    Route::middleware(['role:seller'])->group(function () {
 
-        // Pending approval page (accessible to all sellers including pending)
-        Route::get('/seller/pending', [SellerController::class, 'pending'])
-            ->name('seller.pending');
+        // Pending approval page
+        Route::get('/seller/pending', [SellerController::class, 'pending'])->name('seller.pending');
 
         // Confirmation page (after admin approval)
-        Route::get('/seller/confirm', [SellerController::class, 'confirm'])
-            ->name('seller.confirm');
+        Route::get('/seller/confirm', [SellerController::class, 'confirm'])->name('seller.confirm');
 
         // Confirm YES - activate seller account
-        Route::patch('/seller/confirm-yes', [SellerController::class, 'confirmYes'])
-            ->name('seller.confirm.yes');
+        Route::patch('/seller/confirm-yes', [SellerController::class, 'confirmYes'])->name('seller.confirm.yes');
 
         // Confirm NO - delete account
-        Route::delete('/seller/confirm-no', [SellerController::class, 'confirmNo'])
-            ->name('seller.confirm.no');
-    });
+        Route::delete('/seller/confirm-no', [SellerController::class, 'confirmNo'])->name('seller.confirm.no');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ACTIVE SELLER ROUTES ONLY (status = 'active')
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware(['auth', 'role:seller', 'seller.active'])->group(function () {
+        // Active seller routes (status checks handled in controller)
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
         Route::get('/seller/profile', [SellerController::class, 'profile'])->name('seller.profile');
         Route::post('/seller/profile/update', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
@@ -195,11 +181,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('products.destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN ROUTES
-    |--------------------------------------------------------------------------
-    */
+    // --- ADMIN ROUTES ---
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 

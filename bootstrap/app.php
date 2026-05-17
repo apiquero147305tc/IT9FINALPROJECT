@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+        $middleware->alias([
+        'seller.active' => \App\Http\Middleware\EnsureSellerIsActive::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

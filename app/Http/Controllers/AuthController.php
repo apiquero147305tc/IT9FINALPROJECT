@@ -183,8 +183,14 @@ public function showSellerRegister()
     /**
      * Show the pending approval view
      */
-    public function pending()
-    {
-        return view('auth.pending');
+   public function pending()
+{
+    // If user is logged in and is a seller, redirect to seller pending page
+    if (Auth::check() && Auth::user()->role === 'seller') {
+        return redirect()->route('seller.pending');
     }
+    
+    // Otherwise show the generic pending page
+    return view('auth.pending');
+}
 }

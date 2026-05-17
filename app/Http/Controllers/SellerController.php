@@ -12,13 +12,30 @@ use App\Models\Notification;
 class SellerController extends Controller
 {
     /**
-     * Show the pending approval page (while waiting for admin)
+     * Check seller status and redirect if needed
+     */
+    protected function checkSellerStatus()
+    {
+        $user = Auth::user();
+
+        if ($user->status === 'pending') {
+            return redirect()->route('seller.pending');
+        }
+
+        if ($user->status === 'approved') {
+            return redirect()->route('seller.confirm');
+        }
+
+        return null;
+    }
+
+    /**
+     * Show the pending approval page
      */
     public function pending()
     {
         $user = Auth::user();
 
-        // Redirect if already approved or active
         if ($user->status === 'approved') {
             return redirect()->route('seller.confirm');
         }
@@ -31,13 +48,12 @@ class SellerController extends Controller
     }
 
     /**
-     * Show the confirmation page (after admin approval)
+     * Show the confirmation page after admin approval
      */
     public function confirm()
     {
         $user = Auth::user();
 
-        // Only show if status is 'approved'
         if ($user->status === 'pending') {
             return redirect()->route('seller.pending')
                 ->with('info', 'Your account is still pending admin approval.');
@@ -57,7 +73,6 @@ class SellerController extends Controller
     {
         $user = Auth::user();
 
-        // Only allow if currently approved
         if ($user->status !== 'approved') {
             if ($user->status === 'pending') {
                 return redirect()->route('seller.pending')
@@ -67,12 +82,11 @@ class SellerController extends Controller
                 ->with('info', 'Your account is already active!');
         }
 
-        // Activate the seller account
         $user->status = 'active';
         $user->save();
 
         return redirect()->route('seller.dash')
-            ->with('success', '🎉 Welcome to CraveCart Seller! Your account is now active.');
+            ->with('success', 'Welcome to CraveCart Seller! Your account is now active.');
     }
 
     /**
@@ -82,13 +96,9 @@ class SellerController extends Controller
     {
         $user = Auth::user();
 
-        // Logout first
         Auth::logout();
-
-        // Delete the user account
         $user->delete();
 
-        // Invalidate session
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 
@@ -97,10 +107,13 @@ class SellerController extends Controller
     }
 
     /**
-     * Seller Dashboard View (ACTIVE sellers only)
+     * Seller Dashboard View
      */
     public function dashboard()
     {
+        $redirect = $this->checkSellerStatus();
+        if ($redirect) return $redirect;
+
         $seller = Auth::user();
         $sellerId = $seller->id;
 
@@ -108,25 +121,20 @@ class SellerController extends Controller
             ->where('user_id', $sellerId)
             ->get();
 
-        // Initialize defaults for safety
         $orders = collect();
         $totalEarnings = 0;
         $notifCount = 0;
         $notifications = collect();
 
-        // NOTIFICATIONS (always safe)
         if (Schema::hasTable('notifications')) {
             $notifications = Notification::where('user_id', $sellerId)
                 ->latest()
                 ->get();
-
             $notifCount = Notification::where('user_id', $sellerId)->count();
         }
 
-        // Ensure the orders table exists before querying
         if (class_exists('App\Models\Order') && Schema::hasTable('orders')) {
             try {
-                // ORDERS: Fetch most recent orders for this seller's products
                 $orders = Order::whereHas('product', function ($query) use ($sellerId) {
                     $query->where('user_id', $sellerId);
                 })
@@ -135,14 +143,12 @@ class SellerController extends Controller
                 ->take(5)
                 ->get();
 
-                // EARNINGS: Sum from accepted or completed orders
                 $totalEarnings = Order::whereHas('product', function ($query) use ($sellerId) {
                     $query->where('user_id', $sellerId);
                 })
                 ->whereIn('status', ['accepted', 'completed'])
                 ->sum('total_price');
 
-                // NOTIFICATIONS: Count pending orders
                 $notifCount = Order::whereHas('product', function ($query) use ($sellerId) {
                     $query->where('user_id', $sellerId);
                 })
@@ -150,7 +156,6 @@ class SellerController extends Controller
                 ->count();
 
             } catch (\Exception $e) {
-                // Fail gracefully if relations aren't perfect
                 $orders = collect();
                 $totalEarnings = 0;
                 $notifCount = 0;
@@ -171,6 +176,9 @@ class SellerController extends Controller
      */
     public function profile()
     {
+        $redirect = $this->checkSellerStatus();
+        if ($redirect) return $redirect;
+
         return view('seller.profile', [
             'user' => Auth::user()
         ]);
@@ -181,6 +189,9 @@ class SellerController extends Controller
      */
     public function updateProfile(Request $request)
     {
+        $redirect = $this->checkSellerStatus();
+        if ($redirect) return $redirect;
+
         $user = Auth::user();
 
         $request->validate([
@@ -202,6 +213,9 @@ class SellerController extends Controller
      */
     public function orders()
     {
+        $redirect = $this->checkSellerStatus();
+        if ($redirect) return $redirect;
+
         $seller = Auth::user();
 
         if (!Schema::hasTable('orders')) {
@@ -223,6 +237,9 @@ class SellerController extends Controller
      */
     public function updateOrderStatus(Request $request, $id)
     {
+        $redirect = $this->checkSellerStatus();
+        if ($redirect) return $redirect;
+
         $request->validate([
             'status' => 'required|in:pending,completed,cancelled,accepted,declined'
         ]);
@@ -230,12 +247,10 @@ class SellerController extends Controller
         $seller = Auth::user();
         $sellerId = $seller->id;
 
-        // Find the order and verify the seller owns the product
         $order = Order::whereHas('product', function($query) use ($sellerId) {
             $query->where('user_id', $sellerId);
         })->with('product')->findOrFail($id);
 
-        // If declining, return the stock to the inventory
         if ($request->status === 'declined' && $order->status !== 'declined') {
             $order->product->increment('stock', $order->quantity);
 
