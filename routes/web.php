@@ -69,7 +69,8 @@ Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->n
 Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
 });
 
-Route::get('/blocked', fn() => view('auth.blocked'))->name('blocked');
+Route::get('/pending', fn () => view('auth.pending'))->name('pending');
+Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
 
 /*
 |--------------------------------------------------------------------------
