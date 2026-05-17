@@ -24,19 +24,18 @@ class AuthController extends Controller
     /**
      * Show the registration page specifically for Buyers
      */
-    public function showBuyerRegister()
-    {
-        return view('auth.register', ['role' => 'buyer']);
-    }
+   public function showBuyerRegister()
+{
+    return view('auth.buyer-register');
+}
 
-    /**
-     * Show the registration page specifically for Sellers
-     */
-    public function showSellerRegister()
-    {
-        return view('auth.register', ['role' => 'seller']);
-    }
-
+/**
+ * Show the registration page specifically for Sellers
+ */
+public function showSellerRegister()
+{
+    return view('auth.seller-register');
+}
     /**
      * Unified Registration Logic for both Buyers and Sellers
      */
@@ -99,12 +98,34 @@ class AuthController extends Controller
     /**
      * Handle Login Attempts
      */
-   public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // 1. Check if account is blocked
+           if ($user->role !== 'admin' && $user->is_blocked) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account has been suspended.'
+                ]);
+            }
+
+            // 2. Check for admin approval (all non-buyers)
+            // SELLER APPROVAL ONLY
+            if ($user->role === 'seller' && $user->status !== 'approved') {
+                Auth::logout();
+                return redirect()->route('auth.pending');
+            }
+
+            $request->session()->regenerate();
+            return $this->redirectUserBasedOnRole($user);
+        }
 
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([

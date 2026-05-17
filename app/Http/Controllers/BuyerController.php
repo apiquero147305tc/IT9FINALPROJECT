@@ -120,7 +120,7 @@ class BuyerController extends Controller
     {
         $user = Auth::user();
 
-        $budget = $user->monthly_budget ?? 0;
+        $budget = (float) str_replace(['₱', ',', ' '], '', $user->monthly_budget ?? 0);
 
         $orders = $user->orders ?? collect();
 

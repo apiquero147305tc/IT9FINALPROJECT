@@ -16,6 +16,28 @@
 {{-- HEADER --}}
 <div class="p-5 border-b bg-red-600 text-white flex justify-between items-center">
 
+<div class="p-6">
+
+    {{-- ROLE TITLE (PUT IT HERE) --}}
+    @if($role === 'seller')
+        <h3>Seller Messages</h3>
+
+    @elseif($role === 'buyer')
+        <h3>Buyer Messages</h3>
+
+    @elseif($role === 'admin')
+        <h3>Admin Messages</h3>
+    @endif
+
+    {{-- YOUR INBOX LIST BELOW --}}
+    @foreach($users as $data)
+        <div>
+            {{ $data['user']->name }}
+        </div>
+    @endforeach
+
+</div>
+
     <div>
         <h2 class="text-xl font-bold">Messages</h2>
         <p class="text-red-100 text-sm">Your conversations</p>

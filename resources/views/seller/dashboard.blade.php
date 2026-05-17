@@ -2,11 +2,11 @@
 
 <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
 
-<<<<<<< HEAD
+
     <!-- HEADER SECTION -->
     <div style="background: linear-gradient(135deg, #dd0d22 0%, #b30b1b 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
         <h2 style="margin: 0 0 10px 0; font-size: 1.8rem;">🍱 CraveCart | Seller Studio</h2>
-        <p style="margin: 0; opacity: 0.9; font-size: 1rem;">Store Overview & Performance</p>
+        <p style="margin: 0; opacity: 0.9; font-size: 1rem;">Store Overview & Performance (delete Me)</p>
 
         <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
             <a href="{{ route('seller.profile') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">🚁 Edit Profile</a>
@@ -106,9 +106,7 @@
 
 </div>
 
-<<<<<<< HEAD
 </x-sellerDash>
-=======
     <div class="sidebar">
     <div class="card">
         <h2>Recent Orders</h2>
@@ -380,7 +378,6 @@ IBUTANG DAW NIS DASHBOARD SA BUYER SA NOTIF NIYA-->
         <span class="text-lg">💬</span> Messages
     </a>
 
->>>>>>> origin/SellerStartup2.0
 </body>
 </html>
->>>>>>> origin/almostfinal
+
