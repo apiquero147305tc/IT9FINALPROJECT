@@ -25,17 +25,17 @@ class AuthController extends Controller
      * Show the registration page specifically for Buyers
      */
     public function showBuyerRegister()
-    {
-        return view('auth.register', ['role' => 'buyer']);
-    }
+{
+    return view('auth.buyer-register');
+}
 
     /**
      * Show the registration page specifically for Sellers
      */
     public function showSellerRegister()
-    {
-        return view('auth.register', ['role' => 'seller']);
-    }
+{
+    return view('auth.seller-register');
+}
 
     /**
      * Unified Registration Logic for both Buyers and Sellers
