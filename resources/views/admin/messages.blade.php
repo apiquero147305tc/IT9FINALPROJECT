@@ -3,120 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Messages</title>
+    <title>Admin Messages | CraveCart Studio Hub</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #faf8f5;
+        }
+        .chat-bubble-sent {
+            background: #dc2626;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble-received {
+            background: white;
+            color: #0f172a;
+            border-bottom-left-radius: 4px;
+        }
+        .sidebar-user:hover {
+            background: #faf8f5;
+        }
+        .sidebar-user.active {
+            background: #fef2f2;
+            border-left: 3px solid #dc2626;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 h-screen overflow-hidden">
+<body class="h-screen overflow-hidden">
 
 <div class="flex h-screen">
 
     {{-- SIDEBAR --}}
-    <div class="w-[350px] bg-white border-r flex flex-col">
+    <div class="w-[360px] bg-white border-r border-slate-100 flex flex-col">
 
-        {{-- TOP --}}
-        <div class="p-5 border-b bg-red-600 text-white">
+        {{-- Header --}}
+        <div class="p-6 border-b border-slate-100">
+            <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center border border-red-100">
+                        <i class="fa-solid fa-envelope text-red-600"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-slate-900 tracking-tight text-lg leading-none">Messages</h1>
+                        <p class="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase mt-0.5">Studio Hub</p>
+                    </div>
+                </div>
+                <a href="{{ route('admin.dashboard') }}" class="w-10 h-10 bg-slate-50 hover:bg-slate-900 rounded-xl flex items-center justify-center transition-all duration-300 group">
+                    <i class="fa-solid fa-arrow-left text-slate-400 group-hover:text-white transition-colors"></i>
+                </a>
+            </div>
+        </div>
 
-            <div class="flex justify-between items-center">
-
-                <div>
-                    <h1 class="text-2xl font-bold">
-                        Messages
-                    </h1>
-
-                    <p class="text-red-100 text-sm">
-                        Admin Inbox
-                    </p>
+        {{-- User List --}}
+        <div class="flex-1 overflow-y-auto">
+            @foreach($users as $u)
+            <a href="{{ route('admin.chat', $u->id) }}" 
+               class="sidebar-user flex items-center gap-4 p-5 border-b border-slate-50 transition-all duration-300 {{ isset($user) && $user->id == $u->id ? 'active' : '' }}">
+                
+                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-600 font-black text-lg shadow-inner">
+                    {{ strtoupper(substr($u->name, 0, 1)) }}
                 </div>
 
-                <a href="{{ route('admin.dashboard') }}"
-                   class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl transition">
+                <div class="flex-1 min-w-0">
+                    <h2 class="font-bold text-slate-800 text-sm truncate">{{ $u->name }}</h2>
+                    <p class="text-xs text-slate-400 font-medium truncate">{{ $u->email }}</p>
+                </div>
 
-                    <i class="fa-solid fa-arrow-left"></i>
-
-                </a>
-
-            </div>
-
-        </div>
-
-        {{-- USERS --}}
-        <div class="flex-1 overflow-y-auto">
-
-            @foreach($users as $u)
-
-    <a href="{{ route('admin.chat', $u->id) }}"
-       class="flex items-center gap-4 p-4 border-b hover:bg-red-50 transition">
-
-        <div class="w-12 h-12 rounded-full bg-red-200 flex items-center justify-center text-red-700 font-bold">
-            {{ strtoupper(substr($u->name, 0, 1)) }}
-        </div>
-
-        <div class="flex-1">
-            <h2 class="font-semibold text-gray-800">{{ $u->name }}</h2>
-            <p class="text-sm text-gray-500">{{ $u->email }}</p>
-        </div>
-
-        <i class="fa-solid fa-chevron-right text-gray-400"></i>
-
-    </a>
-
-@endforeach
-
+                <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+            </a>
+            @endforeach
         </div>
 
     </div>
 
     {{-- CHAT AREA --}}
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col bg-[#faf8f5]">
 
         @if(isset($user))
 
-            {{-- CHAT HEADER --}}
-            <div class="bg-white border-b px-6 py-4 flex items-center gap-4 shadow-sm">
-
-                <div class="w-12 h-12 rounded-full bg-red-200 flex items-center justify-center text-red-700 font-bold">
-
+            {{-- Chat Header --}}
+            <div class="bg-white border-b border-slate-100 px-8 py-5 flex items-center gap-4 shadow-sm">
+                <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 font-black text-lg shadow-inner border border-red-100">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
-
                 </div>
-
                 <div>
-                    <h2 class="font-bold text-lg">
-                        {{ $user->name }}
-                    </h2>
-
-                    <p class="text-sm text-gray-500">
-                        {{ $user->email }}
-                    </p>
+                    <h2 class="font-bold text-slate-900 text-lg tracking-tight">{{ $user->name }}</h2>
+                    <p class="text-xs text-slate-400 font-medium">{{ $user->email }}</p>
                 </div>
-
+                <div class="ml-auto">
+                    <span class="inline-flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-600 px-3 py-1.5 rounded-full text-[10px] font-black tracking-wider uppercase">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online
+                    </span>
+                </div>
             </div>
 
-            {{-- CHAT BODY --}}
-            <div class="flex-1 overflow-y-auto p-6 bg-gray-100 space-y-4">
+            {{-- Chat Messages --}}
+            <div class="flex-1 overflow-y-auto p-8 space-y-5" id="chatContainer">
 
                 @forelse($messages as $msg)
 
                     <div class="flex {{ $msg->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
 
-                        <div class="
-                            max-w-md px-5 py-3 rounded-3xl shadow
-                            {{ $msg->sender_id == auth()->id()
-                                ? 'bg-red-600 text-white rounded-br-md'
-                                : 'bg-white text-gray-800 rounded-bl-md'
-                            }}
-                        ">
+                        <div class="max-w-md px-6 py-4 rounded-2xl shadow-sm {{ $msg->sender_id == auth()->id() ? 'chat-bubble-sent' : 'chat-bubble-received border border-slate-100' }}">
 
-                            <p class="text-sm leading-relaxed">
+                            <p class="text-sm leading-relaxed font-medium">
                                 {{ $msg->message }}
                             </p>
 
-                            <div class="text-[11px] mt-2 opacity-70 text-right">
+                            <div class="text-[10px] mt-2 opacity-70 text-right font-semibold tracking-wide">
                                 {{ $msg->created_at->format('h:i A') }}
                             </div>
 
@@ -127,67 +136,55 @@
                 @empty
 
                     <div class="h-full flex items-center justify-center">
-
                         <div class="text-center">
-
-                            <i class="fa-solid fa-comments text-6xl text-gray-300 mb-4"></i>
-
-                            <p class="text-gray-500 text-lg">
-                                No messages yet.
-                            </p>
-
+                            <div class="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                                <i class="fa-solid fa-comments text-3xl text-slate-300"></i>
+                            </div>
+                            <p class="text-slate-400 font-bold text-sm tracking-wider uppercase">No messages yet</p>
+                            <p class="text-slate-300 text-xs mt-1">Start the conversation below</p>
                         </div>
-
                     </div>
 
                 @endforelse
 
             </div>
 
-            {{-- INPUT --}}
-            <form action="{{ route('messages.send') }}"
-                  method="POST"
-                  class="bg-white border-t p-4 flex gap-3">
-
+            {{-- Input Area --}}
+            <form action="{{ route('messages.send') }}" method="POST" class="bg-white border-t border-slate-100 p-6 flex gap-3">
                 @csrf
+                <input type="hidden" name="receiver_id" value="{{ $user->id }}">
 
-                <input type="hidden"
-                       name="receiver_id"
-                       value="{{ $user->id }}">
+                <div class="flex-1 relative">
+                    <input type="text"
+                           name="message"
+                           placeholder="Type your message..."
+                           class="w-full bg-slate-50 border-0 rounded-2xl px-6 py-4 text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-red-100 focus:bg-white outline-none transition text-sm font-medium"
+                           autocomplete="off">
+                </div>
 
-                <input type="text"
-                       name="message"
-                       placeholder="Type your message..."
-                       class="flex-1 border border-gray-300 rounded-2xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-red-300">
-
-                <button type="submit"
-                        class="bg-red-600 hover:bg-red-700 text-white px-6 rounded-2xl transition">
-
-                    <i class="fa-solid fa-paper-plane"></i>
-
+                <button type="submit" class="bg-slate-900 hover:bg-red-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
                 </button>
-
             </form>
 
         @else
 
-            {{-- EMPTY STATE --}}
-            <div class="flex-1 flex items-center justify-center bg-gray-100">
-
+            {{-- Empty State --}}
+            <div class="flex-1 flex items-center justify-center bg-[#faf8f5]">
                 <div class="text-center">
-
-                    <i class="fa-solid fa-comments text-7xl text-gray-300 mb-5"></i>
-
-                    <h2 class="text-2xl font-bold text-gray-700 mb-2">
-                        Welcome to Admin Messages
+                    <div class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100">
+                        <i class="fa-solid fa-comments text-4xl text-slate-200"></i>
+                    </div>
+                    <div class="inline-block bg-red-100 border border-red-200 rounded-full px-4 py-1.5 mb-4">
+                        <span class="text-red-600 text-[10px] font-black tracking-[0.4em] uppercase">Message Center</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight uppercase mb-2">
+                        Select a <span class="text-red-600">Conversation.</span>
                     </h2>
-
-                    <p class="text-gray-500">
-                        Select a user from the left sidebar to start chatting.
+                    <p class="text-slate-400 font-bold text-[11px] tracking-[0.3em] uppercase">
+                        CraveCart Studio Hub
                     </p>
-
                 </div>
-
             </div>
 
         @endif
