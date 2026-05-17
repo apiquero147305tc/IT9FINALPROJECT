@@ -13,6 +13,18 @@
             </h1>
         </div>
 
+</x-buyerDash>
+<x-layout title="My Cart - CraveCart">
+    <section class="min-h-screen bg-slate-50 py-12 px-6 lg:px-12">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="flex items-center gap-4 mb-10">
+                <div class="bg-orange-600 p-3 rounded-2xl shadow-lg">
+                    <span class="text-2xl text-white">🛒</span>
+                </div>
+                <h1 class="text-4xl font-black italic uppercase tracking-tighter text-slate-900">
+                    My <span class="text-orange-600">Cart</span>~
+                </h1>
+            </div>
         @if($cartItems->count() > 0)
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
