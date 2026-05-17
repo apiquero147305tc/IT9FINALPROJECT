@@ -4,42 +4,70 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 use App\Models\ProductImage;
+use App\Models\Favorite;
+use App\Models\ProductRating;
 
 class Product extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-    'user_id',
-    'name',
-    'description',
-    'price',
-    'stock',   // 🔥 THIS MUST EXIST
-    'category',
-    'image',
-    'status'
-];
+        'user_id',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'category',
+        'image',
+        'status'
+    ];
 
-    /**
-     * Relationship: A product belongs to a Seller (User).
-     */
+    /*
+    |-------------------------
+    | RELATIONSHIPS
+    |-------------------------
+    */
+
+    // Seller
     public function seller()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Relationship: A product can be in many orders.
-     */
+    // Images
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    // Orders
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
-    
-    public function images()
+
+    // Favorites
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'product_id');
+    }
+
+    // reviews
+ public function reviews()
 {
-    return $this->hasMany(ProductImage::class);
+    return $this->hasMany(Review::class);
+}
+
+   public function favoritedBy()
+{
+    return $this->belongsToMany(User::class, 'favorites');
+}
+
+public function ratings()
+{
+    return $this->hasMany(ProductRating::class);
 }
 
 public function user()

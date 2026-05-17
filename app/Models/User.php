@@ -37,9 +37,11 @@ class User extends Authenticatable
         'is_blocked' => 'boolean', // Cast to boolean for easier logic
     ];
 
-    // =========================
-    // ROLE HELPERS
-    // =========================
+    /*
+    |-------------------------
+    | ROLE HELPERS
+    |-------------------------
+    */
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -55,32 +57,63 @@ class User extends Authenticatable
         return $this->role === 'buyer';
     }
 
-    // =========================
-    // RELATIONSHIPS
-    // =========================
+    /*
+    |-------------------------
+    | RELATIONSHIPS
+    |-------------------------
+    */
 
+<<<<<<< HEAD
+=======
+    // Products owned by seller
+>>>>>>> origin/smart-budget-control
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
     }
 
+<<<<<<< HEAD
+=======
+    // Orders made by user
+>>>>>>> origin/smart-budget-control
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
     }
 
+<<<<<<< HEAD
+=======
+    // Cart items
+>>>>>>> origin/smart-budget-control
     public function cartItems()
     {
         return $this->hasMany(Cart::class);
     }
 
-    // =========================
-    // 💰 SMART BUDGET SYSTEM
-    // =========================
+    /*
+    |-------------------------
+    | SMART BUDGET
+    |-------------------------
+    */
 
     public function addSpent($amount)
     {
         $this->spent_amount += $amount;
         $this->save();
     }
+
+    public function favorites()
+    {
+    return $this->hasMany(Favorite::class, 'user_id');
+    }
+
+   public function favoriteProducts()
+   {
+    return $this->belongsToMany(Product::class, 'favorites');
+   }
+
+   public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
 }
