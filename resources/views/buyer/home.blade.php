@@ -1,3 +1,4 @@
+<x-layout title="My Cart - CraveCart">
 <x-buyerDash>
     <section class="min-h-[85vh] bg-[#FDFCFB] px-6 py-20">
         <div class="max-w-[1440px] mx-auto">
@@ -136,3 +137,4 @@
         </div>
     </section>
 </x-buyerDash>
+</x-layout>
