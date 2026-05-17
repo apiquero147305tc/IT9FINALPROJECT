@@ -36,9 +36,15 @@ class BuyerController extends Controller
         | SEARCH FILTER
         |-----------------------------------
         */
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
+       if ($request->filled('search')) {
+    $query->where(function ($q) use ($request) {
+        $q->where('name', 'like', '%' . $request->search . '%')
+          ->orWhereHas('seller', function ($q2) use ($request) {
+              $q2->where('shop_name', 'like', '%' . $request->search . '%')
+                  ->orWhere('name', 'like', '%' . $request->search . '%');
+          });
+    });
+}
 
         /*
         |-----------------------------------

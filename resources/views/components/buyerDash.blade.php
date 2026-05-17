@@ -191,6 +191,15 @@
         .product-container {
             padding: 20px 5%;
         }
+
+        .search-box {
+    color: #111827; /* dark text */
+    background: white;
+}
+
+.search-box::placeholder {
+    color: #9ca3af;
+}
     </style>
 </head>
 
@@ -205,26 +214,35 @@
     <div class="nav-right-container">
 
         {{-- SEARCH + CLEAR --}}
-        <form action="{{ route('buyer.home') }}" method="GET"
-              class="search-group">
+       <form action="{{ route('buyer.home') }}"
+      method="GET"
+      class="search-group"
+      onsubmit="return false;">
+      
+    {{-- SEARCH --}}
+    <input type="text"
+           name="search"
+           class="search-box"
+           placeholder="Search products or shop..."
+           value="{{ request('search') }}">
 
-            <input type="text"
-                   name="search"
-                   class="search-box"
-                   placeholder="Search products..."
-                   value="{{ request('search') }}">
+    {{-- CATEGORY (hidden but controlled by dropdown) --}}
+    <input type="hidden" name="category" id="categoryInput" value="{{ request('category') }}">
 
-            {{-- SEARCH --}}
-            <button type="submit" class="search-btn">
-                <i data-lucide="search"></i>
-            </button>
+    {{-- SORT (hidden default or dropdown controlled later) --}}
+    <input type="hidden" name="sort" id="sortInput" value="{{ request('sort', 'latest') }}">
 
-            {{-- CLEAR --}}
-            <a href="{{ route('buyer.home') }}" class="clear-btn">
-                <i data-lucide="x"></i>
-            </a>
+   {{-- SEARCH BUTTON --}}
+<button type="button" class="search-btn" onclick="submitSearch()">
+    <i data-lucide="search"></i>
+</button>
 
-        </form>
+{{-- CLEAR BUTTON --}}
+<a href="{{ route('buyer.home') }}" class="clear-btn">
+    <i data-lucide="x" style="width:18px; height:18px;"></i>
+</a>
+
+</form>
 
         {{-- FILTER (3-line icon) --}}
         <div class="filter-wrapper">
@@ -308,31 +326,71 @@
 </div>
 
 <script>
+const dropdown = document.getElementById("dropdown");
+
+function toggleDropdown() {
+    if (!dropdown) return;
+
+    dropdown.style.display =
+        dropdown.style.display === "block" ? "none" : "block";
+}
+
+// CLOSE DROPDOWN WHEN CLICKING OUTSIDE
+document.addEventListener('click', function (e) {
+    const filter = document.querySelector(".filter-wrapper");
+
+    if (!filter || !dropdown) return;
+
+    if (!filter.contains(e.target)) {
+        dropdown.style.display = "none";
+    }
+});
+
+// CATEGORY FILTER (GLOBAL FUNCTION - IMPORTANT)
+function setCategory(category) {
+    const url = new URL(window.location.href);
+
+    if (category === '') {
+        url.searchParams.delete('category');
+    } else {
+        url.searchParams.set('category', category);
+    }
+
+    window.location.href = url.toString();
+}
+
+function submitSearch() {
+    const searchInput = document.querySelector('input[name="search"]');
+
+    const url = new URL(window.location.href);
+
+    const searchValue = searchInput.value.trim();
+
+    if (searchValue) {
+        url.searchParams.set('search', searchValue);
+    } else {
+        url.searchParams.delete('search');
+    }
+
+    // preserve existing filters safely
+    const category = document.getElementById('categoryInput')?.value;
+    const sort = document.getElementById('sortInput')?.value;
+
+    if (category) {
+        url.searchParams.set('category', category);
+    }
+
+    if (sort) {
+        url.searchParams.set('sort', sort);
+    }
+
+    window.location.href = url.toString();
+}
+</script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
     lucide.createIcons();
-
-    function toggleDropdown() {
-        const menu = document.getElementById("dropdown");
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
-
-    function setCategory(category) {
-        let url = new URL(window.location.href);
-
-        if (category === '') {
-            url.searchParams.delete('category');
-        } else {
-            url.searchParams.set('category', category);
-        }
-
-        window.location.href = url.toString();
-    }
-
-    window.addEventListener('click', function(e) {
-        const dropdown = document.getElementById("dropdown");
-        if (!e.target.closest('.filter-wrapper')) {
-            dropdown.style.display = "none";
-        }
-    });
 </script>
 
 </body>

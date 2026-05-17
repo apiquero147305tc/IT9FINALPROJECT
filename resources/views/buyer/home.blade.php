@@ -19,7 +19,7 @@
             </a>
             </header>
 
-            {{-- SORTING & FILTER UI --}}
+            <!-- {{-- SORTING & FILTER UI --}}
             <div class="flex flex-wrap gap-4 mb-10 justify-center">
                 <form method="GET" action="{{ route('buyer.home') }}" class="flex flex-wrap gap-4">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." 
@@ -44,7 +44,7 @@
                         Filter
                     </button>
                 </form>
-            </div>
+            </div> -->
 
             @php
                 $user = auth()->user();
@@ -62,8 +62,8 @@
                         $isFavorited = $favorites->contains($product->id);
                     @endphp
 
-                    <div class="group bg-white rounded-[30px] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-red-100/50 hover:-translate-y-2 transition-all duration-500">
-                        
+                    <a href="{{ route('products.show', $product->id) }}"
+   class="block group bg-white rounded-[30px] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-red-100/50 hover:-translate-y-2 transition-all duration-500">
                         {{-- IMAGE --}}
                         <div class="relative h-56 overflow-hidden bg-slate-100">
                             @if($product->images && $product->images->count() > 0)
@@ -119,7 +119,6 @@
                             </div>
 
                             {{-- ACTIONS --}}
-                            <a href="{{ route('products.show', $product) }}" class="btn-view">View</a>
                             @auth
                                 @if(auth()->user()->role === 'buyer')
                                     {{-- ADD TO CART BUTTON (existing) --}}
@@ -137,7 +136,7 @@
                                 @endif
                             @endauth
                             </div>
-                        </div>
+                        </a>
                     </div>
                 @empty
                     <div class="col-span-full text-center py-20">
@@ -149,5 +148,19 @@
             </div>
         </div>
     </section>
+    <script>
+    let timeout = null;
+
+    const searchInput = document.querySelector('input[name="search"]');
+    const form = searchInput.closest('form');
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            form.submit();
+        }, 500); // waits 0.5s after typing stops
+    });
+</script>
 </x-buyerDash>
 </x-layout>

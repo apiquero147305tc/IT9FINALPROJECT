@@ -16,6 +16,10 @@ use App\Http\Controllers\LendingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavoriteController;
 use App\Models\Product;
+use App\Http\Controllers\ReportController;
+
+Route::post('/report/store', [ReportController::class, 'store'])
+    ->name('report.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +52,9 @@ Route::get('/best-sellers', function () {
 })->name('bestSeller');
 
 // Public Product/Seller Views
-Route::get('/products/{product}', [BuyerController::class, 'show'])->name('products.show')->whereNumber('product');
+
+Route::get('/products/{id}', [BuyerController::class, 'show'])
+    ->name('products.show');
 Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])->name('seller.shop');
 
 /*
