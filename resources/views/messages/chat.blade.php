@@ -25,10 +25,23 @@
     </div>
 
     {{-- BACK BUTTON --}}
-    <a href="{{ url()->previous() }}"
-       class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm transition">
-        <i class="fa-solid fa-arrow-left mr-1"></i> Back
-    </a>
+    @php
+    $role = auth()->user()->role;
+@endphp
+
+@php
+    $backRoute = match($role) {
+        'buyer' => route('buyer.home'),
+        'seller' => route('seller.dash'),
+        'admin' => route('admin.dashboard'),
+        default => url('/')
+    };
+@endphp
+
+<a href="{{ $backRoute }}"
+   class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm transition">
+    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
+</a>
 
 </div>
 

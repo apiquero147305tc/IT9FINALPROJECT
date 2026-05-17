@@ -269,7 +269,8 @@
     </style>
 </head>
 
-<body>
+<body style="margin:0; background:#f5f5f5; font-family:Arial;">
+
 
 @php
     $reviews = $product->reviews ?? collect();
@@ -293,109 +294,109 @@
         <div>
 
             {{-- PRODUCT IMAGES --}}
-            <div class="images">
+            <div style="max-width:520px; margin:0 auto; background:white; min-height:100vh; position:relative;">
 
-                @forelse($product->images ?? [] as $img)
+    {{-- IMAGE CAROUSEL (TikTok style) --}}
+    <div style="display:flex; overflow-x:auto; scroll-snap-type:x mandatory;">
 
-                    <img src="{{ asset('storage/' . $img->image_path) }}" alt="Product Image">
+        @forelse($product->images ?? [] as $img)
+            <img src="{{ asset('storage/' . $img->image_path) }}"
+                 style="width:100%; flex:0 0 100%; height:420px; object-fit:cover; scroll-snap-align:center;">
+        @empty
+            <img src="https://via.placeholder.com/500"
+                 style="width:100%; height:420px; object-fit:cover;">
+        @endforelse
 
-                @empty
+    </div>
 
-                    <img src="https://via.placeholder.com/220" alt="No Image">
-
-                @endforelse
-
-            </div>
-
+    
+    {{-- RIGHT --}}
+    <div style="padding:16px;">
+        
+        <div style="font-size:22px; font-weight:800;">
+            {{ $product->name }}
         </div>
-
-        {{-- RIGHT --}}
-        <div>
-
-            <div class="product-name">
-                {{ $product->name }}
+        
+        <div style="color:#666; margin-top:5px;">
+            Sold by <b>{{ $product->seller->shop_name ?? $product->seller->name }}</b>
+        </div>
+        
+        <div style="font-size:26px; font-weight:900; color:#dc2626; margin-top:10px;">
+            ₱{{ number_format($product->price, 2) }}
+        </div>
+        
+        <div style="margin-top:12px; color:#444; line-height:1.6;">
+            {{ $product->description }}
+        </div>
+        
+    </div>
+    
+    {{-- STEP 11 + STEP 12 --}}
+    {{-- RATINGS + REVIEWS DISPLAY --}}
+    <div class="rating-box">
+        
+        <div class="rating-header">
+            
+            <div class="rating-score">
+                {{ $avgRating }}
             </div>
-
-            <div class="shop-name">
-                Sold by:
-                <strong>
-                    {{ $product->seller->shop_name ?? $product->seller->name ?? 'Shop' }}
-                </strong>
-            </div>
-
-            <div class="price">
-                ₱{{ number_format($product->price, 2) }}
-            </div>
-
-            <div class="description">
-                {{ $product->description ?? 'No description available.' }}
-            </div>
-
-            {{-- STEP 11 + STEP 12 --}}
-            {{-- RATINGS + REVIEWS DISPLAY --}}
-            <div class="rating-box">
-
-                <div class="rating-header">
-
-                    <div class="rating-score">
-                        {{ $avgRating }}
-                    </div>
-
-                    <div>
-
-                        <div class="stars">
-                            ★★★★★
-                        </div>
-
-                        <div class="review-count">
-                           {{ $totalReviews }} Reviews • {{ $avgRating }}/5 Avg Rating
-                        </div>
-
-                    </div>
-
+            
+            <div>
+                
+                <div class="stars">
+                    ★★★★★
                 </div>
-
-                {{-- REVIEW FORM --}}
-                <div class="review-form">
-
-                    <form action="{{ route('reviews.store', $product->id) }}" method="POST">
-                        @csrf
-
-                        {{-- STEP 11 --}}
-                        {{-- STAR RATING INPUT --}}
-                        <label>
-                            Product Rating
-                        </label>
-
-                        <select name="rating" required>
-
-                            <option value="">Select Rating</option>
-                            <option value="5">★★★★★ - Excellent</option>
-                            <option value="4">★★★★ - Very Good</option>
+                
+                <div class="review-count">
+                    {{ $totalReviews }} Reviews • {{ $avgRating }}/5 Avg Rating
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        {{-- REVIEW FORM --}}
+        <div class="review-form">
+            
+            <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+                @csrf
+                
+                {{-- STEP 11 --}}
+                {{-- STAR RATING INPUT --}}
+                <label>
+                    Product Rating
+                </label>
+                
+                <select name="rating" required>
+                    
+                    <option value="">Select Rating</option>
+                    <option value="5">★★★★★ - Excellent</option>
+                    <option value="4">★★★★ - Very Good</option>
                             <option value="3">★★★ - Good</option>
                             <option value="2">★★ - Fair</option>
                             <option value="1">★ - Poor</option>
-
+                            
                         </select>
-
+                        
                         {{-- STEP 12 --}}
                         {{-- REVIEW COMMENT --}}
                         <label>
                             Your Review
                         </label>
-
+                        
                         <textarea
                             name="comment"
-                            placeholder="Share your experience about this product..."
                             required
+                            placeholder="Share your experience..."
+                            style="width:100%; padding:12px; border-radius:10px; min-height:120px;"
                         ></textarea>
-
+                        
                         <button type="submit" class="submit-btn">
                             Submit Review
                         </button>
 
                     </form>
-
+                    
                 </div>
 
             </div>
@@ -413,18 +414,18 @@
 
         @forelse($product->reviews as $review)
 
-    <div class="review-card">
-
-        <div class="review-top">
-
-            <div class="review-user">
+        <div class="review-card">
+            
+            <div class="review-top">
+                
+                <div class="review-user">
                 {{ $review->user->name ?? 'Anonymous User' }}
             </div>
 
             <div class="review-stars">
                 ★ {{ $review->rating }}/5
             </div>
-
+            
         </div>
 
         <div class="review-comment">
@@ -433,7 +434,7 @@
 
     </div>
 
-@empty
+    @empty
 
     <div class="empty-review">
         No reviews yet.
@@ -450,166 +451,144 @@
         <strong>Seller:</strong>
         {{ $product->seller->name ?? 'Unknown Seller' }}
     </div>
-
-    <div style="display:flex; gap:10px; align-items:center;">
-
+    
+    <div style="display:flex; gap:10px; padding:16px;">
+        
         {{-- CHAT --}}
         <a href="{{ route('messages.chat', $product->user_id) }}"
-           class="chat-btn">
+        style="flex:1; text-align:center; padding:12px; background:#111; color:white; border-radius:10px; text-decoration:none;">
+        💬 Chat
+    </a>
+    
+    <button type="button"
+    onclick="openReportModal()"
+    style="
+        background:#111827;
+        color:white;
+        padding:12px 18px;
+        border-radius:12px;
+        font-weight:700;
+        border:none;
+        cursor:pointer;
+        position:relative;
+        z-index:10;
+        ">
+    ⚠ Report
+</button>
 
-            💬 Chat Seller
+</div>
 
-        </a>
+</div>
 
-        {{-- REPORT BUTTON (STEP 5) --}}
-        <button type="button"
-                onclick="document.getElementById('reportModal').classList.remove('hidden')"
-                style="
-                    background:#111827;
-                    color:white;
-                    padding:12px 18px;
-                    border-radius:12px;
-                    font-weight:700;
-                    border:none;
-                    cursor:pointer;
-                ">
+{{-- BUY NOW --}}
+@if($product->stock > 0)
 
-            ⚠ Report
+<div style="
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:white;
+    padding:12px;
+    border-top:1px solid #eee;
+">
 
-        </button>
+    <div style="max-width:520px; margin:0 auto; display:flex; gap:10px;">
 
-    </div>
-
-    </div>
-
-    {{-- BUY NOW --}}
-    @if($product->stock > 0)
-
-        <form action="{{ route('orders.store') }}"
-              method="POST"
-              class="buy-form">
-
+        <form action="{{ route('orders.store') }}" method="POST" style="flex:1;">
             @csrf
+            <input type="hidden" name="product_id" value="{{ $product->id }}">
+            <input type="hidden" name="quantity" value="1">
 
-            <input type="hidden"
-                   name="product_id"
-                   value="{{ $product->id }}">
-
-            <input type="hidden"
-                   name="quantity"
-                   value="1">
-
-            <button type="submit" class="buy-btn">
+            <button style="
+                width:100%;
+                padding:14px;
+                background:linear-gradient(to right,#dc2626,#ea580c);
+                color:white;
+                border:none;
+                border-radius:12px;
+                font-weight:800;
+            ">
                 Buy Now
             </button>
-
         </form>
 
-    @else
-
+        
+        @else
+        
         <div class="sold-out">
             Product Sold Out
         </div>
-
-    @endif
-
-    {{-- BACK --}}
+        
+    </div>
+</div>
+        @endif
+        
+        {{-- BACK --}}
     <a href="{{ route('buyer.home') }}"
-       class="back-link">
-
-        ← Back to Marketplace
-
+    class="back-link">
+    
+    ← Back to Marketplace
+    
     </a>
-
+    
+</div>
 </div>
 
 {{-- REPORT MODAL --}}
 <div id="reportModal"
-     class="hidden"
      style="
+        display:none;
         position:fixed;
-        top:0; left:0;
-        width:100%; height:100%;
-        background:rgba(0,0,0,0.5);
-        display:flex;
-        align-items:center;
+        inset:0;
+        background:rgba(0,0,0,0.6);
         justify-content:center;
+        align-items:center;
+        z-index:9999;
      ">
 
-    <div style="
-        background:white;
-        width:100%;
-        max-width:500px;
-        padding:25px;
-        border-radius:18px;
-        box-shadow:0 10px 30px rgba(0,0,0,0.2);
-    ">
+    <div style="background:white; width:90%; max-width:400px; padding:20px; border-radius:16px;">
 
-        <h2 style="font-size:22px; font-weight:800; margin-bottom:15px;">
-            Report Product / Seller
-        </h2>
+        <h2 style="font-weight:800; margin-bottom:10px;">Report Product</h2>
 
         <form method="POST" action="{{ route('report.store') }}">
             @csrf
 
-            {{-- PRODUCT ID --}}
             <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-            {{-- SELLER ID --}}
             <input type="hidden" name="seller_id" value="{{ $product->user_id }}">
 
-            {{-- TYPE --}}
-            <label style="font-weight:700;">Report Type</label>
-            <select name="type" required
-                    style="width:100%; padding:12px; border-radius:10px; margin:8px 0 15px;">
-
+            <select name="type" style="width:100%; padding:10px; margin-bottom:10px;">
                 <option value="product">Product</option>
-                <option value="seller">Seller / Shop</option>
-
+                <option value="seller">Seller</option>
             </select>
 
-            {{-- REASON --}}
-            <label style="font-weight:700;">Reason</label>
             <textarea name="reason"
-                      required
-                      placeholder="Explain your report..."
-                      style="width:100%; padding:12px; border-radius:10px; min-height:120px; margin-top:8px;">
-            </textarea>
+                      placeholder="Why are you reporting this?"
+                      style="width:100%; padding:10px; min-height:100px;"></textarea>
 
-            {{-- BUTTONS --}}
             <button type="submit"
-                    style="
-                        width:100%;
-                        background:#dc2626;
-                        color:white;
-                        padding:12px;
-                        border:none;
-                        border-radius:12px;
-                        font-weight:800;
-                        margin-top:15px;
-                        cursor:pointer;
-                    ">
+                    style="width:100%; margin-top:10px; padding:12px; background:#dc2626; color:white; border:none; border-radius:10px;">
                 Submit Report
             </button>
-
         </form>
 
-        {{-- CLOSE --}}
-        <button onclick="document.getElementById('reportModal').classList.add('hidden')"
-                style="
-                    margin-top:10px;
-                    width:100%;
-                    background:#e5e7eb;
-                    padding:10px;
-                    border:none;
-                    border-radius:10px;
-                    cursor:pointer;
-                ">
+        <button onclick="closeReportModal()"
+                style="margin-top:10px; width:100%; padding:10px; background:#eee; border:none; border-radius:10px;">
             Cancel
         </button>
 
     </div>
 </div>
+
+<script>
+function openReportModal() {
+    document.getElementById('reportModal').style.display = 'flex';
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+}
+</script>
 
 </body>
 </html>
