@@ -62,10 +62,11 @@ Route::middleware('guest')->group(function () {
     Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
 
     // Registration Routes
-    Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
-    Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
-    Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
-    Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
+Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
+Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('buyer.register.post');
+
+Route::get('/register/seller', [AuthController::class, 'showSellerRegister'])->name('seller.register');
+Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
 });
 
 Route::get('/blocked', fn() => view('auth.blocked'))->name('blocked');
