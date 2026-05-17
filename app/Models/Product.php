@@ -4,25 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ProductImage;
 
 class Product extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-    'user_id',
-    'name',
-    'description',
-    'price',
-    'stock',   // 🔥 THIS MUST EXIST
-    'category',
-    'image',
-    'status'
-];
+        'user_id',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'category',
+        'image',
+        'status'
+    ];
 
     /**
-     * Relationship: A product belongs to a Seller (User).
+     * Seller who owns this product
      */
     public function seller()
     {
@@ -30,20 +29,26 @@ class Product extends Model
     }
 
     /**
-     * Relationship: A product can be in many orders.
+     * Alias for seller (used in home.blade)
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Product images
+     */
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    /**
+     * Orders for this product
      */
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
-    
-    public function images()
-{
-    return $this->hasMany(ProductImage::class);
-}
-
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
 }

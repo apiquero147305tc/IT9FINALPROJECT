@@ -17,12 +17,14 @@ use App\Http\Controllers\ContactController;
 //////////////////////////////////////////////////
 
 Route::get('/', function () {
-    $products = [
-        ['name' => 'Rice (5kg)', 'price' => 250, 'image' => '/images/rice.jpg'],
-        ['name' => 'Cooking Oil', 'price' => 120, 'image' => '/images/oil.jpg'],
-        ['name' => 'Canned Goods', 'price' => 80, 'image' => '/images/canned.jpg'],
-        ['name' => 'Laundry Detergent', 'price' => 150, 'image' => '/images/detergent.jpg'],
-    ];
+    $products = \App\Models\Product::with(['images', 'user'])
+        ->whereHas('user', function ($q) {
+            $q->where('status', 'approved')->where('is_blocked', false);
+        })
+        ->where('stock', '>', 0)
+        ->latest()
+        ->take(8)
+        ->get();
 
     return view('home', compact('products'));
 })->name('home');
