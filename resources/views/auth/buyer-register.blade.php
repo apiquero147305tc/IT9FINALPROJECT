@@ -55,6 +55,14 @@
                    class="w-full px-4 py-3 border border-gray-300 rounded-lg
                           focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition">
 
+            {{-- Password Confirmation — THIS WAS MISSING! --}}
+            <input type="password"
+                   name="password_confirmation"
+                   placeholder="Confirm Password"
+                   required
+                   class="w-full px-4 py-3 border border-gray-300 rounded-lg
+                          focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition">
+
             {{-- Grade Level --}}
             <select name="grade_level"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg

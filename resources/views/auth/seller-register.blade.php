@@ -42,23 +42,28 @@
                    placeholder="Password"
                    required>
 
+            {{-- PASSWORD CONFIRMATION — THIS WAS MISSING! --}}
+            <input type="password"
+                   name="password_confirmation"
+                   placeholder="Confirm Password"
+                   required>
+
             <input type="text"
                    name="shop_name"
                    placeholder="Shop Name"
                    value="{{ old('shop_name') }}"
                    required>
 
-
             <input type="number"
                    name="age"
                    placeholder="Age"
-                   min="10"
+                   min="18"
                    value="{{ old('age') }}"
                    required>
 
             <input type="text"
                     name="contact_number"
-                    placeholder="Contact Number"
+                    placeholder="Contact Number (09123456789)"
                     value="{{ old('contact_number') }}"
                     maxlength="11"
                     pattern="[0-9]{11}"

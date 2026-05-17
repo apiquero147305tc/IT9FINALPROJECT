@@ -116,7 +116,7 @@ class AuthController extends Controller
             }
 
             // 2. Check for admin approval (all non-buyers)
-            if ($user->status !== 'approved') {
+            if ($user->role === 'seller' && $user->status !== 'approved') {
                 Auth::logout();
                 return redirect()->route('blocked')->withErrors([
                     'email' => 'Your account is currently waiting for admin approval.'
