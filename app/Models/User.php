@@ -15,7 +15,15 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
+        'is_blocked', // Added for the block/unblock system
         'shop_name',
+        'contact_number',
+        'age',
+        'valid_id',
+        'grade_level',
+        'monthly_budget',
+        'spent_amount',
     ];
 
     protected $hidden = [
@@ -26,14 +34,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_blocked' => 'boolean', // Cast to boolean for easier logic
     ];
 
-    // ✔ ROLE HELPERS
-    public function isAdmin() { return $this->role === 'admin'; }
-    public function isSeller() { return $this->role === 'seller'; }
-    public function isBuyer() { return $this->role === 'buyer'; }
-
-<<<<<<< HEAD
+    // =========================
+    // ROLE HELPERS
+    // =========================
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -49,23 +55,10 @@ class User extends Authenticatable
         return $this->role === 'buyer';
     }
 
-    /**
-     * Custom helper for University of Mindanao student logic
-     */
-    public function isStudent(): bool
-    {
-        return in_array($this->grade_level, ['High School', 'SHS', 'College']);
-    }
+    // =========================
+    // RELATIONSHIPS
+    // =========================
 
-    // --- RELATIONSHIPS ---
-
-    /**
-     * Seller Side: A seller has many products.
-     */
-=======
-    // ✔ RELATIONSHIPS
-
->>>>>>> mergeTesting
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
@@ -75,16 +68,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'user_id');
     }
-<<<<<<< HEAD
 
-    /**
-     * Buyer Side: A buyer has many items in their cart.
-     * This links to the Cart model using the 'user_id' column.
-     */
     public function cartItems()
     {
         return $this->hasMany(Cart::class);
     }
-=======
->>>>>>> mergeTesting
+
+    // =========================
+    // 💰 SMART BUDGET SYSTEM
+    // =========================
+
+    public function addSpent($amount)
+    {
+        $this->spent_amount += $amount;
+        $this->save();
+    }
 }

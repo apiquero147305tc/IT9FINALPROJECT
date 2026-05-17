@@ -15,7 +15,7 @@ class Cart extends Model
 
     /**
      * Relationship: A cart item belongs to a product.
-     * This allows you to do $cartItem->product->name
+     * Access via: $cartItem->product
      */
     public function product(): BelongsTo
     {
@@ -24,6 +24,7 @@ class Cart extends Model
 
     /**
      * Relationship: A cart item belongs to a user.
+     * Access via: $cartItem->user
      */
     public function user(): BelongsTo
     {
@@ -31,11 +32,12 @@ class Cart extends Model
     }
 
     /**
-     * Helper: Calculate the subtotal for this specific line item.
+     * Accessor Helper: Calculate the subtotal for this specific line item.
      * Use in Blade like: ₱{{ number_format($item->subtotal, 2) }}
      */
     public function getSubtotalAttribute()
     {
+        // This ensures that even if a product is deleted, the site doesn't crash
         return $this->product ? $this->product->price * $this->quantity : 0;
     }
 }
