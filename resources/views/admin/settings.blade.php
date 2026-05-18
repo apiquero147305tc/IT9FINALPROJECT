@@ -9,203 +9,210 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     {{-- Font Awesome --}}
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
     {{-- Google Font --}}
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body{
-            font-family:'Poppins',sans-serif;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8fafc;
+            color: #475569;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 5px;
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 99px;
+        }
+        
+        /* Premium Gradient Border Layout with Rounded Clipping */
+        .gradient-border-wrapper {
+            position: relative;
+            background: linear-gradient(to right, #ba1124 0%, #d31c30 70%, #f97316 100%);
+            padding: 1px;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body class="antialiased min-h-screen selection:bg-red-500/10 selection:text-red-600">
 
-<div class="flex">
+<div class="flex flex-col md:flex-row min-h-screen">
 
     {{-- SIDEBAR --}}
-    <aside class="w-72 bg-red-800 text-white min-h-screen p-7 shadow-2xl">
-
-        <div class="flex items-center gap-4 mb-12">
-
-            <div class="w-14 h-14 rounded-2xl bg-white text-red-700 flex items-center justify-center text-2xl">
-                <i class="fa-solid fa-gear"></i>
+    <aside class="w-full md:w-64 bg-white border-r border-slate-100 flex flex-col flex-shrink-0 sticky top-0 h-screen z-40 p-4 justify-between">
+        
+        <div class="space-y-8">
+            <div class="p-3 flex items-center gap-3">
+                <div class="w-9 h-9 bg-gradient-to-tr from-red-600 to-orange-500 rounded-xl flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-cart-shopping text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm tracking-tight text-slate-800">CraveCart</h1>
+                    <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Admin Studio</p>
+                </div>
             </div>
 
-            <div>
-                <h1 class="text-2xl font-bold">
-                    CraveCart
-                </h1>
+            <nav class="space-y-1">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all">
+                    <i class="fa-solid fa-chart-pie text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
 
-                <p class="text-red-100 text-sm">
-                    Admin Settings
-                </p>
-            </div>
+                <a href="{{ route('admin.messages') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all">
+                    <i class="fa-solid fa-envelope text-sm"></i>
+                    <span>Messages</span>
+                </a>
 
+                <a href="{{ route('admin.contacts') }}" class="relative flex items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-message text-sm"></i>
+                        <span>Complaints</span>
+                    </div>
+                </a>
+
+                <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all">
+                    <i class="fa-solid fa-chart-line text-sm"></i>
+                    <span>Analytics</span>
+                </a>
+
+                <a href="{{ route('admin.users.delete.page') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all">
+                    <i class="fa-solid fa-trash text-sm"></i>
+                    <span>Delete Accounts</span>
+                </a>
+
+                <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50/60 rounded-xl transition-all">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
         </div>
 
-        <nav class="space-y-3">
-
-            <a href="{{ route('admin.dashboard') }}"
-            class="flex items-center gap-3 p-4 rounded-2xl hover:bg-red-900 transition">
-
-                <i class="fa-solid fa-chart-line"></i>
-                Dashboard
-
-            </a>
-
-            <a href="{{ route('admin.settings') }}"
-            class="flex items-center gap-3 p-4 rounded-2xl bg-red-900">
-
-                <i class="fa-solid fa-gear"></i>
-                Settings
-
-            </a>
-
-            {{-- LOGOUT --}}
+        <div class="p-2 border-t border-slate-50">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-
-            <button type="submit"
-                    class="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-red-900 transition text-left">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
-
-    </button>
-</form>
-
-        </nav>
-
+                <button type="submit" class="w-full flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-600 transition text-left">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
     </aside>
 
-    {{-- MAIN --}}
-    <main class="flex-1 p-10 bg-gray-800">
+    {{-- MAIN CONTENT SUITE --}}
+    <main class="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
 
-        {{-- HEADER --}}
-        <div class="mb-10">
-
-            <h1 class="text-5xl font-bold text-white">
-                Admin Settings
-            </h1>
-
-            <p class="text-gray-100 mt-3 text-lg">
-                Manage your administrator account
-            </p>
-
+        {{-- LANDSCAPE HERO BANNER --}}
+        <div class="bg-gradient-to-r from-[#ba1124] via-[#d31c30] to-[#f97316] text-white rounded-3xl p-6 md:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative overflow-hidden">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white/90">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Admin Settings</h1>
+                    <p class="text-white/70 text-xs font-semibold uppercase tracking-wider mt-0.5">Manage your administrator account</p>
+                </div>
+            </div>
+            
+            <a href="{{ route('admin.dashboard') }}"
+               class="bg-black/15 backdrop-blur-sm border border-white/10 text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-sm hover:bg-black/25 transition">
+                <i class="fa-solid fa-arrow-left mr-1.5"></i> Dashboard
+            </a>
         </div>
 
-        {{-- SUCCESS --}}
+        {{-- SUCCESS ALERT FEEDBACK --}}
         @if(session('success'))
-
-        <div class="bg-green-100 text-green-700 p-5 rounded-2xl mb-6 font-semibold">
-
-            {{ session('success') }}
-
-        </div>
-
+            <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-5 py-4 rounded-2xl font-semibold text-sm shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ session('success') }}
+            </div>
         @endif
 
-        {{-- SETTINGS CARD --}}
-        <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-3xl">
+        {{-- SETTINGS FORM WRAPPED IN PREMIUM ROUNDED GRADIENT LAYOUT --}}
+        <div class="max-w-3xl">
+            <div class="gradient-border-wrapper rounded-3xl shadow-sm overflow-hidden">
+                <div class="bg-white p-6 md:p-8 rounded-[23px]">
+                    
+                    <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
+                        @csrf
 
-            <form action="{{ route('admin.settings.update') }}"
-            method="POST">
+                        {{-- CENTERED PROFILE SHIELD COMPONENT --}}
+                        <div class="flex justify-center pb-4">
+                            <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-red-50 to-red-100/50 text-red-600 border border-red-100/50 flex items-center justify-center text-3xl shadow-sm">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                        </div>
 
-                @csrf
+                        {{-- NAME ENTRY HUB --}}
+                        <div class="space-y-2">
+                            <label class="block text-slate-700 text-xs font-bold uppercase tracking-wider">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value="{{ $admin->name }}"
+                                class="w-full border border-slate-200 bg-slate-50/50 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-red-500/40 focus:ring-4 focus:ring-red-500/[0.03] transition-all duration-200"
+                            >
+                        </div>
 
-                {{-- PROFILE ICON --}}
-                <div class="flex justify-center mb-10">
+                        {{-- EMAIL ADDRESS ENTRY HUB --}}
+                        <div class="space-y-2">
+                            <label class="block text-slate-700 text-xs font-bold uppercase tracking-wider">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value="{{ $admin->email }}"
+                                class="w-full border border-slate-200 bg-slate-50/50 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-red-500/40 focus:ring-4 focus:ring-red-500/[0.03] transition-all duration-200"
+                            >
+                        </div>
 
-                    <div class="w-32 h-32 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-5xl shadow-lg">
+                        {{-- PASSWORD SECURITY MODIFICATION BLOCK --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-slate-700 text-xs font-bold uppercase tracking-wider">
+                                    New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="Leave blank to keep current"
+                                    class="w-full border border-slate-200 bg-slate-50/50 rounded-2xl px-5 py-3.5 text-sm placeholder-slate-400 outline-none focus:border-red-500/40 focus:ring-4 focus:ring-red-500/[0.03] transition-all duration-200"
+                                App>
+                            </div>
 
-                        <i class="fa-solid fa-user-shield"></i>
+                            <div class="space-y-2">
+                                <label class="block text-slate-700 text-xs font-bold uppercase tracking-wider">
+                                    Confirm Password
+                                </label>
+                                <input
+                                    type="password"
+                                    name="password_confirmation"
+                                    class="w-full border border-slate-200 bg-slate-50/50 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-red-500/40 focus:ring-4 focus:ring-red-500/[0.03] transition-all duration-200"
+                                >
+                            </div>
+                        </div>
 
-                    </div>
+                        {{-- EXECUTE SUBMIT OPERATIONS ACTION BAR --}}
+                        <div class="pt-4">
+                            <button type="submit"
+                                    class="w-full bg-gradient-to-r from-red-700 via-red-600 to-red-500 hover:from-red-600 hover:to-red-500 text-white font-bold py-4 rounded-xl text-xs uppercase tracking-widest shadow-md shadow-red-600/10 transition-all duration-200 active:scale-95">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i> Save Changes
+                            </button>
+                        </div>
 
+                    </form>
                 </div>
-
-                {{-- NAME --}}
-                <div class="mb-6">
-
-                    <label class="block text-gray-700 font-semibold mb-3">
-                        Full Name
-                    </label>
-
-                    <input
-                        type="text"
-                        name="name"
-                        value="{{ $admin->name }}"
-                        class="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:border-red-500"
-                    >
-
-                </div>
-
-                {{-- EMAIL --}}
-                <div class="mb-6">
-
-                    <label class="block text-gray-700 font-semibold mb-3">
-                        Email Address
-                    </label>
-
-                    <input
-                        type="email"
-                        name="email"
-                        value="{{ $admin->email }}"
-                        class="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:border-red-500"
-                    >
-
-                </div>
-
-                {{-- PASSWORD --}}
-                <div class="mb-6">
-
-                    <label class="block text-gray-700 font-semibold mb-3">
-                        New Password
-                    </label>
-
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Leave blank to keep current password"
-                        class="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:border-red-500"
-                    >
-
-                </div>
-
-                {{-- CONFIRM PASSWORD --}}
-                <div class="mb-8">
-
-                    <label class="block text-gray-700 font-semibold mb-3">
-                        Confirm Password
-                    </label>
-
-                    <input
-                        type="password"
-                        name="password_confirmation"
-                        class="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:border-red-500"
-                    >
-
-                </div>
-
-                {{-- BUTTON --}}
-                <button
-                class="w-full bg-red-600 hover:bg-red-700 transition text-white py-5 rounded-2xl text-lg font-semibold shadow-lg">
-
-                    <i class="fa-solid fa-floppy-disk mr-2"></i>
-
-                    Save Changes
-
-                </button>
-
-            </form>
-
+            </div>
         </div>
-
     </main>
 
 </div>
