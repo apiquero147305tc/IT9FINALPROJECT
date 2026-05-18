@@ -75,14 +75,31 @@ class LendingController extends Controller
 
     public function myRequests()
     {
-        $requests = Lending::where('borrower_id', Auth::id())
-            ->with(['product.images', 'lender'])
+        $user = Auth::user();
+        
+        $allLoans = Lending::where('borrower_id', $user->id)
+            ->with(['product', 'lender'])
             ->latest()
             ->get();
-
-        return view('lending.my-requests', compact('requests'));
+        
+        $activeLoans = $allLoans->filter(function ($loan) {
+            return $loan->status === 'approved' && is_null($loan->returned_at);
+        });
+        
+        $pendingRequests = $allLoans->filter(function ($loan) {
+            return $loan->status === 'pending';
+        });
+        
+        $loanHistory = $allLoans->filter(function ($loan) {
+            return $loan->status === 'returned' || $loan->status === 'rejected';
+        });
+        
+        $totalFees = $allLoans->sum('lending_fee');
+        
+        return view('lending.my-requests', compact(
+            'allLoans', 'activeLoans', 'pendingRequests', 'loanHistory', 'totalFees'
+        ));
     }
-
     public function sellerLendings()
     {
         $lendings = Lending::where('lender_id', Auth::id())
