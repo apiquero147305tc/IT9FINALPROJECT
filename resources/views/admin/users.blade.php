@@ -5,238 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CraveCart | All Users</title>
 
+    {{-- Tailwind --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    {{-- Font Awesome --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+    {{-- Google Font --}}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body{
-            font-family:'Poppins',sans-serif;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fdfefe;
+            color: #0f172a;
+        }
+        /* Fluid premium scrollbars for table bodies */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 5px;
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 99px;
         }
     </style>
 </head>
 
-<body class="bg-red-100 min-h-screen">
+<body class="antialiased min-h-screen selection:bg-orange-500/10 selection:text-orange-600">
 
-<div class="p-10">
+<div class="max-w-6xl mx-auto p-8 md:p-12 space-y-8">
 
-    {{-- HEADER --}}
-    <div class="flex justify-between items-center mb-10">
-
-        <div>
-            <h1 class="text-5xl font-bold text-red-800">
-                Registered Users
+    {{-- PRESTIGE TOP HEADER WITH GRADIENT ACCENT --}}
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-slate-100 pb-8">
+        <div class="space-y-1">
+            <h1 class="text-3xl font-black tracking-tight">
+                <span class="bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent">Registered Users</span>
             </h1>
-
-            <p class="text-gray-500 mt-3">
-                View every CraveCart account
-            </p>
+            <p class="text-slate-400 text-sm">Comprehensive index of current live records within the platform ecosystem.</p>
         </div>
 
         <a href="{{ route('admin.dashboard') }}"
-        class="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-2xl font-semibold transition">
-
-            <i class="fa-solid fa-arrow-left mr-2"></i>
-            Dashboard
-
+           class="inline-flex items-center gap-2 text-xs font-semibold text-white bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 px-5 py-3 rounded-xl transition-all shadow-md shadow-red-500/10 hover:shadow-orange-500/20 hover:-translate-y-0.5">
+            <i class="fa-solid fa-arrow-left"></i>
+            Return to Dashboard
         </a>
-
     </div>
 
-    {{-- SEARCH BAR --}}
-    <div class="mb-6">
-
-        <div class="relative">
-
+    {{-- SEARCH BAR WITH INTERACTIVE ACCENT RING --}}
+    <div class="max-w-xl">
+        <div class="relative group">
             <input
                 type="text"
                 id="searchInput"
-                placeholder="Search by name or email..."
-                class="w-full p-4 pl-12 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-300"
+                placeholder="Search index by unique identifier name or email lookup..."
+                class="w-full p-4 pl-12 rounded-xl border border-slate-200 bg-white text-sm placeholder-slate-400 focus:outline-none focus:border-orange-500/40 focus:ring-4 focus:ring-orange-500/[0.04] transition-all duration-200"
             >
-
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors text-sm"></i>
         </div>
-
     </div>
 
-    {{-- TABLE --}}
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+    {{-- DATA INTERFACE: GLOBAL REGISTER --}}
+    <div class="bg-white ring-1 ring-slate-100 rounded-2xl shadow-sm overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-500 to-orange-500"></div>
 
-        <table class="w-full">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse whitespace-nowrap">
+                <thead>
+                    <tr class="text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100 bg-slate-50/40">
+                        <th class="py-5 px-6">Identity Parameter</th>
+                        <th class="py-5 px-6">Assigned Network Mail</th>
+                        <th class="py-5 px-6">Role Rank</th>
+                        <th class="py-5 px-6">Node Status</th>
+                        <th class="py-5 px-6 text-right">Operations</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable" class="text-sm divide-y divide-slate-50 text-slate-600">
 
-            <thead class="bg-red-700 text-white">
+                    @foreach($users as $user)
+                    <tr class="hover:bg-slate-50/[0.4] transition-colors user-row group">
 
-                <tr>
-                    <th class="p-5 text-left">Name</th>
-                    <th class="p-5 text-left">Email</th>
-                    <th class="p-5 text-left">Role</th>
-                    <th class="p-5 text-left">Status</th>
-                    <th class="p-5 text-left">Actions</th>
-                </tr>
+                        {{-- NAME --}}
+                        <td class="py-4 px-6 font-semibold text-slate-800 group-hover:text-red-600 transition-colors duration-200 user-name">
+                            {{ $user->name }}
+                        </td>
 
-            </thead>
+                        {{-- EMAIL --}}
+                        <td class="py-4 px-6 text-slate-400 font-medium user-email">
+                            {{ $user->email }}
+                        </td>
 
-            <tbody id="usersTable">
+                        {{-- ROLE BADGES --}}
+                        <td class="py-4 px-6">
+                            @if($user->role == 'seller')
+                                <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-100/40">
+                                    Seller
+                                </span>
+                            @elseif($user->role == 'buyer')
+                                <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-100/40">
+                                    Buyer
+                                </span>
+                            @else
+                                <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-100/40">
+                                    Admin
+                                </span>
+                            @endif
+                        </td>
 
-                @foreach($users as $user)
+                        {{-- STATUS BADGES --}}
+                        <td class="py-4 px-6">
+                            @if($user->is_blocked)
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-600 border border-red-100/30">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Restricted
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100/30">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Operational
+                                </span>
+                            @endif
+                        </td>
 
-                <tr class="border-b hover:bg-gray-50 user-row">
+                        {{-- OPERATIONS INTERFACE --}}
+                        <td class="py-4 px-6 text-right">
+                            <div class="inline-flex items-center gap-2 justify-end">
+                                
+                                @if(!$user->is_blocked)
+                                    {{-- BLOCK FORM --}}
+                                    <form action="{{ route('admin.block', $user->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="text-xs font-semibold text-slate-600 hover:text-red-600 bg-slate-50 hover:bg-red-50 border border-slate-100 hover:border-red-100 px-3 py-1.5 rounded-xl transition-all">
+                                            Restrict
+                                        </button>
+                                    </form>
+                                @else
+                                    {{-- UNBLOCK FORM --}}
+                                    <form action="{{ route('admin.unblock', $user->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-xl shadow-sm transition-all">
+                                            Reinstate
+                                        </button>
+                                    </form>
+                                @endif
+                                
+                                {{-- DIRECT CONTACT MAIL --}}
+                                <a href="{{ route('admin.email.page', $user->id) }}"
+                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-orange-200 px-3 py-1.5 rounded-xl transition-all shadow-sm">
+                                    <i class="fa-solid fa-paper-plane text-slate-400 group-hover:text-orange-500"></i> Dispatch Mail
+                                </a>
 
-                    {{-- NAME --}}
-                    <td class="p-5 font-semibold user-name">
-                        {{ $user->name }}
-                    </td>
+                            </div>
+                        </td>
 
-                    {{-- EMAIL --}}
-                    <td class="p-5 text-gray-500 user-email">
-                        {{ $user->email }}
-                    </td>
+                    </tr>
+                    @endforeach
 
-                    {{-- ROLE --}}
-                    <td class="p-5">
-
-                        @if($user->role == 'seller')
-
-                        <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm">
-                            Seller
-                        </span>
-
-                        @elseif($user->role == 'buyer')
-
-                        <span class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
-                            Buyer
-                        </span>
-
-                        @else
-
-                        <span class="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm">
-                            Admin
-                        </span>
-
-                        @endif
-
-                    </td>
-
-                    {{-- STATUS --}}
-                    <td class="p-5">
-
-                        @if($user->is_blocked)
-
-                        <span class="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm">
-                            Blocked
-                        </span>
-
-                        @else
-
-                        <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm">
-                            Active
-                        </span>
-
-                        @endif
-
-                    </td>
-
-                    {{-- ACTIONS --}}
-                    <td class="p-5">
-
-                        @if(!$user->is_blocked)
-
-                        {{-- BLOCK --}}
-                        <form action="{{ route('admin.block', $user->id) }}"
-                              method="POST">
-
-                            @csrf
-
-                            <button
-                                type="submit"
-                                class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition">
-
-                                <i class="fa-solid fa-ban mr-2"></i>
-                                Block
-
-                            </button>
-
-                        </form>
-
-                        @else
-
-                        {{-- UNBLOCK --}}
-                        <form action="{{ route('admin.unblock', $user->id) }}"
-                              method="POST">
-
-                            @csrf
-
-                            <button
-                                type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition">
-
-                                <i class="fa-solid fa-unlock mr-2"></i>
-                                Unblock
-
-                            </button>
-
-                        </form>
-
-                        
-                        @endif
-                        
-                        <a href="{{ route('admin.email.page', $user->id) }}"
-                           class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl transition">
-
-                               <i class="fa-solid fa-envelope mr-2"></i>
-                               Email
-
-                       </a>
-
-                    </td>
-
-                </tr>
-
-                @endforeach
-
-            </tbody>
-
-        </table>
-
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
 
-{{-- SEARCH SCRIPT --}}
+{{-- LIVE SEARCH SCRIPT CONFIGURATION --}}
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById('searchInput');
 
-const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+        const rows = document.querySelectorAll('.user-row');
 
-searchInput.addEventListener('keyup', function () {
+        rows.forEach(row => {
+            const name = row.querySelector('.user-name').textContent.toLowerCase();
+            const email = row.querySelector('.user-email').textContent.toLowerCase();
 
-    let filter = searchInput.value.toLowerCase();
-
-    let rows = document.querySelectorAll('.user-row');
-
-    rows.forEach(row => {
-
-        let name = row.querySelector('.user-name')
-            .textContent.toLowerCase();
-
-        let email = row.querySelector('.user-email')
-            .textContent.toLowerCase();
-
-        if (name.includes(filter) || email.includes(filter)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-
+            if (name.includes(filter) || email.includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     });
-
 });
-
 </script>
 
 </body>
