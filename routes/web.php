@@ -178,6 +178,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buyer/smartbudgetcontrol', [BuyerController::class, 'smartBudget'])->name('buyer.smartbudgetcontrol');
         Route::get('/buyer/profile', [BuyerController::class, 'profile'])->name('buyer.profile');
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
+        Route::get('/buyer/favorites', function () {
+    $user = Auth::user();
+
+    return view('buyer.favorites', [
+        'favorites' => $user->favoriteProducts
+    ]);
+})->name('buyer.favorites');
     });
 
     /*
