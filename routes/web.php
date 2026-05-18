@@ -164,6 +164,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])->name('lending.my-requests');
     Route::patch('/products/{product}/toggle-lendable',[LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
     Route::get('/my-lending', [LendingController::class, 'buyerDashboard'])->name('lending.buyer')->middleware(['auth', 'role:buyer']);
+    Route::get('/lending/{id}', [LendingController::class, 'show'])
+    ->name('lending.show');
 
     /*
     |--------------------------------------------------------------------------
@@ -309,3 +311,12 @@ Route::post('/report', [ReportController::class, 'store'])->name('report.store')
 Route::post('/favorite/{productId}', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
 
 Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
+
+//BUYER Settings
+Route::patch('/buyer/profile/update',
+    [BuyerController::class, 'updateProfile'])
+    ->name('buyer.profile.update');
+
+Route::delete('/buyer/account/delete',
+    [BuyerController::class, 'deleteAccount'])
+    ->name('buyer.account.delete'); 

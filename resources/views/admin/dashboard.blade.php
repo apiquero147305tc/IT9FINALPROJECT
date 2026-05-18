@@ -136,57 +136,115 @@
         {{-- FOUR-COLUMN ROUNDED STAT GRID WITH ROUNDED GRADIENT BORDERS --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-                <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
-                    <div class="space-y-2">
-                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Global Register</p>
-                        <h2 class="text-4xl font-bold text-slate-800 tracking-tight">{{ $users->count() }}</h2>
-                        <p class="text-slate-400 text-[11px] font-medium leading-tight">Total catalog accounts logged on site.</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-red-50 text-red-500 flex-shrink-0">
-                        <i class="fa-solid fa-users text-sm"></i>
-                    </div>
-                </div>
+            <a href="{{ route('admin.users') }}" class="block no-underline">
+    <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]">
+        
+        <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
+            
+            <div class="space-y-2">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                    Global Register
+                </p>
+
+                <h2 class="text-4xl font-bold text-slate-800 tracking-tight">
+                    {{ $users->count() }}
+                </h2>
+
+                <p class="text-slate-400 text-[11px] font-medium leading-tight">
+                    Total catalog accounts logged on site.
+                </p>
             </div>
 
-            <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-                <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
-                    <div class="space-y-2">
-                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Active Sellers</p>
-                        <h2 class="text-4xl font-bold text-slate-800 tracking-tight">{{ $users->where('role','seller')->count() }}</h2>
-                        <p class="text-slate-400 text-[11px] font-medium leading-tight">Total authorized operational vendors.</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-50 text-orange-500 flex-shrink-0">
-                        <i class="fa-solid fa-store text-sm"></i>
-                    </div>
-                </div>
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-red-50 text-red-500 flex-shrink-0">
+                <i class="fa-solid fa-users text-sm"></i>
             </div>
 
-            <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-                <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
-                    <div class="space-y-2">
-                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Buyers</p>
-                        <h2 class="text-4xl font-bold text-slate-800 tracking-tight">{{ $users->where('role','buyer')->count() }}</h2>
-                        <p class="text-slate-400 text-[11px] font-medium leading-tight">Consumer nodes interacting in marketplace.</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-50/50 text-orange-500 flex-shrink-0">
-                        <i class="fa-solid fa-cart-shopping text-sm"></i>
-                    </div>
-                </div>
+        </div>
+
+    </div>
+</a>
+
+            <a href="{{ route('admin.sellers') }}" class="block no-underline">
+    <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]">
+        
+        <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
+            
+            <div class="space-y-2">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                    Active Sellers
+                </p>
+
+                <h2 class="text-4xl font-bold text-slate-800 tracking-tight">
+                    {{ $users->where('role','seller')->count() }}
+                </h2>
+
+                <p class="text-slate-400 text-[11px] font-medium leading-tight">
+                    Total authorized operational vendors.
+                </p>
             </div>
 
-            <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-                <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
-                    <div class="space-y-2">
-                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Blocked Accounts</p>
-                        <h2 class="text-4xl font-bold text-slate-800 tracking-tight">{{ $users->where('is_blocked',1)->count() }}</h2>
-                        <p class="text-slate-400 text-[11px] font-medium leading-tight">Suspended users restricted from access.</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-red-50 text-red-500 flex-shrink-0">
-                        <i class="fa-solid fa-user-lock text-sm"></i>
-                    </div>
-                </div>
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-50 text-orange-500 flex-shrink-0">
+                <i class="fa-solid fa-store text-sm"></i>
             </div>
+
+        </div>
+    </div>
+</a>
+
+            <a href="{{ route('admin.buyers') }}" class="block no-underline">
+    <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]">
+        
+        <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
+            
+            <div class="space-y-2">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                    Total Buyers
+                </p>
+
+                <h2 class="text-4xl font-bold text-slate-800 tracking-tight">
+                    {{ $users->where('role','buyer')->count() }}
+                </h2>
+
+                <p class="text-slate-400 text-[11px] font-medium leading-tight">
+                    Consumer nodes interacting in marketplace.
+                </p>
+            </div>
+
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-50/50 text-orange-500 flex-shrink-0">
+                <i class="fa-solid fa-cart-shopping text-sm"></i>
+            </div>
+
+        </div>
+    </div>
+</a>
+
+
+           <a href="{{ route('admin.blocked') }}" class="block no-underline">
+    <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]">
+        
+        <div class="bg-white p-6 rounded-[23px] flex justify-between items-start h-full">
+            
+            <div class="space-y-2">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                    Blocked Accounts
+                </p>
+
+                <h2 class="text-4xl font-bold text-slate-800 tracking-tight">
+                    {{ $users->where('is_blocked',1)->count() }}
+                </h2>
+
+                <p class="text-slate-400 text-[11px] font-medium leading-tight">
+                    Suspended users restricted from access.
+                </p>
+            </div>
+
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-red-50 text-red-500 flex-shrink-0">
+                <i class="fa-solid fa-user-lock text-sm"></i>
+            </div>
+
+        </div>
+    </div>
+</a>
 
         </div>
 
@@ -199,7 +257,7 @@
                         <p class="text-slate-400 text-xs mt-0.5">Manage your storefront listings and profile approvals here.</p>
                     </div>
                     <button class="bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-full shadow-sm hover:opacity-95 transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Add Action
+                        <i class="fa-solid mr-1"></i> Actions
                     </button>
                 </div>
 

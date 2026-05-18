@@ -349,14 +349,37 @@
 
         </div>
 
-        {{-- MESSAGES --}}
-        <a href="{{ route('messages.inbox') }}"
-           class="message-btn">
+        {{-- LENDING NAV --}}
+<div class="flex items-center gap-2">
 
-            <i class="fa-solid fa-message"></i>
-            Messages
+    <a href="{{ route('lending.index') }}"
+       class="px-3 py-2 rounded-xl text-xs font-bold border border-white/30
+              bg-white/10 text-white transition
+              hover:bg-white/20 hover:border-white/60 hover:-translate-y-0.5">
 
-        </a>
+        📚 Lending Hub
+    </a>
+
+    <a href="{{ route('lending.my-requests') }}"
+       class="px-3 py-2 rounded-xl text-xs font-bold border border-white/30
+              bg-white/10 text-white transition
+              hover:bg-white/20 hover:border-white/60 hover:-translate-y-0.5">
+
+        📋 My Borrowings
+    </a>
+
+</div>
+
+       <a href="{{ route('messages.inbox') }}"
+   class="px-3 py-2 rounded-xl text-xs font-bold border border-white/30
+          bg-white/10 text-white transition
+          hover:bg-white/20 hover:border-white/60 hover:-translate-y-0.5
+          flex items-center gap-2">
+
+    <i class="fa-solid fa-message"></i>
+    Messages
+
+</a>
 
         {{-- NAV ICONS --}}
         <div class="nav-links">

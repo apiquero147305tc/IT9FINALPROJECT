@@ -3,19 +3,21 @@
         <div class="max-w-[1440px] mx-auto">
             
             {{-- HEADER --}}
-            <header class="mb-16 text-center">
+            <header class="mb-16 text-center relative">
+
                 <span class="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-red-200">
                     Marketplace
                 </span>
+
                 <h2 class="text-5xl md:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">
                     Browse <span class="text-red-600">Essentials.</span>
                 </h2>
-                <a href="{{ route('lending.index') }}" class="nav-link">
-                    📚 Lending Hub
-                </a>
-                <a href="{{ route('lending.my-requests') }}" class="nav-link">
-                    📋 My Borrowings
-                </a>
+
+                {{-- RED ACCENT LINE --}}
+                <div class="mt-6 flex justify-center">
+                    <div class="w-80 md:w-[36rem] lg:w-[48rem] xl:w-[56rem] h-[3px] bg-gradient-to-r from-red-600 to-orange-500 rounded-full"></div>
+                </div>
+
             </header>
 
             <!-- {{-- SORTING & FILTER UI --}}
@@ -95,8 +97,10 @@
                         </div>
 
                         {{-- LENDABLE BADGE --}}
-                        @if($product->is_lendable && $product->stock > 0)
-                            <span class="badge-lendable">📚 Lendable</span>
+                       @if($product->is_lendable && $product->stock > 0)
+                            <span class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-400 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md">
+                                📚 Lendable
+                            </span>
                         @endif
 
                         {{-- CONTENT --}}
@@ -137,14 +141,6 @@
                                           ⚡ Buy Now
                                         </button>
                                     </form>
-
-                                    {{-- BORROW BUTTON (NEW) --}}
-                                    @if($product->is_lendable && $product->stock > 0)
-                                        <a href="{{ route('lending.create', $product) }}" class="btn-borrow">
-                                            📚 Borrow
-                                        </a>
-                                    @endif
-
                                 @endif
                             @endauth
                         </div>

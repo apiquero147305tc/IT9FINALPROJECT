@@ -198,7 +198,7 @@ class LendingController extends Controller
 
         if ($lending->borrower_id !== $user->id &&
             $lending->lender_id !== $user->id &&
-            !$user->isAdmin()) {
+           $user->role !== 'admin') {
             abort(403);
         }
 

@@ -6,176 +6,206 @@
     <title>My Lending - CraveCart</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #dd0d22 0%, #ff6b35 50%, #ff8c42 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            text-align: center;
-        }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 50px 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background: #f6f7fb;
+        padding: 30px;
+        color: #111827;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        margin-bottom: 20px;
+    }
+
+    /* HEADER */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .header h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+    }
+
+    .header p {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+    /* BUTTONS */
+    .btn {
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.2s ease;
+        font-size: 0.85rem;
+    }
+
+    .btn-primary {
+        background: #dc2626;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 2px solid #dc2626;
+        color: #dc2626;
+    }
+
+    .btn-secondary:hover {
+        background: #fff5f5;
+    }
+
+    /* STATS */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: #f9fafb;
+        padding: 18px;
+        border-radius: 14px;
+        text-align: center;
+    }
+
+    .stat-card .icon {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .stat-card h3 {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .stat-card .number {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #dc2626;
+    }
+
+    /* SECTION */
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #111827;
+    }
+
+    /* LOAN ITEM */
+    .loan-item {
+        background: #fff;
+        border: 1px solid #f1f5f9;
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .loan-item.active {
+        border-left: 4px solid #22c55e;
+    }
+
+    .loan-item.pending {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .loan-item.overdue {
+        border-left: 4px solid #ef4444;
+    }
+
+    .loan-info h4 {
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .loan-info p {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    /* STATUS */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-pending { background: #fef9c3; color: #854d0e; }
+    .status-overdue { background: #fee2e2; color: #991b1b; }
+    .status-returned { background: #e5e7eb; color: #374151; }
+
+    /* ACTIONS */
+    .action-buttons {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+    }
+
+    /* EMPTY */
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #6b7280;
+    }
+
+    .empty-state .icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 30px;
+            flex-direction: column;
+            align-items: flex-start;
         }
-        .header h1 {
-            color: #333;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        .header p {
-            color: #666;
-            font-size: 1rem;
-            margin-top: 5px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            margin: 5px;
-        }
-        .btn-primary {
-            background: #dd0d22;
-            color: white;
-            box-shadow: 0 4px 15px rgba(221,13,34,0.3);
-        }
-        .btn-primary:hover {
-            background: #b30b1b;
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background: transparent;
-            color: #dd0d22;
-            border: 2px solid #dd0d22;
-        }
-        .btn-secondary:hover {
-            background: #fff5f5;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        .stat-card h3 {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-        .stat-card .number {
-            color: #dd0d22;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        .content-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .content-card h2 {
-            color: #333;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+
         .loan-item {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            border-left: 4px solid #dd0d22;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-direction: column;
+            align-items: flex-start;
         }
-        .loan-item.active { border-left-color: #28a745; }
-        .loan-item.pending { border-left-color: #ffc107; }
-        .loan-item.overdue { border-left-color: #dc3545; }
-        .loan-info h4 {
-            color: #333;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-        .loan-info p {
-            color: #666;
-            font-size: 0.85rem;
-            margin-bottom: 3px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .status-active { background: #d4edda; color: #155724; }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-overdue { background: #f8d7da; color: #721c24; }
-        .status-returned { background: #e2e3e5; color: #383d41; }
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        .empty-state h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .empty-state p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 768px) {
-            .header { flex-direction: column; text-align: center; }
-            .loan-item { flex-direction: column; text-align: center; }
-        }
+    }
+</style>
     </style>
 </head>
 <body>

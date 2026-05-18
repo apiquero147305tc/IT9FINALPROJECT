@@ -156,9 +156,12 @@ class SellerController extends Controller
         $seller = Auth::user();
         $sellerId = $seller->id;
 
-        $products = Product::with('images')
-            ->where('user_id', $sellerId)
-            ->get();
+       $products = Product::with([
+            'images',
+            'reviews.user'
+        ])
+        ->where('user_id', $sellerId)
+        ->get();
 
         $orders = collect();
         $totalEarnings = 0;

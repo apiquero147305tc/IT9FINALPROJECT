@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class BuyerController extends Controller
 {
@@ -199,4 +200,43 @@ class BuyerController extends Controller
 
         return view('buyer.orders', compact('orders'));
     }
+
+    public function updateProfile(Request $request)
+{
+    /** @var \App\Models\User $user */
+$user = Auth::user();
+
+    $request->validate([
+        'name' => 'required|max:255',
+        'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+        'password' => 'nullable|min:6|confirmed',
+    ]);
+
+    $user->name = $request->name;
+    $user->email = $request->email;
+
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    $user->save();
+
+    return back()->with('success', 'Profile updated successfully!');
+}
+
+public function deleteAccount()
+{
+   /** @var \App\Models\User $user */
+$user = Auth::user();
+
+    Auth::logout();
+
+    $user->delete();
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('home')
+        ->with('success', 'Your account has been deleted.');
+}
 }

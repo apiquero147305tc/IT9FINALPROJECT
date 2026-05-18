@@ -163,55 +163,85 @@
                 {{ $product->description }}
             </div>
 
-            {{-- BUY + CART ACTIONS --}}
-            @auth
-                @if(auth()->user()->role === 'buyer' && $product->stock > 0)
+           @auth
+    @if(auth()->user()->role === 'buyer' && $product->stock > 0)
 
-                    <div style="margin-top:20px; display:flex; gap:10px;">
+        <div style="margin-top:20px; display:flex; gap:10px;">
 
-                        {{-- ⚡ BUY NOW (ALSO CART ENTRY) --}}
-                        <form action="{{ route('cart.add', $product) }}" method="POST" style="flex:1;">
-                            @csrf
+            {{-- ⚡ BUY NOW --}}
+            <form action="{{ route('cart.add', $product) }}" method="POST" style="flex:1;">
+                @csrf
+                <input type="hidden" name="buy_now" value="1">
 
-                            <input type="hidden" name="buy_now" value="1">
+                <button style="
+                    width:100%;
+                    padding:14px;
+                    background:linear-gradient(to right,#dc2626,#ea580c);
+                    color:white;
+                    border:none;
+                    border-radius:12px;
+                    font-weight:900;
+                    cursor:pointer;
+                ">
+                    ⚡ Buy Now
+                </button>
+            </form>
 
-                            <button style="
-                                width:100%;
-                                padding:14px;
-                                background:linear-gradient(to right,#dc2626,#ea580c);
-                                color:white;
-                                border:none;
-                                border-radius:12px;
-                                font-weight:900;
-                            ">
-                                ⚡ Buy Now
-                            </button>
-                        </form>
+            {{-- 🛒 ADD TO CART --}}
+            <form action="{{ route('cart.add', $product) }}" method="POST" style="flex:1;">
+                @csrf
 
-                        {{-- 🛒 ADD TO CART --}}
-                        <form action="{{ route('cart.add', $product) }}" method="POST" style="flex:1;">
-                            @csrf
+                <button style="
+                    width:100%;
+                    padding:14px;
+                    background:white;
+                    border:1px solid #ddd;
+                    border-radius:12px;
+                    font-weight:800;
+                    cursor:pointer;
+                ">
+                    🛒 Add to Cart
+                </button>
+            </form>
 
-                            <button style="
-                                width:100%;
-                                padding:14px;
-                                background:white;
-                                border:1px solid #ddd;
-                                border-radius:12px;
-                                font-weight:800;
-                            ">
-                                🛒 Add to Cart
-                            </button>
-                        </form>
+        </div>
 
-                    </div>
+        {{-- 📚 BORROW BUTTON --}}
+        @if($product->is_lendable)
 
-                @else
-                    <div class="sold-out">
-                        Product Sold Out
-                    </div>
-                @endif
-            @endauth
+            <div style="margin-top:12px;">
+
+                <a href="{{ route('lending.create', $product) }}"
+                   style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        gap:10px;
+                        width:100%;
+                        padding:14px;
+                        background:linear-gradient(to right,#f97316,#f59e0b);
+                        color:white;
+                        text-decoration:none;
+                        border-radius:12px;
+                        font-weight:900;
+                        text-transform:uppercase;
+                        letter-spacing:1px;
+                        box-shadow:0 4px 15px rgba(249,115,22,0.25);
+                        transition:.3s;
+                   ">
+                    📚 Borrow Product
+                </a>
+
+            </div>
+
+        @endif
+
+    @else
+        <div class="sold-out">
+            Product Sold Out
+        </div>
+    @endif
+@endauth
 
         </div>
     </div>
@@ -245,6 +275,94 @@
             <button class="submit-btn">Submit Review</button>
         </form>
 
+        {{-- REVIEWS LIST --}}
+@if($reviews->count() > 0)
+
+    <div style="margin-top:30px;">
+
+        <h3 style="
+            font-size:22px;
+            font-weight:800;
+            margin-bottom:20px;
+        ">
+            Customer Reviews
+        </h3>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+
+            @foreach($reviews as $review)
+
+                <div style="
+                    background:white;
+                    border:1px solid #e5e7eb;
+                    border-radius:18px;
+                    padding:20px;
+                ">
+
+                    {{-- USER --}}
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        margin-bottom:10px;
+                    ">
+
+                        <div style="font-weight:800;">
+                            {{ $review->user->name ?? 'Anonymous User' }}
+                        </div>
+
+                        <div style="
+                            color:#f59e0b;
+                            font-size:14px;
+                            font-weight:700;
+                        ">
+                            {{ str_repeat('★', $review->rating) }}
+                        </div>
+
+                    </div>
+
+                    {{-- COMMENT --}}
+                    <div style="
+                        color:#4b5563;
+                        line-height:1.6;
+                        font-size:15px;
+                    ">
+                        {{ $review->comment }}
+                    </div>
+
+                    {{-- DATE --}}
+                    <div style="
+                        margin-top:12px;
+                        font-size:12px;
+                        color:#9ca3af;
+                        font-weight:600;
+                    ">
+                        {{ $review->created_at->diffForHumans() }}
+                    </div>
+
+                </div>
+
+            @endforeach
+
+        </div>
+
+    </div>
+
+@else
+
+    <div style="
+        margin-top:30px;
+        padding:25px;
+        text-align:center;
+        background:#f9fafb;
+        border-radius:18px;
+        color:#9ca3af;
+        font-weight:700;
+    ">
+        No reviews yet.
+    </div>
+
+@endif
     </div>
 
     {{-- SELLER --}}

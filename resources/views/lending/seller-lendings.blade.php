@@ -1,135 +1,224 @@
 <x-sellerDash>
 
-<div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-    <h2 style="color: #333; margin-bottom: 10px;">📚 Lending Management</h2>
-    <p style="color: #666; margin-bottom: 30px;">Manage borrowing requests for your products</p>
+<style>
+    .gradient-border-card {
+        position: relative;
+        background: #fff;
+        border-radius: 2rem;
+        overflow: hidden;
+    }
 
+    .gradient-border-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 2px;
+        border-radius: inherit;
+        background: linear-gradient(135deg, #b91c1c, #ea580c, #f97316);
+        -webkit-mask: 
+            linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.15;
+        transition: 0.3s ease;
+        pointer-events: none;
+    }
+
+    .gradient-border-card:hover::before {
+        opacity: 0.35;
+    }
+</style>
+
+<div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+
+   {{-- HEADER --}}
+<div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 p-8 shadow-xl shadow-red-600/10">
+
+    {{-- BACKGROUND GLOW --}}
+    <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+
+    <div class="relative z-10 flex items-center justify-between flex-wrap gap-6">
+
+        {{-- LEFT --}}
+        <div class="flex items-center gap-5">
+
+            <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-inner">
+                <i class="fa-solid fa-book-open-reader text-2xl"></i>
+            </div>
+
+            <div>
+                <span class="inline-block text-[10px] font-black uppercase tracking-[0.25em] text-red-100 mb-2">
+                    Seller Operations
+                </span>
+
+                <h2 class="text-3xl font-black text-white tracking-tight leading-none">
+                    Lending Management
+                </h2>
+
+                <p class="text-sm text-red-100/80 mt-2 font-medium">
+                    Review, approve, and manage borrower requests efficiently
+                </p>
+            </div>
+
+        </div>
+
+        {{-- RIGHT STATUS --}}
+        <div class="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 text-white min-w-[180px]">
+
+            <p class="text-[10px] uppercase tracking-[0.2em] text-red-100 font-black">
+                Active Requests
+            </p>
+
+            <h3 class="text-3xl font-black mt-1">
+                {{ $lendings->count() }}
+            </h3>
+
+            <p class="text-[11px] text-red-100/70 font-medium mt-1">
+                Borrowing transactions tracked
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+    {{-- LENDING LIST --}}
     @forelse($lendings as $lending)
-        <div style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <div style="display: flex; gap: 20px; align-items: start;">
 
-                <div style="flex-shrink: 0;">
+        <div class="gradient-border-card p-6 shadow-sm hover:shadow-lg transition">
+
+            <div class="flex flex-col md:flex-row gap-6">
+
+                {{-- IMAGE --}}
+                <div class="flex-shrink-0">
                     @if($lending->product->images && $lending->product->images->isNotEmpty())
-                        <img src="{{ asset('storage/' . $lending->product->images[0]->image_path) }}" 
-                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px;">
+                        <img src="{{ asset('storage/' . $lending->product->images[0]->image_path) }}"
+                             class="w-24 h-24 rounded-2xl object-cover border border-slate-100">
                     @else
-                        <div style="width: 100px; height: 100px; background: #f3e3cb; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                        <div class="w-24 h-24 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl">
                             📦
                         </div>
                     @endif
                 </div>
 
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                {{-- INFO --}}
+                <div class="flex-1 space-y-2">
+
+                    <div class="flex justify-between flex-wrap gap-2">
                         <div>
-                            <h3 style="margin: 0; color: #333;">{{ $lending->product->name }}</h3>
-                            <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">
-                                👤 Borrower: {{ $lending->borrower->name }} ({{ $lending->borrower->email }})
+                            <h3 class="font-black text-slate-800 text-lg">
+                                {{ $lending->product->name }}
+                            </h3>
+                            <p class="text-xs text-slate-400">
+                                👤 {{ $lending->borrower->name }} ({{ $lending->borrower->email }})
                             </p>
                         </div>
-                        <span style="
-                            padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;
-                            @if($lending->status == 'pending') background: #fff3cd; color: #856404;
-                            @elseif($lending->status == 'approved') background: #d4edda; color: #155724;
-                            @elseif($lending->status == 'rejected') background: #f8d7da; color: #721c24;
-                            @elseif($lending->status == 'returned') background: #cce5ff; color: #004085;
-                            @elseif($lending->status == 'overdue') background: #f8d7da; color: #721c24;
-                            @endif
-                        ">{{ ucfirst($lending->status) }}</span>
-                    </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 15px 0;">
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px;">
-                            <span style="color: #999; font-size: 0.8rem;">Duration</span>
-                            <p style="margin: 5px 0; font-weight: bold; color: #333;">{{ $lending->duration_days }} days</p>
-                        </div>
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px;">
-                            <span style="color: #999; font-size: 0.8rem;">Due Date</span>
-                            <p style="margin: 5px 0; font-weight: bold; color: #333;">{{ $lending->due_date->format('M d, Y') }}</p>
-                        </div>
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px;">
-                            <span style="color: #999; font-size: 0.8rem;">Lending Fee</span>
-                            <p style="margin: 5px 0; font-weight: bold; color: #dd0d22;">₱{{ number_format($lending->lending_fee, 2) }}</p>
-                        </div>
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px;">
-                            <span style="color: #999; font-size: 0.8rem;">Collateral Value</span>
-                            <p style="margin: 5px 0; font-weight: bold; color: #28a745;">₱{{ number_format($lending->collateral_value, 2) }}</p>
-                        </div>
-                    </div>
-
-                    <div style="margin: 15px 0; padding: 12px; background: #e7f3ff; border-radius: 8px;">
-                        <strong style="color: #004085;">🔒 Collateral:</strong>
-                        <span style="color: #004085; font-size: 0.9rem;">
-                            {{ ucfirst($lending->collateral_type) }} - {{ $lending->collateral_description }}
+                        {{-- STATUS --}}
+                        <span class="text-[10px] font-black uppercase px-3 py-1 rounded-full
+                            @if($lending->status == 'pending') bg-amber-50 text-amber-600
+                            @elseif($lending->status == 'approved') bg-emerald-50 text-emerald-600
+                            @elseif($lending->status == 'rejected') bg-rose-50 text-rose-600
+                            @elseif($lending->status == 'returned') bg-slate-100 text-slate-600
+                            @elseif($lending->status == 'overdue') bg-red-50 text-red-600
+                            @endif">
+                            {{ ucfirst($lending->status) }}
                         </span>
                     </div>
 
+                    {{-- DETAILS --}}
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+
+                        <div class="bg-slate-50 p-3 rounded-xl">
+                            <p class="text-slate-400">Duration</p>
+                            <p class="font-bold">{{ $lending->duration_days }} days</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl">
+                            <p class="text-slate-400">Due</p>
+                            <p class="font-bold">{{ $lending->due_date->format('M d, Y') }}</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl">
+                            <p class="text-slate-400">Fee</p>
+                            <p class="font-bold text-red-600">₱{{ number_format($lending->lending_fee, 2) }}</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl">
+                            <p class="text-slate-400">Collateral</p>
+                            <p class="font-bold text-green-600">₱{{ number_format($lending->collateral_value, 2) }}</p>
+                        </div>
+
+                    </div>
+
+                    {{-- COLLATERAL --}}
+                    <div class="bg-blue-50 text-blue-700 p-3 rounded-xl text-xs">
+                        🔒 <b>Collateral:</b> {{ ucfirst($lending->collateral_type) }} - {{ $lending->collateral_description }}
+                    </div>
+
                     @if($lending->purpose)
-                        <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                            <strong style="color: #666;">📝 Purpose:</strong>
-                            <span style="color: #666; font-size: 0.9rem;">{{ $lending->purpose }}</span>
+                        <div class="bg-slate-50 p-3 rounded-xl text-xs text-slate-600">
+                            📝 {{ $lending->purpose }}
                         </div>
                     @endif
 
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    {{-- ACTIONS --}}
+                    <div class="flex gap-2 flex-wrap pt-2">
+
                         @if($lending->status == 'pending')
-                            <form action="{{ route('lending.update-status', $lending->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('PATCH')
+
+                            <form action="{{ route('lending.update-status', $lending->id) }}" method="POST">
+                                @csrf @method('PATCH')
                                 <input type="hidden" name="status" value="approved">
-                                <button type="submit" 
-                                        style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                                    ✓ Approve
+                                <button class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl">
+                                    Approve
                                 </button>
                             </form>
-                            <form action="{{ route('lending.update-status', $lending->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('PATCH')
+
+                            <form action="{{ route('lending.update-status', $lending->id) }}" method="POST">
+                                @csrf @method('PATCH')
                                 <input type="hidden" name="status" value="rejected">
-                                <button type="submit" 
-                                        style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                                    ✕ Reject
+                                <button class="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl">
+                                    Reject
                                 </button>
                             </form>
+
                         @elseif($lending->status == 'approved')
-                            <form action="{{ route('lending.update-status', $lending->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('PATCH')
+
+                            <form action="{{ route('lending.update-status', $lending->id) }}" method="POST">
+                                @csrf @method('PATCH')
                                 <input type="hidden" name="status" value="returned">
-                                <button type="submit" 
-                                        style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                                    ↩ Mark Returned
+                                <button class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl">
+                                    Mark Returned
                                 </button>
                             </form>
-                            @if($lending->isOverdue())
-                                <form action="{{ route('lending.update-status', $lending->id) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="overdue">
-                                    <button type="submit" 
-                                            style="padding: 10px 20px; background: #ffc107; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                                        ⚠ Confirm Overdue
-                                    </button>
-                                </form>
-                            @endif
+
                         @endif
+
                     </div>
 
                     @if($lending->isOverdue())
-                        <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 8px; margin-top: 10px;">
-                            ⚠️ <strong>Overdue!</strong> Item was due {{ $lending->due_date->diffForHumans() }}.
+                        <div class="bg-red-50 text-red-600 p-3 rounded-xl text-xs mt-2">
+                            ⚠ Overdue item detected
                         </div>
                     @endif
+
                 </div>
             </div>
+
         </div>
+
     @empty
-        <div style="text-align: center; padding: 60px 20px;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
-            <h3 style="color: #666;">No Lending Requests</h3>
-            <p style="color: #999;">No one has requested to borrow your products yet.</p>
+
+        <div class="text-center py-20 text-slate-400">
+            <div class="text-5xl mb-4">📭</div>
+            <p class="font-semibold">No Lending Requests</p>
         </div>
+
     @endforelse
+
 </div>
 
 </x-sellerDash>

@@ -1,70 +1,104 @@
 <x-buyerDash>
 
-<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-    <h2 style="color: #333; margin-bottom: 10px;">📚 Product Lending Hub</h2>
-    <p style="color: #666; margin-bottom: 30px;">Browse items available for short-term borrowing</p>
+<main class="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
 
-    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+   {{-- HEADER --}}
+<div class="bg-gradient-to-r from-red-700 via-red-600 to-orange-500 text-white rounded-3xl p-6 shadow-sm">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+        {{-- LEFT TEXT --}}
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight">Product Lending Hub</h2>
+            <p class="text-white/80 text-xs mt-1 uppercase tracking-wider">
+                Browse items available for borrowing
+            </p>
+        </div>
+
+        {{-- RIGHT BUTTON --}}
+        <a href="{{ route('buyer.home') }}"
+           class="bg-white text-red-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-xl shadow-md transition flex items-center gap-2 w-fit">
+
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+        </a>
+
+    </div>
+
+</div>
+
+
+    {{-- GRID --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
         @forelse($products as $product)
-            <div class="card" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.2s;">
 
-                <div style="height: 180px; overflow: hidden;">
+        <div class="gradient-border-wrapper rounded-3xl shadow-sm hover:shadow-md transition overflow-hidden hover:scale-[1.02]">
+
+            <div class="bg-white rounded-[23px] overflow-hidden h-full flex flex-col">
+
+                {{-- IMAGE --}}
+                <div class="h-44 bg-slate-100 overflow-hidden">
                     @if($product->images && $product->images->isNotEmpty())
-                        <img src="{{ asset('storage/' . $product->images[0]->image_path) }}" 
-                             style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ asset('storage/' . $product->images[0]->image_path) }}"
+                             class="w-full h-full object-cover">
                     @else
-                        <div style="width: 100%; height: 100%; background: #f3e3cb; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                        <div class="w-full h-full flex items-center justify-center text-4xl text-slate-300">
                             📦
                         </div>
                     @endif
                 </div>
 
-                <div style="padding: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                        <h3 style="margin: 0; font-size: 1rem; color: #333;">{{ $product->name }}</h3>
-                        <span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">
-                            ✓ Lendable
+                {{-- CONTENT --}}
+                <div class="p-5 flex flex-col gap-3 flex-1">
+
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-slate-800 text-sm">
+                            {{ $product->name }}
+                        </h3>
+
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                            Lendable
                         </span>
                     </div>
 
-                    <p style="color: #666; font-size: 0.85rem; margin: 5px 0;">
+                    <p class="text-xs text-slate-400">
                         🏪 {{ $product->user->shop_name ?? $product->user->name }}
                     </p>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
-                        <div>
-                            <span style="color: #dd0d22; font-weight: bold; font-size: 1.1rem;">
-                                ₱{{ number_format($product->price, 2) }}
-                            </span>
-                            <span style="color: #999; font-size: 0.8rem;">value</span>
-                        </div>
-                        <span style="color: #28a745; font-size: 0.85rem;">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-red-600 font-bold">
+                            ₱{{ number_format($product->price, 2) }}
+                        </span>
+                        <span class="text-emerald-600 font-semibold">
                             Stock: {{ $product->stock }}
                         </span>
                     </div>
 
-                    <div style="background: #fff3cd; padding: 8px; border-radius: 8px; margin-top: 10px;">
-                        <span style="color: #856404; font-size: 0.8rem;">
-                            💰 Est. fee: ₱{{ number_format($product->price * 0.10, 2) }}/week
-                        </span>
+                    <div class="bg-orange-50 border border-orange-100 rounded-xl p-2 text-[11px] text-orange-700">
+                        💰 Est. fee: ₱{{ number_format($product->price * 0.10, 2) }}/week
                     </div>
 
-                    <a href="{{ route('lending.create', $product->id) }}" 
-                       style="display: block; text-align: center; margin-top: 12px; padding: 10px; background: #dd0d22; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9rem;">
-                        📋 Request to Borrow
+                    <a href="{{ route('lending.create', $product->id) }}"
+                       class="mt-auto text-center bg-gradient-to-r from-red-600 to-orange-500 text-white text-xs font-bold py-3 rounded-xl shadow-sm hover:opacity-90 transition">
+                        Request to Borrow
                     </a>
+
                 </div>
             </div>
+        </div>
 
         @empty
-            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-                <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
-                <h3 style="color: #666;">No Lendable Products</h3>
-                <p style="color: #999;">No products are currently available for lending.</p>
-            </div>
+
+        <div class="col-span-full text-center py-16 text-slate-400">
+            <div class="text-5xl mb-4">📭</div>
+            <p class="text-sm font-semibold">No lendable products available</p>
+        </div>
+
         @endforelse
+
     </div>
-</div>
+
+</main>
 
 </x-buyerDash>
