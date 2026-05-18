@@ -79,11 +79,20 @@ class AdminController extends Controller
     //////////////////////////////////////////////////
     // ✅ APPROVAL SYSTEM
     //////////////////////////////////////////////////
-    public function approveUser($id)
-    {
-        User::findOrFail($id)->update(['status' => 'approved']);
-        return back();
+   public function approveUser($id)
+{
+    $user = User::findOrFail($id);
+
+    if ($user->role === 'seller') {
+        $user->status = 'approved';
+    } else {
+        $user->status = 'approved';
     }
+
+    $user->save();
+
+    return back()->with('success', 'User approved successfully.');
+}
 
     public function rejectUser($id)
     {

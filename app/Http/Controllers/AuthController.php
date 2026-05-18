@@ -98,40 +98,20 @@ public function showSellerRegister()
     /**
      * Handle Login Attempts
      */
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            // 1. Check if account is blocked
-           if ($user->role !== 'admin' && $user->is_blocked) {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Your account has been suspended.'
-                ]);
-            }
-
-            // 2. Check for admin approval (all non-buyers)
-            // SELLER APPROVAL ONLY
-            if ($user->role === 'seller' && $user->status !== 'approved') {
-                Auth::logout();
-                return redirect()->route('auth.pending');
-            }
-
-            $request->session()->regenerate();
-            return $this->redirectUserBasedOnRole($user);
-        }
+   public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
+
+    $request->session()->regenerate();
 
     $user = Auth::user();
 
@@ -143,20 +123,25 @@ public function showSellerRegister()
         ]);
     }
 
-    // Pending sellers
-    if ($user->role === 'seller' && $user->status !== 'approved') {
-        Auth::logout();
+    // 🔥 SELLER APPROVAL FLOW (IMPORTANT)
+   if ($user->role === 'seller') {
 
-        return redirect()
-            ->route('auth.pending')
-            ->with('message', 'Your account is waiting for admin approval.');
+    if ($user->status === 'pending') {
+        Auth::logout();
+        return redirect()->route('seller.pending');
     }
 
-    $request->session()->regenerate();
+    if ($user->status === 'approved') {
+        return redirect()->route('seller.confirm');
+    }
+
+    if ($user->status === 'active') {
+        return redirect()->route('seller.dash');
+    }
+}
 
     return $this->redirectUserBasedOnRole($user);
 }
-
     /**
      * Helper to route users after successful login
      */
