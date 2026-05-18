@@ -93,6 +93,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/pending', [AuthController::class, 'pending'])->name('auth.pending');
 
+    Route::resource('products', ProductController::class)->except(['show']);
+
     /*
     |--------------------------------------------------------------------------
     | SELLER APPROVAL FLOW (IMPORTANT FIX)
@@ -157,8 +159,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
     Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
     Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
+    Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])
+    ->name('lending.seller');
       Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])
         ->name('lending.my-requests');
+    Route::patch('/products/{product}/toggle-lendable',
+    [LendingController::class, 'toggleLendable']
+)->name('products.toggle-lendable');
 
     /*
     |--------------------------------------------------------------------------
@@ -189,6 +196,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/seller/orders', [SellerController::class, 'orders'])->name('seller.orders');
         Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
+        Route::get('/seller/products/create', [ProductController::class, 'create'])
+    ->name('seller.products.create');
     });
 
     /*
@@ -203,8 +212,18 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/admin/approve/{id}', [AdminController::class, 'approveUser'])->name('admin.approve');
         Route::post('/admin/reject/{id}', [AdminController::class, 'rejectUser'])->name('admin.reject');
+        Route::get('/admin/messages', [AdminController::class, 'messages'])
+    ->name('admin.messages');
+        Route::get('/admin/users', [AdminController::class, 'deleteUsersPage'])->name('admin.users');
+        Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+        Route::get('/admin/users/{id}/view-id', [AdminController::class, 'viewId'])->name('admin.users.viewId');
+        Route::get('/admin/users/{id}/email', [AdminController::class, 'emailPage'])->name('admin.users.email');
+        Route::post('/admin/users/{id}/email', [AdminController::class, 'sendEmail'])->name('admin.users.sendEmail');
+        Route::get('/admin/contacts', [AdminController::class, 'contacts'])
+    ->name('admin.contacts');
+     });
     });
-});
+
 
 /*
 |--------------------------------------------------------------------------
