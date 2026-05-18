@@ -28,8 +28,8 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved', 'rejected', 'returned', 'overdue'])
                   ->default('pending');
 
-            $table->timestamp('borrowed_at');
-            $table->timestamp('due_date');
+            $table->timestamp('borrowed_at')->nullable();
+            $table->timestamp('due_date')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('rejected_at')->nullable();
             $table->timestamp('returned_at')->nullable();
