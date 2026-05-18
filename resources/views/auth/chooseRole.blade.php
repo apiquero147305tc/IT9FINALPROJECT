@@ -1,80 +1,72 @@
-<?php
+<x-layout>
+    <section class="min-h-[85vh] flex items-center justify-center bg-[#FDFCFB] px-6 py-20 relative overflow-hidden">
+        
+        <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+            <h1 class="text-[20rem] font-black uppercase tracking-tighter italic">STUDIO</h1>
+        </div>
 
-namespace App\Http\Middleware;
+        <div class="relative z-10 w-full max-w-5xl text-center">
+            <header class="mb-16">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-6 border border-red-200">
+                    System Protocol               
+                </span>
+                <h2 class="text-5xl md:text-7xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">
+                    Select <span class="text-red-600">Interface.</span>
+                </h2>
+                <p class="mt-6 text-slate-400 font-bold uppercase text-[11px] tracking-[0.3em]">CraveCart Essentials Hub</p>
+            </header>
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                {{-- BUYER — FIXED: removed ['role' => 'buyer'] --}}
+                <a href="{{ route('buyer.register') }}" 
+                   class="group relative bg-white p-12 rounded-[45px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-slate-200 hover:-translate-y-4 transition-all duration-500 no-underline text-center overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-slate-900 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
 
-class RoleMiddleware
-{
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next, string $role)
-    {
-        // 1. AUTHENTICATION CHECK
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+                    <div class="mb-8 inline-flex items-center justify-center w-24 h-24 bg-slate-50 rounded-3xl group-hover:bg-slate-900 group-hover:rotate-12 transition-all duration-500 shadow-inner">
+                        <span class="text-5xl group-hover:scale-110 transition-transform">🎒</span>
+                    </div>
 
-        $user = Auth::user();
-        $userRole = strtolower($user->role ?? '');
-        $requiredRole = strtolower($role);
+                    <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tight mb-4">Crave Buyer</h3>
+                    <p class="text-slate-500 font-medium leading-relaxed mb-10 text-sm">
+                        Experience the marketplace. Browse essentials, manage your student budget.
+                    </p>
+                    
+                    <div class="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest group-hover:bg-red-600 transition-colors shadow-lg">
+                        Buyer Access
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </a>
 
-        // 2. SECURITY CHECK: BLOCKED STATUS
-        if ($user->is_blocked || $user->status === 'blocked') {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+                {{-- SELLER — FIXED: removed ['role' => 'seller'] --}}
+                <a href="{{ route('seller.register') }}" 
+                   class="group relative bg-white p-12 rounded-[45px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-red-100 hover:-translate-y-4 transition-all duration-500 no-underline text-center overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-red-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
 
-            return Route::has('blocked')
-                ? redirect()->route('blocked')
-                : redirect()->route('login')->withErrors(['email' => 'Your account has been suspended.']);
-        }
+                    <div class="mb-8 inline-flex items-center justify-center w-24 h-24 bg-rose-50 rounded-3xl group-hover:bg-red-600 group-hover:-rotate-12 transition-all duration-500 shadow-inner">
+                        <span class="text-5xl group-hover:scale-110 transition-transform">📊</span>
+                    </div>
 
-        // 3. ACCOUNT STATUS CHECK: PENDING APPROVAL
-        // Allow sellers to access their pending page while logged in
-        if ($userRole !== 'admin' && $user->status === 'pending') {
-            // Allow access to seller-specific pending page and self-approve/delete routes
-            if ($request->routeIs('seller.pending') || 
-                $request->routeIs('seller.self-approve') || 
-                $request->routeIs('seller.delete-account')) {
-                return $next($request);
-            }
-            // Allow access to generic pending page
-            if ($request->routeIs('auth.pending')) {
-                return $next($request);
-            }
-            // For sellers, redirect to seller.pending instead of generic pending
-            if ($userRole === 'seller') {
-                return redirect()->route('seller.pending');
-            }
-            // For others, use generic pending
-            return redirect()->route('auth.pending');
-        }
+                    <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tight mb-4">Studio Seller</h3>
+                    <p class="text-slate-500 font-medium leading-relaxed mb-10 text-sm">
+                        Control the inventory. Manage sales analytics, update product listings.
+                    </p>
+                    
+                    <div class="inline-flex items-center gap-3 bg-red-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest group-hover:bg-slate-900 transition-colors shadow-lg shadow-red-200/50">
+                        Seller Hub
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </a>
 
-        // 4. Handle approved sellers - let them access confirmation page
-        if ($userRole === 'seller' && $user->status === 'approved') {
-            if ($request->routeIs('seller.confirm') || 
-                $request->routeIs('seller.confirm.yes') || 
-                $request->routeIs('seller.confirm.no')) {
-                return $next($request);
-            }
-            return redirect()->route('seller.confirm');
-        }
+            </div>
 
-        // 5. ROLE-BASED ACCESS CONTROL (RBAC)
-        // Admins are granted "God Mode" and can bypass specific role requirements.
-        if ($userRole !== 'admin' && $userRole !== $requiredRole) {
-            // Check if they are already headed to the pending page to avoid loops
-            if ($request->routeIs('auth.pending') || $request->routeIs('seller.pending')) {
-                return $next($request);
-            }
-
-            abort(403, 'Unauthorized access.');
-        }
-
-        return $next($request);
-    }
-}
+            <footer class="mt-16 flex flex-col items-center gap-4">
+                <a href="{{ route('login') }}" class="text-slate-900 font-black no-underline border-b-2 border-red-600 transition-all hover:text-red-600 uppercase tracking-widest text-[11px]">
+                    Existing Account? Log in
+                </a>
+            </footer>
+        </div>
+    </section>
+</x-layout>
