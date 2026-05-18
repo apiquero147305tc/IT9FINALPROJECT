@@ -11,11 +11,11 @@
                     Browse <span class="text-red-600">Essentials.</span>
                 </h2>
                 <a href="{{ route('lending.index') }}" class="nav-link">
-                📚 Lending Hub
+                    📚 Lending Hub
                 </a>
                 <a href="{{ route('lending.my-requests') }}" class="nav-link">
-                📋 My Borrowings
-            </a>
+                    📋 My Borrowings
+                </a>
             </header>
 
             <!-- {{-- SORTING & FILTER UI --}}
@@ -62,7 +62,8 @@
                     @endphp
 
                     <a href="{{ route('products.show', $product->id) }}"
-   class="block group bg-white rounded-[30px] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-red-100/50 hover:-translate-y-2 transition-all duration-500">
+                        class="block group bg-white rounded-[30px] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-red-100/50 hover:-translate-y-2 transition-all duration-500">
+
                         {{-- IMAGE --}}
                         <div class="relative h-56 overflow-hidden bg-slate-100">
                             @if($product->images && $product->images->count() > 0)
@@ -92,6 +93,7 @@
                                 </span>
                             </div>
                         </div>
+
                         {{-- LENDABLE BADGE --}}
                         @if($product->is_lendable && $product->stock > 0)
                             <span class="badge-lendable">📚 Lendable</span>
@@ -99,10 +101,14 @@
 
                         {{-- CONTENT --}}
                         <div class="p-6">
-                            <h3 class="font-black text-lg text-slate-900 mb-2 group-hover:text-red-600 transition-colors">{{ $product->name }}</h3>
+                            <h3 class="font-black text-lg text-slate-900 mb-2 group-hover:text-red-600 transition-colors">
+                                {{ $product->name }}
+                            </h3>
                             
                             <div class="flex items-center justify-between mb-4">
-                                <span class="text-red-600 font-black text-xl">₱{{ number_format($product->price, 2) }}</span>
+                                <span class="text-red-600 font-black text-xl">
+                                    ₱{{ number_format($product->price, 2) }}
+                                </span>
                                 
                                 {{-- RATING --}}
                                 <div class="flex items-center gap-1">
@@ -113,17 +119,23 @@
                                             <i class="fa-regular fa-star text-slate-300 text-xs"></i>
                                         @endif
                                     @endfor
-                                    <span class="text-[10px] font-bold text-slate-400 ml-1">{{ number_format($avgRating, 1) }} ({{ $ratingCount }})</span>
+                                    <span class="text-[10px] font-bold text-slate-400 ml-1">
+                                        {{ number_format($avgRating, 1) }} ({{ $ratingCount }})
+                                    </span>
                                 </div>
                             </div>
 
                             {{-- ACTIONS --}}
                             @auth
                                 @if(auth()->user()->role === 'buyer')
-                                    {{-- ADD TO CART BUTTON (existing) --}}
+                                    
+                                    {{-- BUY NOW BUTTON (REPLACED ADD TO CART) --}}
                                     <form action="{{ route('cart.add', $product) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="submit" class="btn-cart">🛒 Add to Cart</button>
+                                        <button type="submit"
+                                         class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-500 text-white font-black uppercase text-[11px] tracking-widest py-3 rounded-2xl shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300">
+                                          ⚡ Buy Now
+                                        </button>
                                     </form>
 
                                     {{-- BORROW BUTTON (NEW) --}}
@@ -132,11 +144,12 @@
                                             📚 Borrow
                                         </a>
                                     @endif
+
                                 @endif
                             @endauth
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+
                 @empty
                     <div class="col-span-full text-center py-20">
                         <i class="fa-solid fa-box-open text-6xl text-slate-200 mb-4"></i>
