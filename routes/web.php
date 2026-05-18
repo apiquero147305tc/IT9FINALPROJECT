@@ -146,7 +146,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // --- SELLER ROUTES (ALL - pending, approved, active) ---
-    Route::middleware(['role:seller'])->group(function () {
+     Route::middleware(['role:seller'])->group(function () {
 
         // Pending approval page
         Route::get('/seller/pending', [SellerController::class, 'pending'])->name('seller.pending');
@@ -169,6 +169,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Product Management
         Route::resource('products', ProductController::class)->except(['show']);
+         Route::get('/seller/products/create', [ProductController::class, 'create'])
+        ->name('seller.products.create');
 
         Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
             ->name('orders.updateStatus');
@@ -180,7 +182,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])
             ->name('products.destroy');
-    });
+     });
 
     // --- ADMIN ROUTES ---
     Route::middleware(['role:admin'])->group(function () {

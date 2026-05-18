@@ -26,10 +26,16 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new product.
      */
-    public function create()
-    {
-        return view('seller.products.create');
+ public function create()
+{
+    $user = Auth::user();
+
+    if (!$user || $user->role !== 'seller') {
+        abort(403, 'Unauthorized access');
     }
+
+    return view('seller.products.create');
+}
 
     /**
      * Store a newly created product.

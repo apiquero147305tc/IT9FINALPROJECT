@@ -184,7 +184,8 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('products.create') }}" class="{{ request()->routeIs('products.create') ? 'active' : '' }}">
+               <a href="{{ route('seller.products.create') }}" 
+                class="{{ request()->routeIs('seller.products.create') ? 'active' : '' }}">
                     <span class="icon">➕</span> Add Product
                 </a>
             </li>
