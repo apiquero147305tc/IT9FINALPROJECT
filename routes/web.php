@@ -198,6 +198,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/seller/messages', [MessageController::class, 'sellerInbox'])->name('seller.messages');
         Route::get('/seller/products/create', [ProductController::class, 'create'])
     ->name('seller.products.create');
+    Route::post('/seller/profile/update', [SellerController::class, 'updateProfile'])
+    ->name('seller.profile.update');
     });
 
     /*
