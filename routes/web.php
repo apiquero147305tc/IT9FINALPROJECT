@@ -157,6 +157,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
     Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
     Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
+      Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])
+        ->name('lending.my-requests');
 
     /*
     |--------------------------------------------------------------------------
