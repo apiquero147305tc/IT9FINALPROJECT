@@ -1,25 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SellerController;
-use App\Http\Controllers\BuyerController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BuyerController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\LendingController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductRatingController;
 use App\Http\Controllers\ReceiptController;
-use App\Http\Controllers\LendingController;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\FavoriteController;
-use App\Models\Product;
 use App\Http\Controllers\ReportController;
-
-Route::post('/report/store', [ReportController::class, 'store'])
-    ->name('report.store');
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SellerController;
+use App\Models\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,14 +55,13 @@ Route::get('/seller/{id}/shop', [BuyerController::class, 'sellerShop'])->name('s
 
 /*
 |--------------------------------------------------------------------------
-| AUTHENTICATION
+| AUTHENTICATION (Guest Only)
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::get('/choose-role', fn () => view('auth.chooseRole'))->name('chooseRole');
-    Route::get('/pending', [AuthController::class, 'pending'])->name('auth.pending');
 
     // Registration Routes
     Route::get('/register/buyer', [AuthController::class, 'showBuyerRegister'])->name('buyer.register');
@@ -75,14 +71,24 @@ Route::middleware('guest')->group(function () {
     Route::post('/register/seller', [AuthController::class, 'registerSeller'])->name('seller.register.post');
 });
 
-Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');
-
 /*
 |--------------------------------------------------------------------------
-| PROTECTED ROUTES (Requires Login)
+| AUTHENTICATED ROUTES (Any logged-in user)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
+    // ✅ FIX: Moved pending page here so logged-in users can access it
+    Route::get('/pending', [AuthController::class, 'pending'])->name('auth.pending');
+
+    // ✅ FIX: Seller status pages moved OUT of role:seller middleware
+    // Pending sellers need to see this (NO self-approve — only admin can approve)
+    Route::get('/seller/pending', [SellerController::class, 'pending'])->name('seller.pending');
+
+    // Approved sellers need to confirm their account
+    Route::get('/seller/confirm', [SellerController::class, 'confirm'])->name('seller.confirm');
+    Route::patch('/seller/confirm-yes', [SellerController::class, 'confirmYes'])->name('seller.confirm.yes');
+    Route::delete('/seller/confirm-no', [SellerController::class, 'confirmNo'])->name('seller.confirm.no');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -145,22 +151,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/my-orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     });
 
-    // --- SELLER ROUTES (ALL - pending, approved, active) ---
-     Route::middleware(['role:seller'])->group(function () {
-
-        // Pending approval page
-        Route::get('/seller/pending', [SellerController::class, 'pending'])->name('seller.pending');
-
-        // Confirmation page (after admin approval)
-        Route::get('/seller/confirm', [SellerController::class, 'confirm'])->name('seller.confirm');
-
-        // Confirm YES - activate seller account
-        Route::patch('/seller/confirm-yes', [SellerController::class, 'confirmYes'])->name('seller.confirm.yes');
-
-        // Confirm NO - delete account
-        Route::delete('/seller/confirm-no', [SellerController::class, 'confirmNo'])->name('seller.confirm.no');
-
-        // Active seller routes (status checks handled in controller)
+    // --- SELLER ROUTES (ACTIVE sellers only) ---
+    // ✅ FIX: Only active sellers can access these. Pending/approved sellers use routes above.
+    Route::middleware(['auth', 'role:seller'])->group(function () {
         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dash');
         Route::get('/seller/profile', [SellerController::class, 'profile'])->name('seller.profile');
         Route::post('/seller/profile/update', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
@@ -169,8 +162,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Product Management
         Route::resource('products', ProductController::class)->except(['show']);
-         Route::get('/seller/products/create', [ProductController::class, 'create'])
-        ->name('seller.products.create');
+        Route::get('/seller/products/create', [ProductController::class, 'create'])
+            ->name('seller.products.create');
 
         Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
             ->name('orders.updateStatus');
@@ -182,10 +175,10 @@ Route::middleware(['auth'])->group(function () {
             ->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])
             ->name('products.destroy');
-     });
+    });
 
     // --- ADMIN ROUTES ---
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
         // CONTACT MESSAGES
@@ -223,3 +216,8 @@ Route::middleware(['auth'])->group(function () {
 // --- FAVORITES (Outside auth for toggle) ---
 Route::post('/favorite/{productId}', [FavoriteController::class, 'toggle'])
     ->name('favorite.toggle');
+
+// Report Routes
+Route::post('/report', [ReportController::class, 'store'])->name('report.store');
+
+Route::get('/blocked', fn () => view('auth.blocked'))->name('blocked');

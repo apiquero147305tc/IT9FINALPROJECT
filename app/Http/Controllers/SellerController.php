@@ -12,9 +12,9 @@ use App\Models\Notification;
 class SellerController extends Controller
 {
     /**
-     * Check seller status and redirect if needed
+     * Check seller status and redirect if not active
      */
-    protected function checkSellerStatus()
+    private function checkSellerStatus()
     {
         $user = Auth::user();
 
@@ -70,19 +70,19 @@ class SellerController extends Controller
      * User confirms YES - activate seller account
      */
     public function confirmYes()
-{
-    $user = \App\Models\User::find(Auth::id());
+    {
+        $user = \App\Models\User::find(Auth::id());
 
-    if ($user->role !== 'seller' || $user->status !== 'approved') {
-        return redirect()->route('seller.pending');
+        if ($user->role !== 'seller' || $user->status !== 'approved') {
+            return redirect()->route('seller.pending');
+        }
+
+        $user->status = 'active';
+        $user->save();
+
+        return redirect()->route('seller.dash')
+            ->with('success', 'Welcome to CraveCart!');
     }
-
-    $user->status = 'active';
-    $user->save();
-
-    return redirect()->route('seller.dash')
-        ->with('success', 'Welcome to CraveCart!');
-}
 
     /**
      * User confirms NO - delete account
@@ -90,6 +90,50 @@ class SellerController extends Controller
     public function confirmNo()
     {
         $user = \App\Models\User::find(Auth::id());
+
+        Auth::logout();
+        $user->delete();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('home')
+            ->with('info', 'Your account has been deleted. We hope to see you again!');
+    }
+
+    // ✅ FIX: Added selfApprove method for pending sellers
+    /**
+     * Self-approve a pending seller account
+     */
+    public function selfApprove()
+    {
+        $user = \App\Models\User::find(Auth::id());
+
+        // Only pending sellers can self-approve
+        if ($user->role !== 'seller' || $user->status !== 'pending') {
+            return redirect()->route('seller.pending')
+                ->with('error', 'You are not eligible for self-approval.');
+        }
+
+        $user->status = 'approved';
+        $user->save();
+
+        return redirect()->route('seller.confirm')
+            ->with('success', 'You have been approved! Please confirm your account to start selling.');
+    }
+
+    // ✅ FIX: Added deleteAccount method for pending sellers
+    /**
+     * Delete seller account from pending approval page
+     */
+    public function deleteAccount()
+    {
+        $user = \App\Models\User::find(Auth::id());
+
+        if ($user->role !== 'seller') {
+            return redirect()->route('home')
+                ->with('error', 'Unauthorized action.');
+        }
 
         Auth::logout();
         $user->delete();

@@ -3,39 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
+    /**
+     * Show the login page
+     */
     public function loginPage()
     {
         return view('auth.login');
     }
 
-    public function registerPage()
+    /**
+     * Show the registration page
+     */
+    public function showRegister()
     {
-        return view('auth.register', [
-            'role' => request('role', 'buyer')
-        ]);
+        return view('auth.register');
     }
 
     /**
      * Show the registration page specifically for Buyers
      */
-   public function showBuyerRegister()
-{
-    return view('auth.buyer-register');
-}
+    public function showBuyerRegister()
+    {
+        return view('auth.buyer-register');
+    }
 
-/**
- * Show the registration page specifically for Sellers
- */
-public function showSellerRegister()
-{
-    return view('auth.seller-register');
-}
+    /**
+     * Show the registration page specifically for Sellers
+     */
+    public function showSellerRegister()
+    {
+        return view('auth.seller-register');
+    }
+
     /**
      * Unified Registration Logic for both Buyers and Sellers
      */
@@ -98,50 +103,50 @@ public function showSellerRegister()
     /**
      * Handle Login Attempts
      */
-   public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
-
-    if (!Auth::attempt($credentials)) {
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
+
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // Blocked users
+        if ($user->is_blocked) {
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Your account has been suspended.'
+            ]);
+        }
+
+        // ✅ FIX: SELLER APPROVAL FLOW - Keep user logged in for pending/approved status
+        if ($user->role === 'seller') {
+            if ($user->status === 'pending') {
+                // REMOVED: Auth::logout() - keep them logged in to see pending page
+                return redirect()->route('seller.pending');
+            }
+
+            if ($user->status === 'approved') {
+                return redirect()->route('seller.confirm');
+            }
+
+            if ($user->status === 'active') {
+                return redirect()->route('seller.dash');
+            }
+        }
+
+        return $this->redirectUserBasedOnRole($user);
     }
 
-    $request->session()->regenerate();
-
-    $user = Auth::user();
-
-    // Blocked users
-    if ($user->is_blocked) {
-        Auth::logout();
-        return back()->withErrors([
-            'email' => 'Your account has been suspended.'
-        ]);
-    }
-
-    // 🔥 SELLER APPROVAL FLOW (IMPORTANT)
-   if ($user->role === 'seller') {
-
-    if ($user->status === 'pending') {
-        Auth::logout();
-        return redirect()->route('seller.pending');
-    }
-
-    if ($user->status === 'approved') {
-        return redirect()->route('seller.confirm');
-    }
-
-    if ($user->status === 'active') {
-        return redirect()->route('seller.dash');
-    }
-}
-
-    return $this->redirectUserBasedOnRole($user);
-}
     /**
      * Helper to route users after successful login
      */
@@ -168,14 +173,14 @@ public function showSellerRegister()
     /**
      * Show the pending approval view
      */
-   public function pending()
-{
-    // If user is logged in and is a seller, redirect to seller pending page
-    if (Auth::check() && Auth::user()->role === 'seller') {
-        return redirect()->route('seller.pending');
+    public function pending()
+    {
+        // If user is logged in and is a seller, redirect to seller pending page
+        if (Auth::check() && Auth::user()->role === 'seller') {
+            return redirect()->route('seller.pending');
+        }
+
+        // Otherwise show the generic pending page
+        return view('auth.pending');
     }
-    
-    // Otherwise show the generic pending page
-    return view('auth.pending');
-}
 }
