@@ -71,7 +71,7 @@ class SellerController extends Controller
      */
     public function confirmYes()
     {
-        $user = Auth::user();
+        $user = \App\Models\User::find(Auth::id());
 
         if ($user->status !== 'approved') {
             if ($user->status === 'pending') {
@@ -94,7 +94,7 @@ class SellerController extends Controller
      */
     public function confirmNo()
     {
-        $user = Auth::user();
+        $user = \App\Models\User::find(Auth::id());
 
         Auth::logout();
         $user->delete();
