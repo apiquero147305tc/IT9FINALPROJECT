@@ -1,4 +1,12 @@
-<x-layout>
+@php
+    $safePercent = min((float) $percent, 100);
+    $barColor = $percent >= 90
+        ? 'bg-red-600'
+        : ($percent >= 70
+            ? 'bg-yellow-500'
+            : 'bg-green-600');
+@endphp
+    
     <section class="min-h-[85vh] bg-[#FDFCFB] px-6 py-20">
         <div class="max-w-[1440px] mx-auto">
             
@@ -49,58 +57,97 @@
             </div>
 
             {{-- MAIN GRID --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                
-                {{-- PROGRESS BAR --}}
-                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
-                    <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Budget Flow</h3>
-                    <p class="text-slate-500 text-sm font-medium mb-6">Your monthly spending progress based on your budget.</p>
-                    
-                    <div class="w-full h-6 bg-slate-100 rounded-full overflow-hidden mb-4">
-                        <div class="h-full rounded-full transition-all duration-1000 {{ $percent >= 90 ? 'bg-red-600' : ($percent >= 70 ? 'bg-yellow-500' : 'bg-green-600') }}" 
-                            style="width: {{ min($percent, 100) }}%"></div>
-                    </div>
-                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        <span>0%</span>
-                        <span>50%</span>
-                        <span>100%</span>
-                    </div>
-                </div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                {{-- INSIGHT --}}
-                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
-                    <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Insight</h3>
-                    
-                    @if($spent > 0 && $spending->count())
-                        <p class="text-slate-600 font-medium leading-relaxed">
-                            You spent the most on <span class="font-black text-red-600">{{ $spending->sortDesc()->keys()->first() }}</span>.
-                        </p>
-                    @else
-                        <p class="text-slate-400 font-medium">No spending data available yet.</p>
-                    @endif
-                </div>
+    {{-- PROGRESS BAR --}}
+    <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
 
-                {{-- CATEGORY BREAKDOWN --}}
-                <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm lg:col-span-2">
-                    <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Category Breakdown</h3>
-                    
-                    <div class="space-y-4">
-                        @forelse($spending as $category => $amount)
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600">
-                                        <i class="fa-solid fa-tag"></i>
-                                    </div>
-                                    <span class="font-black text-slate-900 uppercase text-sm tracking-tight">{{ ucfirst($category) }}</span>
-                                </div>
-                                <span class="font-black text-red-600">₱{{ number_format($amount, 2) }}</span>
-                            </div>
-                        @empty
-                            <p class="text-slate-400 font-medium text-center py-8">No spending by category yet.</p>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
+        <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">
+            Budget Flow
+        </h3>
+
+        <p class="text-slate-500 text-sm font-medium mb-6">
+            Your monthly spending progress based on your budget.
+        </p>
+
+       <div class="h-full rounded-full transition-all duration-1000 {{ $barColor }}"
+     style="width: {{ $safePercent }}%;">
+</div>
+
         </div>
-    </section>
-</x-layout>
+
+        <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+        </div>
+
+    </div>
+
+    {{-- INSIGHT --}}
+    <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm">
+
+        <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">
+            Insight
+        </h3>
+
+        @if($spent > 0 && $spending->count())
+            <p class="text-slate-600 font-medium leading-relaxed">
+                You spent the most on
+                <span class="font-black text-red-600">
+                    {{ $spending->sortDesc()->keys()->first() }}
+                </span>.
+            </p>
+        @else
+            <p class="text-slate-400 font-medium">
+                No spending data available yet.
+            </p>
+        @endif
+
+    </div>
+
+    {{-- CATEGORY BREAKDOWN --}}
+    <div class="bg-white p-8 rounded-[30px] border border-slate-100 shadow-sm lg:col-span-2">
+
+        <h3 class="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">
+            Category Breakdown
+        </h3>
+
+        <div class="space-y-4">
+
+            @forelse($spending as $category => $amount)
+
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+
+                    <div class="flex items-center gap-4">
+
+                        <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600">
+                            <i class="fa-solid fa-tag"></i>
+                        </div>
+
+                        <span class="font-black text-slate-900 uppercase text-sm tracking-tight">
+                            {{ ucfirst($category) }}
+                        </span>
+
+                    </div>
+
+                    <span class="font-black text-red-600">
+                        ₱{{ number_format($amount, 2) }}
+                    </span>
+
+                </div>
+
+            @empty
+
+                <p class="text-slate-400 font-medium text-center py-8">
+                    No spending by category yet.
+                </p>
+
+            @endforelse
+
+        </div>
+
+    </div>
+
+</div>
+</section>
