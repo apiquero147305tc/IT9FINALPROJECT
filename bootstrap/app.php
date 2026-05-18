@@ -11,14 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // This connects the name 'role' or 'checkRole' used in your routes 
-        // to the actual RoleMiddleware file.
+        // Register middleware aliases
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'seller.active' => \App\Http\Middleware\EnsureSellerIsActive::class,
         ]);
-        $middleware->alias([
-        'seller.active' => \App\Http\Middleware\EnsureSellerIsActive::class,
-    ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
