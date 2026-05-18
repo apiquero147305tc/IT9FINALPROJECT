@@ -207,6 +207,8 @@ Route::middleware(['auth'])->group(function () {
     ->name('seller.products.create');
     Route::post('/seller/profile/update', [SellerController::class, 'updateProfile'])
     ->name('seller.profile.update');
+    Route::patch('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])
+    ->name('orders.updateStatus');
     });
 
     /*
