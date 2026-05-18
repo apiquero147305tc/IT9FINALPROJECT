@@ -169,11 +169,11 @@
 
                     <div style="margin-top:20px; display:flex; gap:10px;">
 
-                        {{-- BUY NOW --}}
-                        <form action="{{ route('orders.store') }}" method="POST" style="flex:1;">
+                        {{-- ⚡ BUY NOW (ALSO CART ENTRY) --}}
+                        <form action="{{ route('cart.add', $product) }}" method="POST" style="flex:1;">
                             @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="hidden" name="quantity" value="1">
+
+                            <input type="hidden" name="buy_now" value="1">
 
                             <button style="
                                 width:100%;
@@ -188,9 +188,10 @@
                             </button>
                         </form>
 
-                        {{-- ADD TO CART --}}
+                        {{-- 🛒 ADD TO CART --}}
                         <form action="{{ route('cart.add', $product) }}" method="POST" style="flex:1;">
                             @csrf
+
                             <button style="
                                 width:100%;
                                 padding:14px;
