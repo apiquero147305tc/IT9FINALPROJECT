@@ -70,24 +70,19 @@ class SellerController extends Controller
      * User confirms YES - activate seller account
      */
     public function confirmYes()
-    {
-        $user = \App\Models\User::find(Auth::id());
+{
+    $user = \App\Models\User::find(Auth::id());
 
-        if ($user->status !== 'approved') {
-            if ($user->status === 'pending') {
-                return redirect()->route('seller.pending')
-                    ->with('error', 'Your account is still pending admin approval.');
-            }
-            return redirect()->route('seller.dash')
-                ->with('info', 'Your account is already active!');
-        }
-
-        $user->status = 'active';
-        $user->save();
-
-        return redirect()->route('seller.dash')
-            ->with('success', 'Welcome to CraveCart Seller! Your account is now active.');
+    if ($user->role !== 'seller' || $user->status !== 'approved') {
+        return redirect()->route('seller.pending');
     }
+
+    $user->status = 'active';
+    $user->save();
+
+    return redirect()->route('seller.dash')
+        ->with('success', 'Welcome to CraveCart!');
+}
 
     /**
      * User confirms NO - delete account
