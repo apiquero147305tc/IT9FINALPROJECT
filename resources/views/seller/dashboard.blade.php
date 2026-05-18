@@ -1,188 +1,292 @@
 <x-sellerDash>
+    {{-- ========================================================= --}}
+    {{-- SYSTEM STYLE OVERRIDE TO FORCE A SINGLE NAVBAR            --}}
+    {{-- ========================================================= --}}
+    <style>
+        header, 
+        .bg-white.shadow-sm.sticky,
+        div[class*="sticky"][class*="bg-white"] { 
+            display: none !important; 
+        }
 
-<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+        /* Fluent Gradient Border Effect Masking */
+        .gradient-border-card {
+            position: relative;
+            background: #ffffff;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+        .gradient-border-card::after {
+            content: '';
+            position: absolute;
+            top: -2px; bottom: -2px; left: -2px; right: -2px;
+            background: linear-gradient(135deg, #b91c1c 0%, #ea580c 50%, #f97316 100%);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0.15;
+            transition: opacity 0.3s ease;
+        }
+        .gradient-border-card:hover::after {
+            opacity: 0.35;
+        }
+    </style>
 
-    <!-- HEADER SECTION -->
-    <div style="background: linear-gradient(135deg, #dd0d22 0%, #b30b1b 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-        <h2 style="margin: 0 0 10px 0; font-size: 1.8rem;">🍱 CraveCart | Seller Studio</h2>
-        <p style="margin: 0; opacity: 0.9; font-size: 1rem;">Store Overview & Performance</p>
+    {{-- ========================================================= --}}
+    {{-- PILL-SHAPE STUDIO HERO BANNER                             --}}
+    {{-- ========================================================= --}}
+    <div class="relative overflow-hidden bg-gradient-to-r from-red-700 via-rose-600 to-red-600 rounded-[2rem] p-6 -mt-4 mb-8 text-white shadow-xl shadow-red-700/10">
+        <div class="relative z-10 flex items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 shadow-inner">
+                    <i class="fa-solid fa-store text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight leading-none">Seller Studio</h1>
+                    <p class="text-xs font-bold text-red-200/80 uppercase tracking-widest mt-1.5">Control Panel & Performance</p>
+                </div>
+            </div>
 
-        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="{{ route('seller.profile') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">🚁 Edit Profile</a>
-            <a href="{{ route('seller.orders') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">📊 Order Hub</a>
-            <a href="{{ route('lending.seller') }}" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 0.9rem;">📚 Lending Management</a>
+            <div class="bg-black/20 backdrop-blur-md pl-4 pr-2 py-2 rounded-2xl border border-white/10 flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs font-black tracking-wide leading-none text-white">Seller Account</p>
+                    <span class="text-[9px] text-red-200 font-black uppercase tracking-widest block mt-1">Verified Merchant</span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-white text-red-600 font-black text-sm flex items-center justify-center shadow-md uppercase">
+                    {{ substr(Auth::user()->shop_name ?? 'S', 0, 1) }}
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- STATS CARDS -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="margin: 0 0 15px 0; color: #666; font-size: 1rem;">My Inventory</h3>
-            <div style="font-size: 2.5rem; font-weight: bold; color: #dd0d22; margin-bottom: 10px;">{{ $products->count() }}</div>
-            <div style="font-size: 2rem;">📦</div>
-        </div>
-        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="margin: 0 0 15px 0; color: #666; font-size: 1rem;">Total Revenue</h3>
-            <div style="font-size: 2.5rem; font-weight: bold; color: #dd0d22; margin-bottom: 10px;">₱{{ number_format($totalEarnings, 2) }}</div>
-            <div style="font-size: 2rem;">💰</div>
-        </div>
-        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="margin: 0 0 15px 0; color: #666; font-size: 1rem;">Pending Orders</h3>
-            <div style="font-size: 2.5rem; font-weight: bold; color: #dd0d22; margin-bottom: 10px;"><strong>{{ $notifCount }}</strong></div>
-            <div style="font-size: 2rem;">📊</div>
-        </div>
-    </div>
+    {{-- ========================================= --}}
+    {{-- MAIN CONFIGURATION CONTROL HUB WORKSPACE  --}}
+    {{-- ========================================= --}}
+    <div class="space-y-8">
 
-    <!-- PRODUCTS SECTION -->
-    <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h2 style="margin: 0; color: #333; font-size: 1.5rem;">🛍️ Active Inventory</h2>
-            <a href="{{ route('products.create') }}" style="padding: 10px 20px; background: #dd0d22; color: white; text-decoration: none; border-radius: 25px; font-weight: bold;">+ Add Product</a>
+        {{-- 4-COLUMN STATS GRID --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {{-- Metric 1: My Inventory --}}
+            <div class="gradient-border-card rounded-[2rem] p-6 shadow-xl shadow-slate-900/5 flex flex-col justify-between min-h-[160px] group transition-all duration-300">
+                <div class="flex justify-between items-start w-full">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">My Inventory</span>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tight leading-none">{{ $products->count() }}</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-4">Total catalog items tracked inside your storefront window.</p>
+            </div>
+
+            {{-- Metric 2: Active Borrowing --}}
+            <div class="gradient-border-card rounded-[2rem] p-6 shadow-xl shadow-slate-900/5 flex flex-col justify-between min-h-[160px] group transition-all duration-300">
+                <div class="flex justify-between items-start w-full">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Active Lease</span>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tight leading-none">
+                            {{ $products->where('is_lendable', true)->count() }}
+                        </h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-4">Storefront catalog objects actively toggled inside lendable loops.</p>
+            </div>
+
+            {{-- Metric 3: Total Earnings --}}
+            <div class="gradient-border-card rounded-[2rem] p-6 shadow-xl shadow-slate-900/5 flex flex-col justify-between min-h-[160px] group transition-all duration-300">
+                <div class="flex justify-between items-start w-full">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Total Revenue</span>
+                        <h2 class="text-3xl font-black text-slate-800 tracking-tight leading-none">₱{{ number_format($totalEarnings, 0) }}</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-peso-sign"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-4">Gross capital generated from fulfilled buyouts & borrow contracts.</p>
+            </div>
+
+            {{-- Metric 4: Pending Operations Queue --}}
+            <div class="gradient-border-card rounded-[2rem] p-6 shadow-xl shadow-slate-900/5 flex flex-col justify-between min-h-[160px] group transition-all duration-300">
+                <div class="flex justify-between items-start w-full">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Pending Orders</span>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tight leading-none">{{ $notifCount }}</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-4">Active checkout requests requiring immediate routing approvals.</p>
+            </div>
         </div>
 
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="border-bottom: 2px solid #f3e3cb;">
-                    <th style="text-align: left; padding: 15px; color: #666; font-size: 0.9rem;">Product Details</th>
-                    <th style="text-align: left; padding: 15px; color: #666; font-size: 0.9rem;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($products as $product)
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 15px;">
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                @if($product->images && $product->images->isNotEmpty())
-                                    <img src="{{ asset('storage/'.$product->images[0]->image_path) }}" alt="Product Image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px;">
-                                @else
-                                    <div style="width: 60px; height: 60px; background: #f3e3cb; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🛒</div>
-                                @endif
-                                <div>
-                                    <div style="font-weight: bold; color: #333; margin-bottom: 5px;">{{ $product->name }}</div>
-                                    <div style="color: #dd0d22; font-weight: bold; margin-bottom: 3px;">₱{{ number_format($product->price, 2) }}</div>
-                                    <div style="color: #666; font-size: 0.85rem;">Stock: {{ $product->stock }}</div>
-                                </div>
+        {{-- ACTIVE INVENTORY DATA MATRIX LAYER --}}
+        <section class="gradient-border-card rounded-[2rem] shadow-xl shadow-slate-900/5 overflow-hidden">
+            <div class="px-8 py-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
+                <div>
+                    <h2 class="font-extrabold text-xl text-slate-800 tracking-tight">Active Inventory</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Manage your storefront listings and item options entries.</p>
+                </div>
+                <a href="{{ route('seller.products.create') }}" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-700 via-red-600 to-orange-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-95 transition shadow-md shadow-red-600/10">
+                    <i class="fa-solid fa-plus text-xs"></i> Add Product
+                </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/70 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                            <th class="px-8 py-4">Product Info & Visibility Type</th>
+                            <th class="px-6 py-4">Financials & Stock Status</th>
+                            <th class="px-8 py-4 text-right">Actions Area Options</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm">
+                        @forelse($products as $product)
+                            <tr class="hover:bg-slate-50/30 transition-colors">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-start gap-4">
+                                        @if($product->images && $product->images->isNotEmpty())
+                                            <img src="{{ asset('storage/'.$product->images[0]->image_path) }}" alt="" class="w-14 h-14 object-cover rounded-xl border border-slate-100 shadow-sm flex-shrink-0">
+                                        @else
+                                            <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 border border-slate-200/60 flex-shrink-0">
+                                                <i class="fa-solid fa-image text-sm"></i>
+                                            </div>
+                                        @endif
+                                        <div class="space-y-1">
+                                            <p class="font-bold text-slate-800 text-base tracking-tight leading-tight">{{ $product->name }}</p>
+                                            
+                                            @if($product->is_lendable)
+                                                <div>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black tracking-wide bg-orange-50 text-orange-600 border border-orange-100/50">
+                                                        📚 Borrowable
+                                                    </span>
+                                                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Customers can reserve or rent this asset item temporarily.</p>
+                                                </div>
+                                            @else
+                                                <div>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black tracking-wide bg-slate-100 text-slate-500">
+                                                        🛍️ Sale Only
+                                                    </span>
+                                                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Standard fixed retail checkout format. Cannot be borrowed.</p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 align-top">
+                                    <div class="space-y-1">
+                                        <p class="font-black text-slate-900 text-lg tracking-tight leading-none">₱{{ number_format($product->price, 2) }}</p>
+                                        @if($product->is_lendable)
+                                            <p class="text-[11px] text-orange-600 font-bold">Lending baseline rate / cycle</p>
+                                        @else
+                                            <p class="text-[11px] text-slate-400 font-medium">Fixed marketplace retail price</p>
+                                        @endif
+                                        <p class="text-[12px] text-slate-500 pt-1 font-medium">Stock Available: <span class="font-bold text-slate-700">{{ $product->stock }} units</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    {{-- ========================================== --}}
+                                    {{-- ACTIONS COLUMN WITH EXPLICIT ACCENT LABELS  --}}
+                                    {{-- ========================================== --}}
+                                    <div class="flex items-center justify-end gap-3">
+                                        
+                                        {{-- Contextual Visibility Mode Flag Descriptions --}}
+                                        <div class="text-right hidden md:block">
+                                            @if($product->is_lendable)
+                                                <span class="text-[10px] font-black uppercase text-orange-600 tracking-wider">Borrowable</span>
+                                                <p class="text-[9px] text-slate-400 font-medium -mt-0.5">Toggle configuration mode</p>
+                                            @else
+                                                <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Retail Sale Only</span>
+                                                <p class="text-[9px] text-slate-400 font-medium -mt-0.5">Lending functions locked</p>
+                                            @endif
+                                        </div>
+
+                                        {{-- Interactive Function Button Core Array --}}
+                                        <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-xl p-1 shadow-inner">
+                                            <form action="{{ route('products.toggle-lendable', $product->id) }}" method="POST">
+                                                @csrf @method('patch')
+                                                <button type="submit" class="p-2 rounded-lg bg-white border border-slate-200/80 text-slate-400 hover:text-orange-500 shadow-sm transition" title="{{ $product->is_lendable ? 'Switch to Sale Only' : 'Switch to Borrowable Mode' }}">
+                                                    <i class="fa-solid {{ $product->is_lendable ? 'fa-toggle-on text-orange-500' : 'fa-toggle-off' }} text-base"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <a href="{{ route('products.edit', $product->id) }}" class="p-2 rounded-lg bg-white border border-slate-200/80 text-slate-500 hover:text-slate-800 shadow-sm transition" title="Edit Product Details">
+                                                <i class="fa-regular fa-pen-to-square text-sm"></i>
+                                            </a>
+                                            
+                                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Delete this product entry?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="p-2 rounded-lg bg-rose-50/50 border border-rose-100 text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition" title="Purge Record">
+                                                    <i class="fa-regular fa-trash-can text-sm"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="px-8 py-16 text-center text-slate-400">
+                                    <i class="fa-solid fa-box-open text-3xl mb-3 opacity-40"></i>
+                                    <p class="text-sm font-semibold">No active storefront listings available</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        {{-- RECENT ORDERS CHRONOLOGICAL LEDGER --}}
+        <section class="gradient-border-card rounded-[2rem] shadow-xl shadow-slate-900/5 overflow-hidden">
+            <div class="px-8 py-6 border-b border-slate-100 bg-slate-50/50">
+                <h2 class="font-extrabold text-xl text-slate-800 tracking-tight">Recent Orders</h2>
+                <p class="text-xs text-slate-400 mt-1 font-medium">Live transaction operations and tracking pipeline ledger.</p>
+            </div>
+            
+            <div class="divide-y divide-slate-100">
+                @forelse($orders as $order)
+                    <div class="px-8 py-5 hover:bg-slate-50/20 transition-colors">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="space-y-1.5 text-sm">
+                                <p><span class="text-slate-400 font-bold uppercase tracking-wider text-[10px] mr-2">Buyer:</span> <span class="font-semibold text-slate-700">{{ $order->user->name ?? 'Unknown Profile' }}</span></p>
+                                <p><span class="text-slate-400 font-bold uppercase tracking-wider text-[10px] mr-2">Item:</span> <span class="font-medium text-slate-800">{{ $order->product->name ?? 'Registry Asset Terminated' }}</span></p>
+                                <p class="text-xs text-slate-400 pt-0.5 flex items-center gap-1 font-medium"><i class="fa-regular fa-clock"></i>{{ $order->created_at->diffForHumans() }}</p>
                             </div>
-                        </td>
-                        <td style="padding: 15px;">
-                            <!-- ✅ LENDABLE TOGGLE BUTTON WITH INLINE CSS -->
-                            <form action="{{ route('products.toggle-lendable', $product->id) }}" method="POST" style="display: inline; margin-right: 5px;">
-                                @csrf
-                                @method('patch')
-                                <button type="submit" 
-                                        style="padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold;
-                                        @if($product->is_lendable) background: #d4edda; color: #155724;
-                                        @else background: #f8f9fa; color: #666; border: 1px solid #ddd;
-                                        @endif">
-                                    {{ $product->is_lendable ? '📚 Borrowable' : '📚 Not Borrowable' }}
-                                </button>
-                            </form>
-
-                            <a href="{{ route('products.edit', $product->id) }}" 
-                               style="padding: 6px 12px; background: #ffc107; color: #333; text-decoration: none; border-radius: 5px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-right: 5px;">Edit Product</a>
-
-                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; font-size: 0.8rem; font-weight: bold; cursor: pointer;"
-                                        onclick="return confirm('Are you sure you want to delete this product?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
+                            <div class="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-0 pt-3 sm:pt-0 border-slate-100">
+                                <p class="text-xl font-black text-slate-900 tracking-tight">₱{{ number_format($order->total_price, 2) }}</p>
+                                <span class="text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wide border
+                                    {{ $order->status == 'completed' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 
+                                       ($order->status == 'cancelled' ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-amber-50 border-amber-100 text-amber-600') }}">
+                                    {{ $order->status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 @empty
-                    <tr>
-                        <td colspan="2" style="text-align: center; padding: 60px 20px;">
-                            <div style="font-size: 3rem; margin-bottom: 15px;">📦</div>
-                            <p style="color: #666; margin-bottom: 15px;">No products currently in studio</p>
-                            <a href="{{ route('products.create') }}" style="padding: 10px 20px; background: #dd0d22; color: white; text-decoration: none; border-radius: 25px; font-weight: bold;">+ Add Your First Product</a>
-                        </td>
-                    </tr>
+                    <div class="px-8 py-16 text-center text-slate-400">
+                        <i class="fa-solid fa-inbox text-3xl mb-3 opacity-40"></i>
+                        <p class="text-sm font-semibold">No system orders captured yet</p>
+                    </div>
                 @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <!-- RECENT ORDERS SECTION (MOVED INSIDE THE LAYOUT) -->
-    <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 30px;">
-        <h2 style="margin: 0 0 20px 0; color: #333; font-size: 1.5rem;">📦 Recent Orders</h2>
-
-        @forelse($orders as $order)
-            <div style="
-                    border-left: 4px solid #ff4a00;
-                    padding: 15px;
-                    margin-bottom: 15px;
-                    background: #fffaf6;
-                    border-radius: 8px;
-                    transition: 0.2s;
-                 "
-                 onmouseover="this.style.transform='scale(1.01)'"
-                 onmouseout="this.style.transform='scale(1)'">
-
-                <p style="margin:4px 0;">
-                    <strong>👤 Customer:</strong>
-                    {{ $order->user->name ?? 'Unknown' }}
-                </p>
-
-                <p style="margin:4px 0;">
-                    <strong>📦 Item:</strong>
-                    {{ $order->product->name ?? 'Deleted Product' }}
-                </p>
-
-                <p style="margin:4px 0; color:#dd0d22;">
-                    <strong>💰 Total:</strong>
-                    ₱{{ number_format($order->total_price, 2) }}
-                </p>
-
-                <p style="margin:4px 0;">
-                    <strong>Status:</strong>
-                    <span style="
-                    padding: 3px 10px;
-                    border-radius: 12px;
-                    font-size: 0.8rem;
-                    font-weight: bold;
-                    @if($order->status == 'completed') background: #d4edda; color: #155724;
-                    @elseif($order->status == 'cancelled') background: #f8d7da; color: #721c24;
-                    @else background: #fff3cd; color: #856404;
-                    @endif
-                ">
-                    {{ ucfirst($order->status) }}
-                </span>
-                </p>
-
-                <small style="color:#888;">
-                    🕒 {{ $order->created_at->diffForHumans() }}
-                </small>
-
             </div>
-        @empty
-            <div style="text-align:center; padding:25px;">
-                <p style="color:#999; font-size:0.9rem;">
-                    📭 No orders yet.<br>
-                    Keep promoting your products!
-                </p>
-            </div>
-        @endforelse
+            
+            @if($orders->count())
+                <div class="px-8 py-5 border-t border-slate-100 text-center bg-slate-50/30">
+                    <a href="{{ route('seller.orders') }}" class="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold uppercase tracking-wider transition">
+                        View Complete Logs Registry <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            @endif
+        </section>
 
-        @if($orders->count())
-            <a href="{{ route('seller.orders') }}"
-               style="
-                    display:block;
-                    text-align:center;
-                    font-size:0.85rem;
-                    color:#dd0d22;
-                    text-decoration:none;
-                    margin-top:10px;
-                    font-weight:bold;
-               ">
-                View All Orders →
-            </a>
-        @endif
     </div>
-
-</div>
-
-<!-- MESSUI COMPONENT INSIDE THE LAYOUT -->
-<x-messui/>
-
 </x-sellerDash>
