@@ -63,21 +63,41 @@
             </div>
 
             
-            <div class="flex items-center gap-4">
-                @guest
-                    <a href="{{ route('login') }}" class="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-red-100 transition-colors no-underline">LOG IN</a>
-                    <a href="{{ route('chooseRole') }}" class="bg-white text-red-600 px-8 py-3.5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-red-900/10 hover:bg-slate-900 hover:text-white hover:-translate-y-1 transition-all active:scale-95 no-underline">
-                        SIGN IN
-                    </a>
-                @else
-                    <div class="flex items-center gap-3 bg-white/10 p-1.5 pr-4 rounded-2xl border border-white/10">
-                        <div class="bg-white w-9 h-9 rounded-xl flex items-center justify-center text-red-600 shadow-inner">
-                            <i class="fa-solid fa-user-astronaut"></i>
-                        </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ Auth::user()->name ?? 'Account' }}</span>
-                    </div>
-                @endguest
+           <div class="flex items-center gap-4">
+    @guest
+        <a href="{{ route('login') }}"
+           class="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-red-100 transition-colors no-underline">
+            LOG IN
+        </a>
+
+        <a href="{{ route('chooseRole') }}"
+           class="bg-white text-red-600 px-8 py-3.5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-red-900/10 hover:bg-slate-900 hover:text-white hover:-translate-y-1 transition-all active:scale-95 no-underline">
+            SIGN IN
+        </a>
+    @else
+        <div class="flex items-center gap-3 bg-white/10 p-1.5 pr-4 rounded-2xl border border-white/10">
+            <div class="bg-white w-9 h-9 rounded-xl flex items-center justify-center text-red-600 shadow-inner">
+                <i class="fa-solid fa-user-astronaut"></i>
             </div>
+
+            <span class="text-[10px] font-black uppercase tracking-widest text-white">
+                {{ Auth::user()->name }}
+            </span>
+        </div>
+
+        {{-- ✅ SELLER ONLY LOGOUT --}}
+        @if(Auth::user()->role === 'seller')
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit"
+                        class="text-[10px] font-black uppercase tracking-widest bg-black/20 hover:bg-black/40 text-white px-4 py-2 rounded-xl transition">
+                    LOGOUT
+                </button>
+            </form>
+        @endif
+    @endguest
+</div>
+
         </div>
     </div>
 </nav>
