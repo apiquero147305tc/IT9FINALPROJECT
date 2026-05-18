@@ -1,205 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>CraveCart | Shop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraveCart | Buyer Dashboard</title>
 
+    {{-- TAILWIND --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    {{-- LUCIDE --}}
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    {{-- FONT AWESOME --}}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+    {{-- GOOGLE FONT --}}
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
     <style>
-        body {
-            background: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding-bottom: 50px;
+
+        body{
+            font-family:'Plus Jakarta Sans',sans-serif;
+            background:#f8fafc;
+            margin:0;
         }
 
-        nav {
-            background: linear-gradient(90deg, #e11d48, #f97316);
-            padding: 12px 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        /* NAVBAR */
+        nav{
+            position:sticky;
+            top:0;
+            z-index:999;
+            background:linear-gradient(to right,#dc2626,#ea580c);
+            padding:14px 5%;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.12);
         }
 
-        .nav-right-container {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            text-decoration:none;
+            color:white;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 18px;
-            align-items: center;
+        .brand-logo{
+            width:48px;
+            height:48px;
+            border-radius:16px;
+            background:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:22px;
         }
 
-        .icon-link {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0;
-
-            color: white;
-            cursor: pointer;
-
-            border-radius: 10px;
-            transition: 0.15s ease;
+        .brand-text h2{
+            margin:0;
+            font-size:24px;
+            font-weight:900;
+            line-height:1;
         }
 
-        .icon-link:hover {
-            opacity: 0.85;
-            transform: scale(1.05);
+        .brand-text p{
+            margin:0;
+            font-size:10px;
+            letter-spacing:2px;
+            text-transform:uppercase;
+            opacity:0.8;
         }
 
-        .badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-
-            background: #111 !important;
-            color: #fff !important;
-
-            min-width: 18px;
-            height: 18px;
-            padding: 0 6px;
-
-            border-radius: 999px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 10px;
-            font-weight: 800;
-
-            border: 2px solid #fff;
-            z-index: 999;
-            pointer-events: none;
+        .nav-right{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
         }
 
         /* SEARCH */
-        .search-box {
-            padding: 7px 10px;
-            border-radius: 20px;
-            border: none;
-            outline: none;
-            width: 170px;
+        .search-group{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            background:rgba(255,255,255,0.12);
+            padding:6px;
+            border-radius:18px;
+        }
+
+        .search-box{
+            width:220px;
+            border:none;
+            outline:none;
+            padding:10px 14px;
+            border-radius:14px;
+            background:white;
+            color:#111827;
+            font-weight:600;
+        }
+
+        .search-box::placeholder{
+            color:#9ca3af;
         }
 
         .search-btn,
-        .clear-btn {
-            width: 36px;
-            height: 36px;
-
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: rgba(255,255,255,0.2);
-            color: white;
-
-            transition: 0.2s ease;
+        .clear-btn,
+        .filter-btn{
+            width:42px;
+            height:42px;
+            border:none;
+            border-radius:14px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:rgba(255,255,255,0.18);
+            color:white;
+            transition:0.2s;
         }
 
         .search-btn:hover,
-        .clear-btn:hover {
-            transform: scale(1.05);
-            background: rgba(255,255,255,0.35);
+        .clear-btn:hover,
+        .filter-btn:hover{
+            transform:translateY(-1px);
+            background:rgba(255,255,255,0.28);
         }
 
-        .search-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        /* DROPDOWN */
+        .filter-wrapper{
+            position:relative;
         }
 
-        /* FILTER */
-        .filter-wrapper {
-            position: relative;
+        .dropdown-menu{
+            position:absolute;
+            top:55px;
+            right:0;
+            width:220px;
+            background:white;
+            border-radius:16px;
+            box-shadow:0 12px 30px rgba(0,0,0,0.15);
+            overflow:hidden;
+            display:none;
         }
 
-        .filter-btn {
-            width: 38px;
-            height: 38px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: rgba(255,255,255,0.18);
-            border: 1px solid rgba(255,255,255,0.3);
-
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
+        .dropdown-menu button{
+            width:100%;
+            padding:14px;
+            border:none;
+            background:none;
+            text-align:left;
+            cursor:pointer;
+            font-weight:700;
         }
 
-        .dropdown-menu {
-            position: absolute;
-            top: 50px;
-            right: 0;
-
-            background: white;
-            color: black;
-
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-
-            padding: 8px;
-            display: none;
-            min-width: 180px;
-            z-index: 999;
+        .dropdown-menu button:hover{
+            background:#f3f4f6;
         }
 
-        .dropdown-menu button {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
+        /* ICON LINKS */
+        .nav-links{
+            display:flex;
+            align-items:center;
+            gap:10px;
         }
 
-        .dropdown-menu button:hover {
-            background: #f3f4f6;
+        .icon-link{
+            width:44px;
+            height:44px;
+            border-radius:14px;
+            background:rgba(255,255,255,0.14);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            position:relative;
+            transition:0.2s;
+            text-decoration:none;
         }
 
-        .logout-btn {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.5);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+        .icon-link:hover{
+            transform:translateY(-2px);
+            background:rgba(255,255,255,0.24);
         }
 
-        .product-container {
-            padding: 20px 5%;
+        .badge{
+            position:absolute;
+            top:-5px;
+            right:-5px;
+            background:#111827;
+            color:white;
+            min-width:20px;
+            height:20px;
+            border-radius:999px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:10px;
+            font-weight:800;
+            border:2px solid white;
         }
 
-        .search-box {
-    color: #111827; /* dark text */
-    background: white;
-}
+        /* MESSAGES BUTTON */
+        .message-btn{
+            background:#be123c;
+            color:white;
+            text-decoration:none;
+            padding:10px 16px;
+            border-radius:14px;
+            font-weight:800;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            transition:0.2s;
+        }
 
-.search-box::placeholder {
-    color: #9ca3af;
-}
+        .message-btn:hover{
+            background:#9f1239;
+        }
+
+        /* LOGOUT */
+        .logout-btn{
+            border:none;
+            background:white;
+            color:#dc2626;
+            padding:10px 18px;
+            border-radius:14px;
+            font-weight:800;
+            cursor:pointer;
+            transition:0.2s;
+        }
+
+        .logout-btn:hover{
+            transform:translateY(-1px);
+        }
+
+        .product-container{
+            padding:25px 5%;
+        }
+
+        @media(max-width:900px){
+
+            nav{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .nav-right{
+                width:100%;
+                justify-content:space-between;
+            }
+
+            .search-box{
+                width:160px;
+            }
+        }
+
     </style>
 </head>
 
@@ -207,95 +266,111 @@
 
 <nav>
 
-    <a href="{{ route('buyer.home') }}" style="text-decoration:none; color:white;">
-        <h2 style="margin:0;">CraveCart</h2>
+    {{-- BRAND --}}
+    <a href="{{ route('buyer.home') }}" class="brand">
+
+        <div class="brand-logo">
+            🛒
+        </div>
+
+        <div class="brand-text">
+            <h2>CraveCart</h2>
+            <p>Buyer Dashboard</p>
+        </div>
+
     </a>
 
-    <div class="nav-right-container">
+    <div class="nav-right">
 
-        {{-- SEARCH + CLEAR --}}
-       <form action="{{ route('buyer.home') }}"
-      method="GET"
-      class="search-group"
-      onsubmit="return false;">
-      
-    {{-- SEARCH --}}
-    <input type="text"
-           name="search"
-           class="search-box"
-           placeholder="Search products or shop..."
-           value="{{ request('search') }}">
+        {{-- SEARCH --}}
+        <form class="search-group"
+              onsubmit="event.preventDefault(); submitSearch();">
 
-    {{-- CATEGORY (hidden but controlled by dropdown) --}}
-    <input type="hidden" name="category" id="categoryInput" value="{{ request('category') }}">
+            <input type="text"
+                   id="searchInput"
+                   class="search-box"
+                   placeholder="Search products or shop..."
+                   value="{{ request('search') }}">
 
-    {{-- SORT (hidden default or dropdown controlled later) --}}
-    <input type="hidden" name="sort" id="sortInput" value="{{ request('sort', 'latest') }}">
+            <input type="hidden"
+                   id="categoryInput"
+                   value="{{ request('category') }}">
 
-   {{-- SEARCH BUTTON --}}
-<button type="button" class="search-btn" onclick="submitSearch()">
-    <i data-lucide="search"></i>
-</button>
+            <input type="hidden"
+                   id="sortInput"
+                   value="{{ request('sort','latest') }}">
 
-{{-- CLEAR BUTTON --}}
-<a href="{{ route('buyer.home') }}" class="clear-btn">
-    <i data-lucide="x" style="width:18px; height:18px;"></i>
-</a>
-
-</form>
-
-        {{-- FILTER (3-line icon) --}}
-        <div class="filter-wrapper">
-
-            <button type="button" class="filter-btn" onclick="toggleDropdown()">
-                <i data-lucide="menu"></i>
+            {{-- SEARCH --}}
+            <button type="submit" class="search-btn">
+                <i data-lucide="search"></i>
             </button>
 
-            <div id="dropdown" class="dropdown-menu">
-                <button type="button" onclick="setCategory('')">All</button>
-                <button type="button" onclick="setCategory('Food')">Food</button>
-                <button type="button" onclick="setCategory('Cooking')">Cooking</button>
-                <button type="button" onclick="setCategory('Accessories')">Accessories</button>
-                <button type="button" onclick="setCategory('School Supplies')">School Supplies</button>
+            {{-- CLEAR --}}
+            <a href="{{ route('buyer.home') }}" class="clear-btn">
+                <i data-lucide="x"></i>
+            </a>
+
+        </form>
+
+        {{-- FILTER --}}
+        <div class="filter-wrapper">
+
+            <button class="filter-btn"
+                    onclick="toggleDropdown()"
+                    type="button">
+
+                <i data-lucide="sliders-horizontal"></i>
+
+            </button>
+
+            <div class="dropdown-menu" id="dropdown">
+
+                <button onclick="setCategory('')">
+                    All Categories
+                </button>
+
+                <button onclick="setCategory('Food')">
+                    Food
+                </button>
+
+                <button onclick="setCategory('Electronics')">
+                    Electronics
+                </button>
+
+                <button onclick="setCategory('School Supplies')">
+                    School Supplies
+                </button>
+
+                <button onclick="setCategory('Others')">
+                    Others
+                </button>
+
             </div>
 
         </div>
 
-            <!-- FLOATING CART BUTTON -->
-        <a href="{{ route('cart.index') }}" style="text-decoration: none; color: white;" id="floatingCartBtn">
-            Cart
-            <span id="cartCount">0</span>
-        </a>
-        
-        <div style="display:flex; align-items:center; gap:15px;">
+        {{-- MESSAGES --}}
         <a href="{{ route('messages.inbox') }}"
-   style="
-        display:inline-block;
-        background:#dd0d22;
-        color:white;
-        padding:8px 14px;
-        border-radius:8px;
-        text-decoration:none;
-        font-weight:bold;
-        position:relative;
-   ">
-    💬 Messages
-        </a>
-</div>
-        
-        <!-- LOGOUT -->
-        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+           class="message-btn">
 
-        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+            <i class="fa-solid fa-message"></i>
+            Messages
+
+        </a>
 
         {{-- NAV ICONS --}}
         <div class="nav-links">
 
-            <a href="{{ route('buyer.home') }}" class="icon-link">
+            <a href="{{ route('buyer.home') }}"
+               class="icon-link">
+
                 <i data-lucide="home"></i>
+
             </a>
 
-            <a href="{{ route('cart.index') }}" class="icon-link">
+            <a href="{{ route('cart.index') }}"
+               class="icon-link">
+
                 <i data-lucide="shopping-cart"></i>
 
                 @php
@@ -303,94 +378,109 @@
                 @endphp
 
                 @if($cartCount > 0)
-                    <span class="badge">{{ $cartCount }}</span>
+                    <span class="badge">
+                        {{ $cartCount }}
+                    </span>
                 @endif
+
             </a>
 
-            <a href="{{ route('buyer.profile') }}" class="icon-link">
+            <a href="{{ route('buyer.profile') }}"
+               class="icon-link">
+
                 <i data-lucide="user"></i>
+
             </a>
 
         </div>
 
+        {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button class="logout-btn">Logout</button>
+
+            <button class="logout-btn">
+                Logout
+            </button>
         </form>
 
     </div>
+
 </nav>
 
+{{-- PAGE CONTENT --}}
 <div class="product-container">
     {{ $slot }}
 </div>
 
 <script>
-const dropdown = document.getElementById("dropdown");
 
-function toggleDropdown() {
-    if (!dropdown) return;
-
-    dropdown.style.display =
-        dropdown.style.display === "block" ? "none" : "block";
-}
-
-// CLOSE DROPDOWN WHEN CLICKING OUTSIDE
-document.addEventListener('click', function (e) {
-    const filter = document.querySelector(".filter-wrapper");
-
-    if (!filter || !dropdown) return;
-
-    if (!filter.contains(e.target)) {
-        dropdown.style.display = "none";
-    }
-});
-
-// CATEGORY FILTER (GLOBAL FUNCTION - IMPORTANT)
-function setCategory(category) {
-    const url = new URL(window.location.href);
-
-    if (category === '') {
-        url.searchParams.delete('category');
-    } else {
-        url.searchParams.set('category', category);
-    }
-
-    window.location.href = url.toString();
-}
-
-function submitSearch() {
-    const searchInput = document.querySelector('input[name="search"]');
-
-    const url = new URL(window.location.href);
-
-    const searchValue = searchInput.value.trim();
-
-    if (searchValue) {
-        url.searchParams.set('search', searchValue);
-    } else {
-        url.searchParams.delete('search');
-    }
-
-    // preserve existing filters safely
-    const category = document.getElementById('categoryInput')?.value;
-    const sort = document.getElementById('sortInput')?.value;
-
-    if (category) {
-        url.searchParams.set('category', category);
-    }
-
-    if (sort) {
-        url.searchParams.set('sort', sort);
-    }
-
-    window.location.href = url.toString();
-}
-</script>
-
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
     lucide.createIcons();
+
+    // DROPDOWN
+    const dropdown = document.getElementById('dropdown');
+
+    function toggleDropdown(){
+
+        if(dropdown.style.display === 'block'){
+            dropdown.style.display = 'none';
+        }else{
+            dropdown.style.display = 'block';
+        }
+    }
+
+    // CLOSE DROPDOWN
+    document.addEventListener('click', function(e){
+
+        const wrapper = document.querySelector('.filter-wrapper');
+
+        if(wrapper && !wrapper.contains(e.target)){
+            dropdown.style.display = 'none';
+        }
+
+    });
+
+    // CATEGORY FILTER
+    function setCategory(category){
+
+        const url = new URL(window.location.href);
+
+        if(category){
+            url.searchParams.set('category', category);
+        }else{
+            url.searchParams.delete('category');
+        }
+
+        window.location.href = url.toString();
+    }
+
+    // SEARCH BUTTON ONLY
+    function submitSearch(){
+
+        const search = document.getElementById('searchInput').value.trim();
+
+        const category = document.getElementById('categoryInput').value;
+
+        const sort = document.getElementById('sortInput').value;
+
+        const url = new URL(window.location.href);
+
+        if(search){
+            url.searchParams.set('search', search);
+        }else{
+            url.searchParams.delete('search');
+        }
+
+        if(category){
+            url.searchParams.set('category', category);
+        }
+
+        if(sort){
+            url.searchParams.set('sort', sort);
+        }
+
+        window.location.href = url.toString();
+    }
+
 </script>
 
 </body>

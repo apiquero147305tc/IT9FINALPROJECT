@@ -1,4 +1,3 @@
-<x-layout title="My Cart - CraveCart">
 <x-buyerDash>
     <section class="min-h-[85vh] bg-[#FDFCFB] px-6 py-20">
         <div class="max-w-[1440px] mx-auto">
@@ -148,19 +147,4 @@
             </div>
         </div>
     </section>
-    <script>
-    let timeout = null;
-
-    const searchInput = document.querySelector('input[name="search"]');
-    const form = searchInput.closest('form');
-
-    searchInput.addEventListener('input', function () {
-        clearTimeout(timeout);
-
-        timeout = setTimeout(() => {
-            form.submit();
-        }, 500); // waits 0.5s after typing stops
-    });
-</script>
 </x-buyerDash>
-</x-layout>
