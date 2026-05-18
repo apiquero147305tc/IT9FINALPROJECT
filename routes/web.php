@@ -157,15 +157,13 @@ Route::middleware(['auth'])->group(function () {
     */
 
     Route::get('/lending', [LendingController::class, 'index'])->name('lending.index');
+    Route::patch('/lending/{id}/status', [LendingController::class, 'updateStatus'])->name('lending.update-status');
     Route::get('/lending/create/{product}', [LendingController::class, 'create'])->name('lending.create');
     Route::post('/lending', [LendingController::class, 'store'])->name('lending.store');
-    Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])
-    ->name('lending.seller');
-      Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])
-        ->name('lending.my-requests');
-    Route::patch('/products/{product}/toggle-lendable',
-    [LendingController::class, 'toggleLendable']
-)->name('products.toggle-lendable');
+    Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])->name('lending.seller');
+    Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])->name('lending.my-requests');
+    Route::patch('/products/{product}/toggle-lendable',[LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
+    Route::get('/my-lending', [LendingController::class, 'buyerDashboard'])->name('lending.buyer')->middleware(['auth', 'role:buyer']);
 
     /*
     |--------------------------------------------------------------------------

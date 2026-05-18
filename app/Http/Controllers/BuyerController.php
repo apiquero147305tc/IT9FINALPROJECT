@@ -185,4 +185,18 @@ class BuyerController extends Controller
             'spending'
         ));
     }
+        /**
+     * Display buyer's order history.
+     */
+    public function orders()
+    {
+        $user = Auth::user();
+
+        $orders = \App\Models\Order::where('user_id', $user->id)
+            ->with(['product.images', 'product.user'])
+            ->latest()
+            ->get();
+
+        return view('buyer.orders', compact('orders'));
+    }
 }

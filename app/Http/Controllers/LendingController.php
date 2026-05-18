@@ -52,21 +52,21 @@ class LendingController extends Controller
             return back()->with('error', 'Product is out of stock.');
         }
 
-        $lendingFee = ($product->price * 0.10) * ceil($request->duration_days / 7);
+        $lendingFee = ($product->price * 0.10) * ceil((int) $request->duration_days / 7);
 
         Lending::create([
             'borrower_id' => Auth::id(),
             'lender_id' => $product->user_id,
             'product_id' => $product->id,
-            'duration_days' => $request->duration_days,
+            'duration_days' => (int) $request->duration_days,
             'collateral_type' => $request->collateral_type,
             'collateral_description' => $request->collateral_description,
-            'collateral_value' => $request->collateral_value,
-            'lending_fee' => $lendingFee,
+            'collateral_value' => (float) $request->collateral_value,
+            'lending_fee' => (float) $lendingFee,
             'purpose' => $request->purpose,
             'status' => 'pending',
             'borrowed_at' => now(),
-            'due_date' => now()->addDays($request->duration_days),
+            'due_date' => now()->addDays((int) $request->duration_days),
         ]);
 
         return redirect()->route('lending.my-requests')
@@ -204,10 +204,10 @@ class LendingController extends Controller
 
         return view('lending.show', compact('lending'));
     }
-    public function buyerDashboard()
+        public function buyerDashboard()
     {
         $user = Auth::user();
-        
+
         $allLoans = Lending::where('borrower_id', $user->id)->get();
         $activeLoans = Lending::where('borrower_id', $user->id)
             ->where('status', 'approved')
@@ -219,10 +219,11 @@ class LendingController extends Controller
         $loanHistory = Lending::where('borrower_id', $user->id)
             ->whereNotNull('returned_at')
             ->get();
-        $totalFees = $allLoans->sum('total_fee');
-        
+        // ✅ FIX: Changed 'total_fee' to 'lending_fee' to match database column
+        $totalFees = $allLoans->sum('lending_fee');
+
         return view('lending.buyer', compact(
-            'allLoans', 'activeLoans', 'pendingRequests', 
+            'allLoans', 'activeLoans', 'pendingRequests',
             'loanHistory', 'totalFees'
         ));
     }
