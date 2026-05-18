@@ -10,7 +10,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #dd0d22 0%, #ff6b35 50%, #ff8c42 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -224,4 +224,4 @@
     </div>
 
 </body>
-</html>
+</html> 

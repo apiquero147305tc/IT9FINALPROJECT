@@ -193,14 +193,6 @@
                     <span class="icon">👤</span> Profile
                 </a>
             </li>
-            
-           <li>
-                <a href="{{ route('messages.inbox') }}"
-                class="{{ request()->routeIs('messages.inbox') ? 'active' : '' }}">
-                    <span class="icon">💬</span> Messages
-                </a>
-            </li>
-
             <li>
                 <a href="{{ route('lending.seller') }}" class="{{ request()->routeIs('lending.seller') ? 'active' : '' }}">
                     <span class="icon">📚</span> Lending

@@ -27,7 +27,7 @@ class RoleMiddleware
 
         $user = Auth::user();
         $userRole = strtolower($user->role ?? '');
-        $requiredRole = strtolower($role);
+       $requiredRole = strtolower($role);
 
         // 2. SECURITY CHECK: BLOCKED STATUS
         // Checks both is_blocked boolean and status string for safety

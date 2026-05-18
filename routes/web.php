@@ -129,6 +129,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/seller/lendings', [LendingController::class, 'sellerLendings'])->name('lending.seller');
     Route::patch('/lending/{id}/status', [LendingController::class, 'updateStatus'])->name('lending.update-status');
     Route::patch('/products/{product}/toggle-lendable', [LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
+    Route::get('/my-lending', [LendingController::class, 'buyerDashboard'])->name('lending.buyer')->middleware(['auth', 'role:buyer']);
 
     // --- BUYER ROUTES ---
     Route::middleware(['role:buyer'])->group(function () {

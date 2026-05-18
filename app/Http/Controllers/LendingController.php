@@ -187,4 +187,26 @@ class LendingController extends Controller
 
         return view('lending.show', compact('lending'));
     }
+    public function buyerDashboard()
+    {
+        $user = Auth::user();
+        
+        $allLoans = Lending::where('borrower_id', $user->id)->get();
+        $activeLoans = Lending::where('borrower_id', $user->id)
+            ->where('status', 'approved')
+            ->whereNull('returned_at')
+            ->get();
+        $pendingRequests = Lending::where('borrower_id', $user->id)
+            ->where('status', 'pending')
+            ->get();
+        $loanHistory = Lending::where('borrower_id', $user->id)
+            ->whereNotNull('returned_at')
+            ->get();
+        $totalFees = $allLoans->sum('total_fee');
+        
+        return view('lending.buyer', compact(
+            'allLoans', 'activeLoans', 'pendingRequests', 
+            'loanHistory', 'totalFees'
+        ));
+    }
 }
