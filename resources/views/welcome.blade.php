@@ -38,25 +38,27 @@
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex items-center justify-center min-h-screen flex-col p-6 lg:p-8">
         
         <!-- Navigation Header -->
-        <header class="w-full lg:max-w-6xl text-sm mb-6">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-black border text-[#1b1b18] dark:border-[#3E3E3A] rounded-sm transition-all">
-                            Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] rounded-sm transition-all">
-                            Log in
-                        </a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('chooseRole') }}" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-black border text-[#1b1b18] dark:border-[#3E3E3A] rounded-sm transition-all">
-                                Register
+        <header class="w-full lg:max-w-6xl text-sm mb-6 rounded-xl overflow-hidden">
+            <div class="bg-gradient-to-r from-red-500 to-orange-500 p-4 rounded-xl">
+                @if (Route::has('login'))
+                    <nav class="flex items-center justify-end gap-4">
+                        @auth
+                            <a href="{{ url('/dashboard') }}" class="inline-block px-5 py-1.5 text-white border border-white/30 hover:border-white hover:bg-white/10 rounded-sm transition-all">
+                                Dashboard
                             </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="inline-block px-5 py-1.5 text-white border border-transparent hover:border-white/50 rounded-sm transition-all">
+                                Log in
+                            </a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('chooseRole') }}" class="inline-block px-5 py-1.5 text-white border border-white/30 hover:border-white hover:bg-white/10 rounded-sm transition-all">
+                                    Register
+                                </a>
+                            @endif
+                        @endauth
+                    </nav>
+                @endif
+            </div>
         </header>
 
         <!-- Hero Section -->

@@ -30,34 +30,38 @@
     </style>
 </head>
 <body class="text-slate-900 antialiased overflow-x-hidden">
-
-<nav class="sticky top-0 z-[100] border-b border-red-500/10 bg-red-600/90 nav-blur transition-all duration-500 shadow-2xl shadow-red-900/5">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
+<nav class="sticky top-0 z-[100] bg-gradient-to-r from-red-600 via-red-500 to-orange-500 transition-all duration-500 shadow-2xl shadow-orange-900/10">
+    
+    <!-- TOP BAR: Logo | Nav Links | Search | Profile -->
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-3 flex items-center justify-between">
         
-        <div class="flex items-center gap-10">
-            <a href="{{ route('home') }}" class="group flex items-center gap-3 no-underline">
-                <div class="bg-white p-2.5 rounded-2xl rotate-3 group-hover:rotate-0 transition-all duration-500 shadow-lg shadow-red-900/20">
-                    <span class="text-xl">🛒</span>
-                </div>
-                <div class="flex flex-col leading-none">
-                    <h2 class="text-white font-black text-2xl tracking-tighter uppercase mb-0">Crave<span class="text-red-200 italic">Cart</span></h2>
-                    <span class="text-[9px] font-bold text-red-100 uppercase tracking-[0.3em] opacity-80">Curated Studio Essentials</span>
-                </div>
-            </a>
-
-            <ul class="hidden lg:flex items-center gap-8 list-none mb-0">
-                <li><a href="{{ route('shop') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-red-50/80 hover:text-white transition-all no-underline">The Shop</a></li>
-                <li><a href="{{ route('bestSeller') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-red-50/80 hover:text-white transition-all no-underline">Our Products</a></li>
-                <li><a href="{{ route('about') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-red-50/80 hover:text-white transition-all no-underline">About Us</a></li>
-                <li><a href="{{ route('contact') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-red-50/80 hover:text-white transition-all no-underline">Contact Us</a></li>
-            </ul>
-        </div>
-
-        <div class="flex items-center gap-6">
-            <div class="relative hidden xl:block group">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-red-200/60 group-focus-within:text-white transition-colors"></i>
-                <input type="text" placeholder="Find essentials..." class="pl-11 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-2xl text-sm font-semibold text-white placeholder-red-100/50 focus:outline-none focus:bg-white/20 w-44 focus:w-64 transition-all duration-500">
+        <!-- LEFT: Logo -->
+        <a href="{{ route('home') }}" class="group flex items-center gap-3 no-underline shrink-0">
+            <div class="bg-white p-2 rounded-xl shadow-lg shadow-black/10">
+                <span class="text-xl">🛒</span>
             </div>
+            <div class="flex flex-col leading-none">
+                <h2 class="text-white font-black text-xl tracking-tighter uppercase">CRAVE<span class="text-orange-200">CART</span></h2>
+                <span class="text-[8px] font-bold text-orange-100 uppercase tracking-[0.25em]">CURATED STUDIO ESSENTIALS</span>
+            </div>
+        </a>
+
+        <!-- CENTER: Navigation Links -->
+        <ul class="hidden lg:flex items-center gap-8 list-none mb-0 mx-8">
+            <li><a href="{{ route('shop') }}" class="text-[11px] font-black uppercase tracking-[0.15em] text-white/90 hover:text-white transition-all no-underline">THE SHOP</a></li>
+            <li><a href="{{ route('bestSeller') }}" class="text-[11px] font-black uppercase tracking-[0.15em] text-white/90 hover:text-white transition-all no-underline">OUR PRODUCTS</a></li>
+            <li><a href="{{ route('about') }}" class="text-[11px] font-black uppercase tracking-[0.15em] text-white/90 hover:text-white transition-all no-underline">ABOUT US</a></li>
+            <li><a href="{{ route('contact') }}" class="text-[11px] font-black uppercase tracking-[0.15em] text-white/90 hover:text-white transition-all no-underline">CONTACT US</a></li>
+        </ul>
+
+        <!-- RIGHT: Search + Profile -->
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="relative hidden xl:block">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-sm"></i>
+                <input type="text" placeholder="Find essentials..." class="pl-9 pr-4 py-2 bg-white/20 border border-white/20 rounded-full text-sm font-medium text-white placeholder-white/60 focus:outline-none focus:bg-white/30 w-48 transition-all">
+            </div>
+
             
             <div class="flex items-center gap-4">
                 @guest
@@ -111,15 +115,7 @@
         
         <div class="lg:col-span-1 hidden lg:block"></div>
 
-        <div class="lg:col-span-3">
-            <h4 class="uppercase tracking-[0.4em] text-[10px] font-black mb-10 text-red-500">System Nav</h4>
-            <ul class="space-y-5 text-slate-400 font-bold text-xs list-none p-0">
-                <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Marketplace Hub</a></li>
-                <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Seller Management</a></li>
-                <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Logic & Logistics</a></li>
-                <li><a href="#" class="hover:text-white transition-colors block no-underline uppercase tracking-widest">Student Portal</a></li>
-            </ul>
-        </div>
+       
 
         <div class="lg:col-span-3">
             <h4 class="uppercase tracking-[0.4em] text-[10px] font-black mb-10 text-red-500">The Studio</h4>
