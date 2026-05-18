@@ -29,48 +29,48 @@
             background: #f8fafc;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
+            background: #fca5a5;
             border-radius: 99px;
         }
     </style>
 </head>
 
-<body class="antialiased min-h-screen selection:bg-orange-500/10 selection:text-orange-600">
+<body class="antialiased min-h-screen selection:bg-red-500/10 selection:text-red-600">
 
 <div class="max-w-6xl mx-auto p-8 md:p-12 space-y-8">
 
-    {{-- PRESTIGE TOP HEADER WITH GRADIENT ACCENT --}}
+    {{-- PRESTIGE TOP HEADER WITH INTENSE RED GRADIENT --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-slate-100 pb-8">
         <div class="space-y-1">
             <h1 class="text-3xl font-black tracking-tight">
-                <span class="bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent">Registered Users</span>
+                <span class="bg-gradient-to-r from-red-700 via-red-600 to-orange-500 bg-clip-text text-transparent">Registered Users</span>
             </h1>
             <p class="text-slate-400 text-sm">Comprehensive index of current live records within the platform ecosystem.</p>
         </div>
 
         <a href="{{ route('admin.dashboard') }}"
-           class="inline-flex items-center gap-2 text-xs font-semibold text-white bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 px-5 py-3 rounded-xl transition-all shadow-md shadow-red-500/10 hover:shadow-orange-500/20 hover:-translate-y-0.5">
+           class="inline-flex items-center gap-2 text-xs font-bold text-white bg-gradient-to-r from-red-700 via-red-600 to-red-500 hover:from-red-600 hover:to-red-500 px-5 py-3 rounded-xl transition-all shadow-md shadow-red-600/20 hover:shadow-red-600/30 hover:-translate-y-0.5">
             <i class="fa-solid fa-arrow-left"></i>
             Return to Dashboard
         </a>
     </div>
 
-    {{-- SEARCH BAR WITH INTERACTIVE ACCENT RING --}}
+    {{-- SEARCH BAR WITH RED INTERACTIVE ACCENT RING --}}
     <div class="max-w-xl">
         <div class="relative group">
             <input
                 type="text"
                 id="searchInput"
                 placeholder="Search index by unique identifier name or email lookup..."
-                class="w-full p-4 pl-12 rounded-xl border border-slate-200 bg-white text-sm placeholder-slate-400 focus:outline-none focus:border-orange-500/40 focus:ring-4 focus:ring-orange-500/[0.04] transition-all duration-200"
+                class="w-full p-4 pl-12 rounded-xl border border-slate-200 bg-white text-sm placeholder-slate-400 focus:outline-none focus:border-red-500/40 focus:ring-4 focus:ring-red-500/[0.04] transition-all duration-200"
             >
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors text-sm"></i>
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-red-500 transition-colors text-sm"></i>
         </div>
     </div>
 
     {{-- DATA INTERFACE: GLOBAL REGISTER --}}
     <div class="bg-white ring-1 ring-slate-100 rounded-2xl shadow-sm overflow-hidden relative">
-        <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-500 to-orange-500"></div>
+        <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-700 via-red-500 to-orange-500"></div>
 
         <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse whitespace-nowrap">
@@ -86,7 +86,7 @@
                 <tbody id="usersTable" class="text-sm divide-y divide-slate-50 text-slate-600">
 
                     @foreach($users as $user)
-                    <tr class="hover:bg-slate-50/[0.4] transition-colors user-row group">
+                    <tr class="hover:bg-red-50/[0.15] transition-colors user-row group">
 
                         {{-- NAME --}}
                         <td class="py-4 px-6 font-semibold text-slate-800 group-hover:text-red-600 transition-colors duration-200 user-name">
@@ -144,7 +144,7 @@
                                     {{-- UNBLOCK FORM --}}
                                     <form action="{{ route('admin.unblock', $user->id) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="submit" class="text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-xl shadow-sm transition-all">
+                                        <button type="submit" class="text-xs font-bold text-white bg-red-700 hover:bg-red-800 px-3 py-1.5 rounded-xl shadow-sm transition-all">
                                             Reinstate
                                         </button>
                                     </form>
@@ -152,8 +152,8 @@
                                 
                                 {{-- DIRECT CONTACT MAIL --}}
                                 <a href="{{ route('admin.email.page', $user->id) }}"
-                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-orange-200 px-3 py-1.5 rounded-xl transition-all shadow-sm">
-                                    <i class="fa-solid fa-paper-plane text-slate-400 group-hover:text-orange-500"></i> Dispatch Mail
+                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 px-3 py-1.5 rounded-xl transition-all shadow-sm">
+                                    <i class="fa-solid fa-paper-plane text-slate-400 group-hover:text-red-600 transition-colors"></i> Dispatch Mail
                                 </a>
 
                             </div>
