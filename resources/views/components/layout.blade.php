@@ -86,15 +86,17 @@
         </div>
 
         {{-- ✅ SELLER ONLY LOGOUT --}}
-       @if(Auth::user()->role === 'seller' || Auth::user()->role === 'buyer')
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit"
-                class="text-[10px] font-black uppercase tracking-widest bg-black/20 hover:bg-black/40 text-white px-4 py-2 rounded-xl transition">
-            LOGOUT
-        </button>
-    </form>
-@endif
+      @auth
+    @if(in_array(Auth::user()->role, ['seller', 'buyer', 'admin']))
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                    class="text-[10px] font-black uppercase tracking-widest bg-black/20 hover:bg-black/40 text-white px-4 py-2 rounded-xl transition">
+                LOGOUT
+            </button>
+        </form>
+    @endif
+@endauth
     @endguest
 </div>
 
