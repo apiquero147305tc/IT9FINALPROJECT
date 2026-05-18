@@ -7,133 +7,182 @@
     <title>CraveCart | Add New Item</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-        
         body { 
-            background-color: #ffffff; 
-            font-family: 'Inter', sans-serif; 
-            color: #0f172a;
+            font-family: 'Poppins', sans-serif; 
         }
 
-        /* 🔴 Crimson Navbar Branding */
-        .nav-branded { 
-            background-color: #dc2626; 
+        /* 🔴 Clean Hide targets the main marketplace layout top navigation bar on this view */
+        nav.nav-branded,
+        header,
+        nav:not(.studio-nav)[class*="bg-gradient"],
+        div[class*="bg-gradient"][class*="sticky"] {
+            display: none !important;
         }
 
-        /* Clean input styling to match your Red Studio theme */
-        .form-input {
+        /* Interactive modern inputs matching Studio design framework */
+        .form-input-premium {
             width: 100%;
-            border: 4px solid #f8fafc;
-            border-radius: 1.5rem;
-            padding: 1.25rem;
-            font-weight: 700;
-            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1e293b;
+            transition: all 0.25s ease;
             outline: none;
-            background-color: #f8fafc;
+            background-color: #ffffff;
         }
 
-        .form-input:focus {
-            border-color: #dc2626;
-            background-color: #fffafb;
+        .form-input-premium:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
         }
 
-        label {
+        .form-label-premium {
             display: block;
-            font-size: 10px;
-            font-weight: 900;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #94a3b8;
+            letter-spacing: 0.05em;
+            color: #64748b;
             margin-bottom: 0.5rem;
-            margin-left: 0.5rem;
+            margin-left: 0.25rem;
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50/50">
+<body class="min-h-screen bg-slate-50/60 antialiased">
 
-    <nav class="nav-branded px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
-        <div class="flex items-center gap-2">
-            <a href="{{ route('seller.dash') }}" class="bg-white p-1.5 rounded-xl shadow-sm hover:scale-110 transition">
-                <span class="text-xl">⬅️</span>
+    {{-- ========================================================= --}}
+    {{-- UNIFIED BRANDED GRADIENT NAVIGATION BAR                    --}}
+    {{-- ========================================================= --}}
+    <nav class="studio-nav bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 w-full shadow-lg shadow-orange-500/10 border-b border-orange-600/20 sticky top-0 z-50 py-4 px-4 md:px-6">
+        <div class="max-w-3xl mx-auto flex items-center justify-between text-white">
+            
+            <div class="flex items-center gap-3">
+                <a href="{{ route('seller.dash') }}" class="bg-white/10 p-2 rounded-xl border border-white/10 flex items-center justify-center backdrop-blur-sm transition hover:bg-white/20">
+                    <i class="fa-solid fa-arrow-left text-base text-orange-200"></i>
+                </a>
+                <div>
+                    <h1 class="text-base font-black tracking-tight leading-none">Seller Studio</h1>
+                    <p class="text-[10px] text-orange-100/70 font-medium mt-1">Catalog Expansion Registry</p>
+                </div>
+            </div>
+
+            <a href="{{ route('seller.dash') }}" class="inline-flex items-center gap-1.5 bg-black/15 backdrop-blur-md px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-white/10 text-white hover:bg-black/25 transition">
+                Dashboard
             </a>
-            <h1 class="text-sm font-extrabold tracking-tight uppercase text-white">
-                Back to Dashboard
-            </h1>
         </div>
     </nav>
 
-    <main class="max-w-2xl mx-auto p-6 md:p-12">
+    {{-- ========================================================= --}}
+    {{-- MAIN CONFIGURATION WORKSPACE                              --}}
+    {{-- ========================================================= --}}
+    <main class="max-w-3xl mx-auto p-4 md:p-8 space-y-8">
         
-        <div class="mb-12 text-center">
-            <h2 class="text-6xl font-black tracking-tighter uppercase text-slate-900 leading-none">Add Item</h2>
-            <p class="text-xs font-bold text-red-600 uppercase tracking-[0.3em] mt-2">Expand Your Inventory</p>
+        {{-- Header Identifier Row --}}
+        <div class="border-b border-slate-200/60 pb-5">
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-orange-500"></i> Add New Product
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Onboard your asset listings directly into the marketplace engine.</p>
         </div>
 
-        <div class="bg-white border border-slate-100 rounded-[3rem] shadow-2xl shadow-slate-900/5 p-8 md:p-12">
+        <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-6 md:p-10">
             
+            {{-- Error Context Alert Blocks --}}
             @if ($errors->any())
-                <div class="mb-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-2xl">
-                    <ul class="list-none p-0 m-0">
-                        @foreach ($errors->all() as $error)
-                            <li class="text-red-600 text-[10px] font-black uppercase tracking-tight">{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm mt-0.5"></i>
+                    <div>
+                        <h4 class="text-xs font-bold text-rose-800 uppercase tracking-wider">Validation Errors Overlooked</h4>
+                        <ul class="list-disc pl-4 mt-1.5 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li class="text-rose-600 text-xs font-medium">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             @endif
 
+            {{-- Form Structure Element --}}
             <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 
-                <div>
-                    <label>Item Name</label>
-                    <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g. Cooking Oil" required class="form-input">
-                </div>
-
-                <div>
-                    <label>Category</label>
-                    <select name="category" class="form-input appearance-none bg-white cursor-pointer">
-                        <option value="Household">Household</option>
-                        <option value="Cooking">Cooking</option>
-                        <option value="School Supplies">School Supplies</option>
-                        <option value="Accessories">Accessories</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label>Price (PHP)</label>
-                        <input type="number" name="price" value="{{ old('price') }}" step="0.01" placeholder="0.00" required class="form-input">
+                        <label class="form-label-premium">Item Name</label>
+                        <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g. Premium Cooking Oil" required class="form-input-premium">
                     </div>
+
                     <div>
-                        <label>Stock Quantity</label>
-                        <input type="number" name="stock" value="{{ old('stock') }}" placeholder="0" required class="form-input">
+                        <label class="form-label-premium">Category Classification</label>
+                        <div class="relative">
+                            <select name="category" class="form-input-premium appearance-none bg-white cursor-pointer pr-10">
+                                <option value="Household">Household Goods</option>
+                                <option value="Cooking">Cooking & Pantry</option>
+                                <option value="School Supplies">School & Office Supplies</option>
+                                <option value="Accessories">Accessories & Jewelry</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400 text-xs">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div>
-                    <label>Item Description</label>
-                    <textarea name="description" rows="4" placeholder="Tell customers about your product..." class="form-input resize-none">{{ old('description') }}</textarea>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="form-label-premium">Base Price (PHP)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 font-bold text-sm pointer-events-none">₱</span>
+                            <input type="number" name="price" value="{{ old('price') }}" step="0.01" placeholder="0.00" required class="form-input-premium pl-8">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-premium">Initial Stock Quantity</label>
+                        <input type="number" name="stock" value="{{ old('stock') }}" placeholder="e.g. 50" required class="form-input-premium">
+                    </div>
                 </div>
 
-                <div class="p-8 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-center">
-                    <label class="mb-4 block">Product Images</label>
+                <div>
+                    <label class="form-label-premium">Item Public Description</label>
+                    <textarea name="description" rows="4" placeholder="Detail specifications, measurements, capabilities or borrowing stipulations..." class="form-input-premium resize-none">{{ old('description') }}</textarea>
+                </div>
+
+                {{-- Interactive Branded Media Upload Area --}}
+                <div class="p-6 md:p-8 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200 text-center relative group transition hover:bg-slate-50">
+                    <div class="w-12 h-12 bg-white text-slate-400 border border-slate-200 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:text-orange-500 group-hover:border-orange-200 transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                    </div>
+                    <label class="form-label-premium !ml-0 !mb-1 text-center cursor-pointer">Upload Asset Showcase Photos</label>
+                    <p class="text-[11px] text-slate-400 font-medium mb-4">Supports multi-photo drops for dynamic preview arrays</p>
+                    
                     <input type="file" name="images[]" accept="image/*" multiple 
-                           class="text-xs font-bold text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-red-100 file:text-red-600 hover:file:bg-red-200 cursor-pointer">
-                    <p class="mt-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest">Supports multiple high-quality photos</p>
+                           class="text-xs text-slate-500 font-medium file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer mx-auto">
                 </div>
 
-                <button type="submit" 
-                        class="w-full bg-slate-950 text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-sm hover:bg-red-600 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-red-900/10 mt-8">
-                    Upload to Shop
-                </button>
+                {{-- Action Controls Row --}}
+                <div class="pt-4 flex flex-col sm:flex-row items-center gap-3">
+                    <button type="submit" 
+                            class="w-full sm:flex-1 bg-gradient-to-r from-rose-500 via-orange-500 to-orange-600 text-white py-4 rounded-xl font-bold uppercase tracking-wider text-xs hover:opacity-95 active:scale-95 transition-all shadow-md shadow-orange-500/10">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1 text-sm"></i> Commit & Deploy Item
+                    </button>
+                    
+                    <a href="{{ route('seller.dash') }}" 
+                       class="w-full sm:w-auto inline-flex items-center justify-center bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 px-6 py-4 rounded-xl font-bold uppercase tracking-wider text-xs transition active:scale-95 shadow-sm">
+                        Cancel
+                    </a>
+                </div>
             </form>
         </div>
 
-        <div class="mt-8 text-center">
-            <a href="{{ route('seller.dash') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-600 transition-colors">
-                ← Return to Studio
+        <div class="text-center pt-2">
+            <a href="{{ route('seller.dash') }}" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-orange-500 transition-colors">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i> Return to Studio Dashboard
             </a>
         </div>
     </main>
