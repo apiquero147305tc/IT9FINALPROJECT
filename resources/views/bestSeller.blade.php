@@ -60,7 +60,7 @@
 
         <div class="mt-20 flex justify-between items-center text-slate-300 font-black uppercase text-[9px] tracking-[0.4em]">
             <p>CraveCart Marketplace System</p>
-            <p>UM Tagum College v1.0</p>
+            <p>UM Tagum College </p>
         </div>
     </section>
 </x-layout>
