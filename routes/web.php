@@ -19,6 +19,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SellerController;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,15 +35,41 @@ Route::get('/', function () {
 Route::get('/about', fn () => view('about'))->name('about');
 Route::get('/contact', fn () => view('contact'))->name('contact');
 
-Route::get('/shop', function () {
-    if (Auth::check()) {
-        return match(Auth::user()->role) {
-            'seller' => redirect()->route('seller.dash'),
-            'admin' => redirect()->route('admin.dashboard'),
-            default => redirect()->route('buyer.home'),
-        };
+Route::get('/shop', function (Request $request) {
+    $query = Product::with(['images', 'ratings', 'user'])
+        ->where('status', 'available');
+
+    // Search
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%')
+              ->orWhereHas('user', function ($q2) use ($request) {
+                  $q2->where('shop_name', 'like', '%' . $request->search . '%')
+                     ->orWhere('name', 'like', '%' . $request->search . '%');
+              });
+        });
     }
-    return redirect()->route('chooseRole');
+
+    // Category filter
+    if ($request->filled('category') && $request->category !== 'All') {
+        $query->where('category', $request->category);
+    }
+
+    // Sorting
+    $sort = $request->sort ?? 'latest';
+    if ($sort === 'rating') {
+        $query->withAvg('ratings', 'rating')->orderByDesc('ratings_avg_rating');
+    } elseif ($sort === 'price_low') {
+        $query->orderBy('price', 'asc');
+    } elseif ($sort === 'price_high') {
+        $query->orderBy('price', 'desc');
+    } else {
+        $query->latest();
+    }
+
+    $products = $query->paginate(12);
+
+    return view('shop', compact('products'));
 })->name('shop');
 
 Route::get('/best-sellers', function () {
@@ -164,8 +191,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lending/my-requests', [LendingController::class, 'myRequests'])->name('lending.my-requests');
     Route::patch('/products/{product}/toggle-lendable',[LendingController::class, 'toggleLendable'])->name('products.toggle-lendable');
     Route::get('/my-lending', [LendingController::class, 'buyerDashboard'])->name('lending.buyer')->middleware(['auth', 'role:buyer']);
-    Route::get('/lending/{id}', [LendingController::class, 'show'])
-    ->name('lending.show');
+    Route::get('/lending/{id}', [LendingController::class, 'show'])->name('lending.show');
 
     /*
     |--------------------------------------------------------------------------

@@ -40,7 +40,7 @@ class BuyerController extends Controller
        if ($request->filled('search')) {
     $query->where(function ($q) use ($request) {
         $q->where('name', 'like', '%' . $request->search . '%')
-          ->orWhereHas('seller', function ($q2) use ($request) {
+          ->orWhereHas('user', function ($q2) use ($request) {
               $q2->where('shop_name', 'like', '%' . $request->search . '%')
                   ->orWhere('name', 'like', '%' . $request->search . '%');
           });
@@ -127,7 +127,8 @@ class BuyerController extends Controller
     {
         $user = Auth::user();
 
-        $budget = (float) str_replace(['₱', ',', ' '], '', $user->monthly_budget ?? 0);
+        $budgetStr = $user->monthly_budget ?? '0';
+        $budget = (float) str_replace(['₱', ',', ' '], '', $budgetStr);
 
         $orders = $user->orders ?? collect();
 
@@ -139,9 +140,6 @@ class BuyerController extends Controller
             ? ($spent / $budget) * 100
             : 0;
 
-        $spending = $orders->groupBy('category')->map(function ($items) {
-            return $items->sum('total_price');
-        });
 
         return view('buyer.profile', compact(
             'budget',
