@@ -13,15 +13,10 @@
             background: linear-gradient(135deg, #dd0d22 0%, #ff6b35 50%, #ff8c42 100%);
             padding: 40px 20px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
     </style>
+    @stack('styles')
 </head>
 <body>
-    <div class="container">
-        @yield('content')
-    </div>
+    @yield('content')
 </body>
 </html>
